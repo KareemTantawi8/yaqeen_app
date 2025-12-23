@@ -4,12 +4,13 @@ import 'package:yaqeen_app/features/Settings/presentation/views/widgets/custom_c
 import 'package:yaqeen_app/features/Settings/presentation/views/widgets/custom_service_widget.dart';
 import 'package:yaqeen_app/features/Settings/presentation/views/widgets/setting_app_bar_widget.dart';
 import 'package:yaqeen_app/features/Settings/presentation/views/widgets/setting_option_tile.dart';
-import 'package:yaqeen_app/features/Settings/presentation/views/yaqeen_screen.dart';
 
 import '../../../../core/common/widgets/custom_divider_widget.dart';
 import '../../../../core/styles/images/app_image.dart';
 import '../../../../core/utils/spacing.dart';
 import 'allah_names_screen.dart';
+import 'books_screen.dart';
+import 'radio_screen.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -65,23 +66,37 @@ class SettingScreen extends StatelessWidget {
                   CustomServiceWidget(
                     image: AppImages.radioIcon,
                     title: 'الراديو',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RadioScreen(),
+                        ),
+                      );
+                    },
                   ),
                   CustomServiceWidget(
                     image: AppImages.bookIcon,
                     title: 'كتب',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BooksScreen(),
+                        ),
+                      );
+                    },
                   ),
                   CustomServiceWidget(
                     image: AppImages.yaqeenImage,
                     title: 'أسأل يقين ؟',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => YaqeenScreen(),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => YaqeenScreen(),
+                      //   ),YaqeenScreen
+                      // );
                     },
                   ),
                 ],

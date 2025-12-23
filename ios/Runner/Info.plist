@@ -10,6 +10,8 @@
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<!-- TODO: Update PRODUCT_BUNDLE_IDENTIFIER in Xcode project settings before publishing -->
+	<!-- Change from com.example.yaqeenApp to your own bundle ID (e.g., com.yourcompany.yaqeenapp) -->
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

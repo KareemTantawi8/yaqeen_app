@@ -1,22 +1,29 @@
 class AllahNameModel {
-  final String title;
-  final String enTitle;
-  final String traTitle;
-  final String sound;
+  final String name; // Arabic name
+  final String transliteration; // English transliteration
+  final int number;
+  final String meaning; // English meaning
 
   AllahNameModel({
-    required this.title,
-    required this.enTitle,
-    required this.traTitle,
-    required this.sound,
+    required this.name,
+    required this.transliteration,
+    required this.number,
+    required this.meaning,
   });
 
   factory AllahNameModel.fromJson(Map<String, dynamic> json) {
     return AllahNameModel(
-      title: json['title'],
-      enTitle: json['enTitle'],
-      traTitle: json['traTitle'],
-      sound: json['sound'],
+      name: json['name'] ?? '',
+      transliteration: json['transliteration'] ?? '',
+      number: json['number'] ?? 0,
+      meaning: json['en'] != null && json['en'] is Map
+          ? (json['en'] as Map<String, dynamic>)['meaning'] ?? ''
+          : '',
     );
   }
+
+  // Getters for backward compatibility with existing widget
+  String get title => name;
+  String get enTitle => transliteration;
+  String get traTitle => meaning;
 }

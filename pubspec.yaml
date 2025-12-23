@@ -1,5 +1,5 @@
 name: yaqeen_app
-description: "A new Flutter project."
+description: "Yaqeen App - Islamic application with Quran, Azkar, Prayer times, and Islamic events"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -87,11 +87,11 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/images/cloud_image.png
-    - assets/data/surahs.json
-    - assets/data/islamic_events_2025.json
-    - assets/data/azkar_data_full.json
-    - assets/data/allah_names.json
-    # - images/a_dot_ham.jpeg
+    # JSON files removed - data now loaded from API endpoints
+    # - assets/data/surahs.json
+    # - assets/data/islamic_events_2025.json
+    # - assets/data/azkar_data_full.json
+    # - assets/data/allah_names.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

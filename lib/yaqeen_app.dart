@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'core/localization/app_localizations.dart';
 import 'features/home/presentation/views/mespha_screen.dart';
 import 'features/home/presentation/views/quran_screen.dart';
 import 'features/splach/presentation/views/splach_screen.dart';
@@ -12,17 +13,30 @@ class YaqeenApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    
+    // Force Arabic locale and RTL direction
     return MaterialApp(
-      locale: const Locale('ar'),
+      // Force Arabic as default locale
+      locale: const Locale('ar', 'SA'), // Arabic (Saudi Arabia) for full RTL support
       supportedLocales: const [
-        Locale('ar'),
-        Locale('en'),
+        Locale('ar', 'SA'), // Arabic - Saudi Arabia
+        Locale('ar'), // Arabic - generic
+        Locale('en'), // English (fallback)
       ],
+      // Localization delegates
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      // Force RTL for Arabic across all screens
+      builder: (context, child) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: child ?? const SizedBox(),
+        );
+      },
       debugShowCheckedModeBanner: false,
       initialRoute: SplashScreen.routeName,
       routes: {

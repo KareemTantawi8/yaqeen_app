@@ -11,16 +11,18 @@ class DioConsumer extends ApiConsumer {
   DioConsumer({required this.dio}) {
     dio.options.baseUrl = EndPoints.baseUrl;
     dio.interceptors.add(ApiInterceptors());
-    dio.interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
+    // LogInterceptor - Only enable in debug mode for production optimization
+    // Uncomment for debugging, but disable in production builds
+    // dio.interceptors.add(
+    //   LogInterceptor(
+    //     request: true,
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseHeader: true,
+    //     responseBody: true,
+    //     error: true,
+    //   ),
+    // );
   }
   @override
   Future delete(

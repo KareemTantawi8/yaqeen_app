@@ -22,4 +22,13 @@ class EndPoints {
   static String getId = 'company';
   static String getYear = 'year';
   static const String station = 'station';
+  
+  // Islamic content endpoints
+  static String getSurahs = 'surahs';
+  static String getAzkar = 'azkar';
+  static String getIslamicEvents = 'islamic-events';
+  static String getAllahNames = 'allah-names';
+  
+  // External API endpoints
+  static String getAllahNamesExternal = 'https://api.aladhan.com/v1/asmaAlHusna';
 }
