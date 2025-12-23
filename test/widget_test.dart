@@ -8,6 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:yaqeen_app/main.dart';
+import 'package:yaqeen_app/yaqeen_app.dart';
 
 void main() {
   testWidgets('App launches successfully', (WidgetTester tester) async {
