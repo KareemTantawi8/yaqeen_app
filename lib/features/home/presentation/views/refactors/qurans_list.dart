@@ -5,6 +5,7 @@ import '../../../../../core/styles/images/app_image.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/surah_model.dart';
 import '../../../data/repo/quran_data_loader.dart';
+import '../surah_detail_screen.dart';
 
 class QuransList extends StatelessWidget {
   const QuransList({super.key});
@@ -14,12 +15,79 @@ class QuransList extends StatelessWidget {
     return FutureBuilder<List<Surah>>(
       future: QuranDataLoader.loadSurahs(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(
-              child: CircularProgressIndicator(
-            backgroundColor: AppColors.primaryColor,
-          ));
+        // Loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+                verticalSpace(16),
+                const Text(
+                  'جاري تحميل السور...',
+                  style: TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontSize: 14,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+                // verticalSpace(1888),1888
+
+              ],
+            ),
+          );
         }
+        
+        // Error state
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: Colors.red[300],
+                ),
+                verticalSpace(16),
+                Text(
+                  'فشل تحميل السور',
+                  style: const TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                verticalSpace(8),
+                Text(
+                  snapshot.error.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // Empty state
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text(
+              'لا توجد سور متاحة',
+              style: TextStyle(
+                fontFamily: 'Tajawal',
+                fontSize: 16,
+              ),
+            ),
+          );
+        }
+        
         final surahs = snapshot.data!;
         return ListView.builder(
           itemCount: surahs.length,
@@ -27,20 +95,32 @@ class QuransList extends StatelessWidget {
             final surah = surahs[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Container(
-                height: 75,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Color(0x59BBC4CE),
-                      width: 1.0,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SurahDetailScreen(surah: surah),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    height: 75,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Color(0x59BBC4CE),
+                          width: 1.0,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Stack(
@@ -123,6 +203,8 @@ class QuransList extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
                   ),
                 ),
               ),

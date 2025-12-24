@@ -47,5 +47,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Location permissions for prayer times -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نحتاج إلى موقعك لعرض أوقات الصلاة الدقيقة لمنطقتك</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>نحتاج إلى موقعك لعرض أوقات الصلاة الدقيقة لمنطقتك</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>نحتاج إلى موقعك لعرض أوقات الصلاة الدقيقة لمنطقتك</string>
 </dict>
 </plist>

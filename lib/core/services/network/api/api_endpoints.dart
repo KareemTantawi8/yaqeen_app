@@ -31,4 +31,7 @@ class EndPoints {
   
   // External API endpoints
   static String getAllahNamesExternal = 'https://api.aladhan.com/v1/asmaAlHusna';
+  static String getAdhkarExternal = 'https://raw.githubusercontent.com/rn0x/Adhkar-json/refs/heads/main/adhkar.json';
+  static String getQuranSurahsExternal = 'https://api.alquran.cloud/v1/surah';
+  static String getPrayerTimesExternal = 'https://api.aladhan.com/v1/timings';
 }

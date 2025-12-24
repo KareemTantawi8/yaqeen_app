@@ -1,91 +1,188 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../core/styles/colors/app_color.dart';
-import '../../../../../core/styles/fonts/font_styles.dart';
-import '../../../../../core/styles/images/app_image.dart';
-import '../../../../../core/utils/spacing.dart';
-import '../../../data/model/askar_model.dart';
-import '../../../data/repo/askar_load_data.dart';
-import 'askar_widget.dart';
-// Adjust import path as needed
+import '../../../data/model/adhkar_category_model.dart';
+import 'adhkar_category_detail_screen.dart';
 
 class AskarListView extends StatelessWidget {
-  const AskarListView({super.key});
+  final List<AdhkarCategoryModel> categories;
+  final Future<void> Function()? onRefresh;
+
+  const AskarListView({
+    super.key,
+    required this.categories,
+    this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Azkar>>(
-      future: AzkarService.loadAzkar(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Loading indicator while data loads
-          return const Center(
-              child: CircularProgressIndicator(
-            color: AppColors.primaryColor,
-          ));
-        } else if (snapshot.hasError) {
-          // Error UI
-          return Center(child: Text('Error loading Azkar: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          // Empty state UI
-          return const Center(child: Text('No Azkar available'));
-        }
+    Widget listView = ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: categories.length,
+      padding: const EdgeInsets.only(top: 8),
+      itemBuilder: (context, index) {
+        final category = categories[index];
+        return _CategoryCard(
+          category: category,
+          index: index,
+        );
+      },
+    );
 
-        // Data loaded successfully
-        final azkarList = snapshot.data!;
-        return ListView.builder(
-          shrinkWrap: true, // <--- Important
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: azkarList.length,
-          padding: const EdgeInsets.only(top: 8),
-          itemBuilder: (context, index) {
-            final azkar = azkarList[index];
-            return AzkarWidget(
-              title: azkar.title,
-              number: "${index + 1}",
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => Dialog(
-                    backgroundColor: AppColors.boldText,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 28,
+    if (onRefresh != null) {
+      return RefreshIndicator(
+        onRefresh: onRefresh!,
+        color: AppColors.primaryColor,
+        child: listView,
+      );
+    }
+
+    return listView;
+  }
+}
+
+class _CategoryCard extends StatelessWidget {
+  final AdhkarCategoryModel category;
+  final int index;
+
+  const _CategoryCard({
+    required this.category,
+    required this.index,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFEAF9F4),
+            const Color(0xFFEAF9F4).withOpacity(0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryColor.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdhkarCategoryDetailScreen(
+                  category: category,
+                  categoryIndex: index,
+                ),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Number circle
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primaryColor,
+                        AppColors.primaryColor.withOpacity(0.8),
+                      ],
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontFamily: 'Tajawal',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        category.category,
+                        style: const TextStyle(
+                          color: Color(0xFF1A2221),
+                          fontSize: 18,
+                          fontFamily: 'Tajawal',
+                          fontWeight: FontWeight.w700,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
                         children: [
-                          Image.asset(
-                            AppImages.dialogImage,
+                          Icon(
+                            Icons.circle,
+                            size: 6,
+                            color: AppColors.primaryColor.withOpacity(0.6),
                           ),
-                          verticalSpace(12),
-                          Center(
-                            child: Text(
-                              azkar.title,
-                              style: TextStyles.font24WhiteText.copyWith(
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                          ),
-                          verticalSpace(12),
+                          const SizedBox(width: 6),
                           Text(
-                            azkar.content,
-                            textAlign: TextAlign.center,
-                            style: TextStyles.font20PrimaryText.copyWith(
-                              letterSpacing: 0.40,
+                            '${category.items.length} ذكر',
+                            style: TextStyle(
+                              color: AppColors.primaryColor.withOpacity(0.7),
+                              fontSize: 14,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                );
-              },
-            );
-          },
-        );
-      },
+                ),
+
+                // Arrow icon
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: AppColors.primaryColor,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
