@@ -5,6 +5,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/localization/app_localizations.dart';
 import 'features/home/presentation/views/mespha_screen.dart';
 import 'features/home/presentation/views/quran_screen.dart';
+import 'features/home/presentation/views/quran_full_mushaf_screen.dart';
+import 'features/home/presentation/views/surah_full_audio_screen.dart';
+import 'features/home/presentation/views/adhan_full_screen.dart';
 import 'features/splach/presentation/views/splach_screen.dart';
 
 class YaqeenApp extends StatelessWidget {
@@ -43,6 +46,9 @@ class YaqeenApp extends StatelessWidget {
         SplashScreen.routeName: (context) => const SplashScreen(),
         MesphaScreen.routeName: (context) => const MesphaScreen(),
         QuranScreen.routeName: (context) => const QuranScreen(),
+        QuranFullMushafScreen.routeName: (context) => const QuranFullMushafScreen(),
+        SurahFullAudioScreen.routeName: (context) => const SurahFullAudioScreen(),
+        AdhanFullScreen.routeName: (context) => const AdhanFullScreen(),
         // Add more routes here as needed
       },
     );

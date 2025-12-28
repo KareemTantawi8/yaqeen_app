@@ -54,5 +54,24 @@
 	<string>نحتاج إلى موقعك لعرض أوقات الصلاة الدقيقة لمنطقتك</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>نحتاج إلى موقعك لعرض أوقات الصلاة الدقيقة لمنطقتك</string>
+	
+	<!-- Audio permissions and background modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+	
+	<!-- Allow audio from HTTP/HTTPS -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
+	
+	<!-- Audio session category -->
+	<key>UIRequiresPersistentWiFi</key>
+	<false/>
 </dict>
 </plist>

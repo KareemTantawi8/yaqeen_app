@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/features/home/presentation/views/refactors/qurans_list.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/recent_quran_read.dart';
-import 'package:yaqeen_app/features/home/presentation/views/widgets/reciters_list_tab.dart';
+import 'package:yaqeen_app/features/home/presentation/views/widgets/full_surah_player_screen.dart';
+import 'package:yaqeen_app/features/home/presentation/views/quran_full_mushaf_screen.dart';
+import 'package:yaqeen_app/features/home/presentation/views/surah_full_audio_screen.dart';
 
 import '../../../../core/common/widgets/custom_divider_widget.dart';
 import '../../../../core/common/widgets/default_app_bar.dart';
@@ -26,7 +28,7 @@ class _QuranScreenState extends State<QuranScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -60,6 +62,35 @@ class _QuranScreenState extends State<QuranScreen>
                 key: ValueKey('recent_quran_read_quran'),
               ),
               verticalSpace(8),
+              
+              // Quick access buttons for new features
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildQuickAccessButton(
+                      context,
+                      icon: Icons.menu_book,
+                      label: 'المصحف الكامل',
+                      onTap: () {
+                        Navigator.pushNamed(context, QuranFullMushafScreen.routeName);
+                      },
+                    ),
+                  ),
+                  horizontalSpace(12),
+                  Expanded(
+                    child: _buildQuickAccessButton(
+                      context,
+                      icon: Icons.headphones,
+                      label: 'قراءة سورة كاملة',
+                      onTap: () {
+                        Navigator.pushNamed(context, SurahFullAudioScreen.routeName);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              verticalSpace(16),
+              
               // Tab Bar
               TabBar(
                 automaticIndicatorColorAdjustment: false,
@@ -75,10 +106,9 @@ class _QuranScreenState extends State<QuranScreen>
                 ),
                 tabs: const [
                   Tab(
-                    text: 'السورة',
+                    text: 'قراءة السورة',
                   ),
-                  Tab(text: 'الترجمة'),
-                  Tab(text: 'تشغيل'),
+                  Tab(text: 'تشغيل السور'),
                 ],
               ),
               verticalSpace(8),
@@ -87,44 +117,15 @@ class _QuranScreenState extends State<QuranScreen>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    // Surah List Tab with Pull-to-Refresh
+                    // Surah List Tab - For Reading
                     RefreshIndicator(
                       key: _refreshIndicatorKey,
                       onRefresh: _refreshSurahs,
                       color: AppColors.primaryColor,
                       child: const QuransList(),
                     ),
-                    // Translation Tab (Coming Soon)
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.translate,
-                            size: 64,
-                            color: Colors.grey[300],
-                          ),
-                          verticalSpace(16),
-                          Text(
-                            "الترجمة",
-                            style: TextStyles.font20PrimaryText.copyWith(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                          verticalSpace(8),
-                          Text(
-                            "قريباً",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Tajawal',
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Audio Tab - Reciters List
-                    const RecitersListTab(),
+                    // Full Surah Player - For Listening
+                    const FullSurahPlayerScreen(),
                   ],
                 ),
               ),
@@ -134,6 +135,52 @@ class _QuranScreenState extends State<QuranScreen>
               // _buildSurahList(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickAccessButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.primaryColor.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: AppColors.primaryColor,
+              size: 20,
+            ),
+            horizontalSpace(8),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyles.font14PrimaryText.copyWith(
+                  color: AppColors.primaryColor,
+                  fontFamily: FontFamilyHelper.fontFamily1,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
     );

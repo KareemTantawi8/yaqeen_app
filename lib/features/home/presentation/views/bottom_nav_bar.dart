@@ -5,7 +5,7 @@ import '../../../../core/styles/images/app_image.dart';
 import '../../../Azkar/presentation/views/azkar_screen.dart';
 import '../../../Prayer/presntation/view/prayer_screen.dart';
 import '../../../Settings/presentation/views/setting_screen.dart';
-import '../../../events/presentation/views/events_screen.dart';
+import 'quran_screen.dart';
 import 'home_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -22,7 +22,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     AppImages.azkarIcon,
     AppImages.prayerIcons,
     AppImages.homeIcon,
-    AppImages.eventIcon,
+    AppImages.quranIcon,
     AppImages.settingIcons,
   ];
 
@@ -30,7 +30,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     "الأذكار",
     "الصلاة",
     "الرئيسية",
-    "المناسبات",
+    "القرآن",
     "المزيد",
   ];
 
@@ -38,7 +38,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const AzkarScreen(),
     const PrayerScreen(),
     const HomeScreen(),
-    const EventsScreen(),
+    const QuranScreen(),
     const SettingScreen(),
   ];
 

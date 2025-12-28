@@ -19,6 +19,7 @@ import 'package:yaqeen_app/features/home/presentation/views/widgets/rectangle_wi
 import 'package:yaqeen_app/features/home/presentation/views/widgets/time_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/qibla_card.dart';
 import 'package:yaqeen_app/features/qibla/presentation/views/qibla_screen.dart';
+import 'package:yaqeen_app/features/home/presentation/views/adhan_full_screen.dart';
 
 import 'widgets/prayer_times_loading_skeleton.dart';
 import '../../../../core/extension/context_extension.dart';
@@ -326,7 +327,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           FeatureIconButton(
                             onTap: () {
-                              log('printed');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AdhanFullScreen(),
+                                ),
+                              );
                             },
                             image: AppImages.azanIcon,
                             text: 'أذان',

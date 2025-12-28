@@ -34,4 +34,9 @@ class EndPoints {
   static String getAdhkarExternal = 'https://raw.githubusercontent.com/rn0x/Adhkar-json/refs/heads/main/adhkar.json';
   static String getQuranSurahsExternal = 'https://api.alquran.cloud/v1/surah';
   static String getPrayerTimesExternal = 'https://api.aladhan.com/v1/timings';
+  
+  // New Quran API endpoints
+  static String getFullQuran = 'quran'; // GET /api/quran
+  static String getFullSurah(int surahId) => 'surah/$surahId/full'; // GET /api/surah/{id}/full
+  static String getAdhanByLocation = 'adhan'; // GET /api/adhan
 }
