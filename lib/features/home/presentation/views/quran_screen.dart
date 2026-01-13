@@ -4,6 +4,7 @@ import 'package:yaqeen_app/features/home/presentation/views/widgets/recent_quran
 import 'package:yaqeen_app/features/home/presentation/views/widgets/full_surah_player_screen.dart';
 import 'package:yaqeen_app/features/home/presentation/views/quran_full_mushaf_screen.dart';
 import 'package:yaqeen_app/features/home/presentation/views/surah_full_audio_screen.dart';
+import 'package:yaqeen_app/features/home/presentation/views/quran_page_view_screen.dart';
 
 import '../../../../core/common/widgets/custom_divider_widget.dart';
 import '../../../../core/common/widgets/default_app_bar.dart';
@@ -88,6 +89,21 @@ class _QuranScreenState extends State<QuranScreen>
                     ),
                   ),
                 ],
+              ),
+              verticalSpace(12),
+              // New API Features - Page View with Word-by-Word
+              _buildQuickAccessButton(
+                context,
+                icon: Icons.pages,
+                label: 'قراءة صفحة بصفحة (API جديد)',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QuranPageViewScreen(initialPage: 1),
+                    ),
+                  );
+                },
               ),
               verticalSpace(16),
               

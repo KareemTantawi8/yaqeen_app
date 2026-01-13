@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/services/quran_audio_service.dart';
 import '../../../../core/services/quran_reading_service.dart';
+import '../../../../core/services/quran_tafsir_service.dart';
 import '../../../../core/services/reading_progress_notifier.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
@@ -429,6 +430,93 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
             child: const Text('تم', style: TextStyle(fontFamily: 'Tajawal')),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showTafsirDialog(Ayah ayah) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              
+              // Header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withOpacity(0.1),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey[200]!),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.menu_book, color: AppColors.primaryColor),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'التفسير',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryColor,
+                              fontFamily: 'Tajawal',
+                            ),
+                          ),
+                          Text(
+                            '${widget.surah.name} - آية ${ayah.numberInSurah}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                              fontFamily: 'Tajawal',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Tafsir content
+              Expanded(
+                child: _TafsirContent(
+                  surahNumber: widget.surah.number,
+                  ayahNumber: ayah.numberInSurah,
+                  scrollController: scrollController,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -924,6 +1012,18 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(
+                    Icons.menu_book_outlined,
+                    color: AppColors.primaryColor,
+                    size: 22,
+                  ),
+                  onPressed: () => _showTafsirDialog(ayah),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  tooltip: 'التفسير',
+                ),
               ],
             ),
           ),
@@ -1086,6 +1186,161 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Tafsir content widget
+class _TafsirContent extends StatefulWidget {
+  final int surahNumber;
+  final int ayahNumber;
+  final ScrollController scrollController;
+
+  const _TafsirContent({
+    required this.surahNumber,
+    required this.ayahNumber,
+    required this.scrollController,
+  });
+
+  @override
+  State<_TafsirContent> createState() => _TafsirContentState();
+}
+
+class _TafsirContentState extends State<_TafsirContent> {
+  String? _selectedTafsir;
+  Map<String, String?> _tafsirData = {};
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTafsir = QuranTafsirService.availableTafsirs.keys.first;
+    _loadTafsir();
+  }
+
+  Future<void> _loadTafsir() async {
+    if (_selectedTafsir == null) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final tafsirText = await QuranTafsirService.getVerseTafsir(
+        tafsirIdentifier: _selectedTafsir!,
+        surahNumber: widget.surahNumber,
+        ayahNumber: widget.ayahNumber,
+      );
+
+      setState(() {
+        _tafsirData[_selectedTafsir!] = tafsirText;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'فشل تحميل التفسير';
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Tafsir selector
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: QuranTafsirService.availableTafsirs.entries.map((entry) {
+                final isSelected = _selectedTafsir == entry.key;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(
+                      entry.value['name']!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Tajawal',
+                        color: isSelected ? Colors.white : AppColors.primaryColor,
+                      ),
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() {
+                          _selectedTafsir = entry.key;
+                        });
+                        _loadTafsir();
+                      }
+                    },
+                    selectedColor: AppColors.primaryColor,
+                    backgroundColor: Colors.grey[100],
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+
+        // Tafsir content
+        Expanded(
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                )
+              : _errorMessage != null
+                  ? Center(
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(
+                          fontFamily: 'Tajawal',
+                          color: Colors.grey,
+                        ),
+                      ),
+                    )
+                  : _tafsirData[_selectedTafsir] == null
+                      ? Center(
+                          child: Text(
+                            'لا يوجد تفسير متاح',
+                            style: TextStyle(
+                              fontFamily: 'Tajawal',
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        )
+                      : ListView(
+                          controller: widget.scrollController,
+                          padding: const EdgeInsets.all(16),
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                _tafsirData[_selectedTafsir] ?? '',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Tajawal',
+                                  height: 1.8,
+                                  color: Color(0xFF1A2221),
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ),
+        ),
+      ],
     );
   }
 }
