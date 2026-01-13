@@ -1,0 +1,917 @@
+{
+	"info": {
+		"_postman_id": "tawakkul-api-collection",
+		"name": "Tawakkul - Complete API Collection",
+		"description": "Complete API collection for Tawakkul Quran app - All features and endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Quran Audio APIs (everyayah.com)",
+			"item": [
+				{
+					"name": "Get Audio - Abdul Basit (Mujawwad) - Example",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://everyayah.com/data/Abdul_Basit_Mujawwad_128kbps/001001.mp3",
+							"protocol": "https",
+							"host": [
+								"everyayah",
+								"com"
+							],
+							"path": [
+								"data",
+								"Abdul_Basit_Mujawwad_128kbps",
+								"001001.mp3"
+							]
+						},
+						"description": "Format: https://everyayah.com/data/{reader_identifier}/{surah_id}{verse_id}.mp3\n\nSurah and verse IDs are zero-padded to 3 digits.\nExample: Surah 1, Verse 1 = 001001.mp3\nExample: Surah 114, Verse 6 = 114006.mp3"
+					},
+					"response": []
+				},
+				{
+					"name": "All Available Readers",
+					"item": [
+						{
+							"name": "Abdul Basit (Mujawwad) 128kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Abdul_Basit_Mujawwad_128kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Abdul_Basit_Mujawwad_128kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: عبدالباسط عبدالصمد (مجود)"
+							}
+						},
+						{
+							"name": "Abdul Basit (Murattal) 64kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Abdul_Basit_Murattal_64kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: عبدالباسط عبدالصمد (مرتل)"
+							}
+						},
+						{
+							"name": "Alafasy 128kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Alafasy_128kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Alafasy_128kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: مشاري العفاسي"
+							}
+						},
+						{
+							"name": "Abu Bakr Ash-Shaatree 128kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Abu_Bakr_Ash-Shaatree_128kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: أبو بكر الشاطري"
+							}
+						},
+						{
+							"name": "Hani Rifai 192kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Hani_Rifai_192kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Hani_Rifai_192kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: هاني الرفاعي"
+							}
+						},
+						{
+							"name": "Minshawy (Murattal) 128kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Minshawy_Murattal_128kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Minshawy_Murattal_128kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: المنشاوي (مرتل)"
+							}
+						},
+						{
+							"name": "Minshawy (Mujawwad) 192kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Minshawy_Mujawwad_192kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Minshawy_Mujawwad_192kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: المنشاوي (مجود)"
+							}
+						},
+						{
+							"name": "Abdurrahmaan Al Sudais 192kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Abdurrahmaan_As-Sudais_192kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: عبد الرحمن السديس"
+							}
+						},
+						{
+							"name": "Husary 64kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Husary_64kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Husary_64kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: محمود خليل الحصري"
+							}
+						},
+						{
+							"name": "Mohammad Al Tablaway 128kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Mohammad_al_Tablaway_128kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Mohammad_al_Tablaway_128kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: محمد الطبلاوي"
+							}
+						},
+						{
+							"name": "Saud Shuraim 128kbps",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://everyayah.com/data/Saood_ash-Shuraym_128kbps/{{surah_id}}{{verse_id}}.mp3",
+									"protocol": "https",
+									"host": [
+										"everyayah",
+										"com"
+									],
+									"path": [
+										"data",
+										"Saood_ash-Shuraym_128kbps",
+										"{{surah_id}}{{verse_id}}.mp3"
+									]
+								},
+								"description": "Reader: سعود الشريم"
+							}
+						}
+					]
+				}
+			],
+			"description": "Quran audio recitation API from everyayah.com\n\nPattern: https://everyayah.com/data/{reader_identifier}/{surah_id}{verse_id}.mp3\n\n- Surah ID and Verse ID are zero-padded to 3 digits\n- Example: Surah 1, Verse 1 = 001001.mp3\n- Example: Surah 114, Verse 6 = 114006.mp3\n\nTotal Surahs: 114\nTotal Verses: Varies by surah"
+		},
+		{
+			"name": "2. Word Pronunciation APIs (quranwbw.com)",
+			"item": [
+				{
+					"name": "Get Word Pronunciation - Example",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://words.audios.quranwbw.com/1/001_001_001.mp3",
+							"protocol": "https",
+							"host": [
+								"words",
+								"audios",
+								"quranwbw",
+								"com"
+							],
+							"path": [
+								"1",
+								"001_001_001.mp3"
+							]
+						},
+						"description": "Format: https://words.audios.quranwbw.com/{surah_number}/{surah_id}_{verse_id}_{word_position}.mp3\n\n- Surah number: 1-114\n- Surah ID, Verse ID, and Word Position are zero-padded to 3 digits\n- Example: Surah 1, Verse 1, Word 1 = 1/001_001_001.mp3\n- Example: Surah 2, Verse 5, Word 3 = 2/002_005_003.mp3"
+					},
+					"response": []
+				},
+				{
+					"name": "Word Pronunciation Template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://words.audios.quranwbw.com/{{surah_number}}/{{surah_id}}_{{verse_id}}_{{word_position}}.mp3",
+							"protocol": "https",
+							"host": [
+								"words",
+								"audios",
+								"quranwbw",
+								"com"
+							],
+							"path": [
+								"{{surah_number}}",
+								"{{surah_id}}_{{verse_id}}_{{word_position}}.mp3"
+							]
+						},
+						"description": "Template for word-by-word pronunciation audio\n\nVariables:\n- {{surah_number}}: 1-114 (no padding)\n- {{surah_id}}: 001-114 (zero-padded to 3 digits)\n- {{verse_id}}: 001-286 (zero-padded to 3 digits, depends on surah)\n- {{word_position}}: 001-XXX (zero-padded to 3 digits, depends on verse)"
+					},
+					"response": []
+				}
+			],
+			"description": "Word-by-word pronunciation audio API from quranwbw.com\n\nPattern: https://words.audios.quranwbw.com/{surah_number}/{surah_id}_{verse_id}_{word_position}.mp3"
+		},
+		{
+			"name": "3. Quran.com API (Verses by Page)",
+			"item": [
+				{
+					"name": "Get Verses by Page - Example (Page 1)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.quran.com/api/v4/verses/by_page/1?words=true&word_fields=v2_page,location,text_uthmani,codeV2&fields=text_uthmani_simple",
+							"protocol": "https",
+							"host": [
+								"api",
+								"quran",
+								"com"
+							],
+							"path": [
+								"api",
+								"v4",
+								"verses",
+								"by_page",
+								"1"
+							],
+							"query": [
+								{
+									"key": "words",
+									"value": "true"
+								},
+								{
+									"key": "word_fields",
+									"value": "v2_page,location,text_uthmani,codeV2"
+								},
+								{
+									"key": "fields",
+									"value": "text_uthmani_simple"
+								}
+							]
+						},
+						"description": "Get Quran verses by page number with word-level data\n\nParameters:\n- page_number: 1-604 (Total pages in the Quran)\n- words=true: Include word-level data\n- word_fields: Fields to include for words (v2_page,location,text_uthmani,codeV2)\n- fields: Fields to include for verses (text_uthmani_simple)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Verses by Page - Template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.quran.com/api/v4/verses/by_page/{{page_number}}?words=true&word_fields=v2_page,location,text_uthmani,codeV2&fields=text_uthmani_simple",
+							"protocol": "https",
+							"host": [
+								"api",
+								"quran",
+								"com"
+							],
+							"path": [
+								"api",
+								"v4",
+								"verses",
+								"by_page",
+								"{{page_number}}"
+							],
+							"query": [
+								{
+									"key": "words",
+									"value": "true"
+								},
+								{
+									"key": "word_fields",
+									"value": "v2_page,location,text_uthmani,codeV2"
+								},
+								{
+									"key": "fields",
+									"value": "text_uthmani_simple"
+								}
+							]
+						},
+						"description": "Template for getting verses by page\n\n{{page_number}}: 1-604"
+					},
+					"response": []
+				}
+			],
+			"description": "Quran.com API v4 - Get verses by page number\n\nEndpoint: https://api.quran.com/api/v4/verses/by_page/{page_number}\n\nTotal Pages: 604\n\nQuery Parameters:\n- words: true (to include word-level data)\n- word_fields: v2_page,location,text_uthmani,codeV2\n- fields: text_uthmani_simple"
+		},
+		{
+			"name": "4. Timing Data APIs (gitea.com)",
+			"item": [
+				{
+					"name": "Abdul Basit (Mujawwad) 128kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Abdul_Basit_Mujawwad_128kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Abdul_Basit_Mujawwad_128kbps.json"
+							]
+						},
+						"description": "Reader: عبدالباسط عبدالصمد (مجود)\nEnglish: Abdul Basit (Mujawwad)\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Abdul Basit (Murattal) 64kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Abdul_Basit_Murattal_64kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Abdul_Basit_Murattal_64kbps.json"
+							]
+						},
+						"description": "Reader: عبدالباسط عبدالصمد (مرتل)\nEnglish: Abdul Basit (Murattal)\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Alafasy 128kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Alafasy_128kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Alafasy_128kbps.json"
+							]
+						},
+						"description": "Reader: مشاري العفاسي\nEnglish: Alafasy\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Abu Bakr Ash-Shaatree 128kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Abu_Bakr_Ash-Shaatree_128kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Abu_Bakr_Ash-Shaatree_128kbps.json"
+							]
+						},
+						"description": "Reader: أبو بكر الشاطري\nEnglish: Abu Bakr Ash-Shaatree\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Hani Rifai 192kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Hani_Rifai_192kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Hani_Rifai_192kbps.json"
+							]
+						},
+						"description": "Reader: هاني الرفاعي\nEnglish: Hani Rifai\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Minshawy (Murattal) 128kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Minshawy_Murattal_128kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Minshawy_Murattal_128kbps.json"
+							]
+						},
+						"description": "Reader: المنشاوي (مرتل)\nEnglish: Minshawy (Murattal)\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Minshawy (Mujawwad) 192kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Minshawy_Mujawwad_192kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Minshawy_Mujawwad_192kbps.json"
+							]
+						},
+						"description": "Reader: المنشاوي (مجود)\nEnglish: Minshawy (Mujawwad)\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Abdurrahmaan Al Sudais 192kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Abdurrahmaan_As-Sudais_192kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Abdurrahmaan_As-Sudais_192kbps.json"
+							]
+						},
+						"description": "Reader: عبد الرحمن السديس\nEnglish: Abdurrahmaan Al Sudais\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Husary 64kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Husary_64kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Husary_64kbps.json"
+							]
+						},
+						"description": "Reader: محمود خليل الحصري\nEnglish: Husary\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Mohammad Al Tablaway 128kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Mohammad_al_Tablaway_128kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Mohammad_al_Tablaway_128kbps.json"
+							]
+						},
+						"description": "Reader: محمد الطبلاوي\nEnglish: Mohammad Al Tablaway\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				},
+				{
+					"name": "Saud Shuraim 128kbps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/Saood_ash-Shuraym_128kbps.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"quran_timing_data",
+								"raw",
+								"branch",
+								"main",
+								"Saood_ash-Shuraym_128kbps.json"
+							]
+						},
+						"description": "Reader: سعود الشريم\nEnglish: Saud Shuraim\n\nTiming data for word-by-word audio synchronization"
+					},
+					"response": []
+				}
+			],
+			"description": "Quran timing data APIs from gitea.com\n\nThese JSON files contain timing data for word-by-word audio synchronization.\n\nPattern: https://gitea.com/mostafamasri/quran_timing_data/raw/branch/main/{reader_identifier}.json\n\nUsed for synchronizing word highlighting with audio playback."
+		},
+		{
+			"name": "5. Tafsir APIs (gitea.com)",
+			"item": [
+				{
+					"name": "King Fahad Quran Complex (ar.muyassar)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.muyassar.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.muyassar.json"
+							]
+						},
+						"description": "Tafsir: تفسير المیسر\nEnglish: King Fahad Quran Complex\nLanguage: Arabic (ar)\nIdentifier: ar.muyassar"
+					},
+					"response": []
+				},
+				{
+					"name": "Jalal ad-Din (ar.jalalayn)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.jalalayn.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.jalalayn.json"
+							]
+						},
+						"description": "Tafsir: تفسير الجلالين\nEnglish: Jalal ad-Din al-Mahalli and Jalal ad-Din as-Suyuti\nLanguage: Arabic (ar)\nIdentifier: ar.jalalayn"
+					},
+					"response": []
+				},
+				{
+					"name": "Tafsir Al Waseet (ar.waseet)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.waseet.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.waseet.json"
+							]
+						},
+						"description": "Tafsir: الـتـفـسـيـر الـوسـيـط\nEnglish: Tafsir Al Waseet\nLanguage: Arabic (ar)\nIdentifier: ar.waseet"
+					},
+					"response": []
+				},
+				{
+					"name": "Tafsir Al Baghawi (ar.baghawi)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.baghawi.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.baghawi.json"
+							]
+						},
+						"description": "Tafsir: تفسير البغوي\nEnglish: Tafsir Al Baghawi\nLanguage: Arabic (ar)\nIdentifier: ar.baghawi"
+					},
+					"response": []
+				},
+				{
+					"name": "Tafsir Al Qurtubi (ar.qurtubi)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.qurtubi.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.qurtubi.json"
+							]
+						},
+						"description": "Tafsir: تفسير القرطبي\nEnglish: Tafsir Al Qurtubi\nLanguage: Arabic (ar)\nIdentifier: ar.qurtubi"
+					},
+					"response": []
+				},
+				{
+					"name": "Tafsir Al Altahrir & Tanweer (ar.tanweer)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.tanweer.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.tanweer.json"
+							]
+						},
+						"description": "Tafsir: تفسير التحرير والتنوير\nEnglish: Tafsir Al Altahrir & Tanweer\nLanguage: Arabic (ar)\nIdentifier: ar.tanweer"
+					},
+					"response": []
+				},
+				{
+					"name": "Tafsir Al Saddi (ar.saddi)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/ar.saddi.json",
+							"protocol": "https",
+							"host": [
+								"gitea",
+								"com"
+							],
+							"path": [
+								"mostafamasri",
+								"tafsir-json",
+								"raw",
+								"branch",
+								"main",
+								"json",
+								"ar.saddi.json"
+							]
+						},
+						"description": "Tafsir: تفسير السعدي\nEnglish: Tafsir Al Saddi\nLanguage: Arabic (ar)\nIdentifier: ar.saddi"
+					},
+					"response": []
+				}
+			],
+			"description": "Tafsir (Quran interpretation/commentary) APIs from gitea.com\n\nPattern: https://gitea.com/mostafamasri/tafsir-json/raw/branch/main/json/{tafsir_identifier}.json\n\nAll tafsirs are in Arabic language.\nThese JSON files contain verse-by-verse interpretations of the Quran."
+		}
+	],
+	"variable": [
+		{
+			"key": "surah_id",
+			"value": "001",
+			"type": "string",
+			"description": "Surah ID (zero-padded to 3 digits, e.g., 001, 002, ..., 114)"
+		},
+		{
+			"key": "verse_id",
+			"value": "001",
+			"type": "string",
+			"description": "Verse ID (zero-padded to 3 digits, e.g., 001, 002, ...)"
+		},
+		{
+			"key": "surah_number",
+			"value": "1",
+			"type": "string",
+			"description": "Surah number (1-114, no padding)"
+		},
+		{
+			"key": "word_position",
+			"value": "001",
+			"type": "string",
+			"description": "Word position in verse (zero-padded to 3 digits)"
+		},
+		{
+			"key": "page_number",
+			"value": "1",
+			"type": "string",
+			"description": "Page number (1-604)"
+		},
+		{
+			"key": "reader_identifier",
+			"value": "Abdul_Basit_Mujawwad_128kbps",
+			"type": "string",
+			"description": "Quran reader identifier (e.g., Abdul_Basit_Mujawwad_128kbps, Alafasy_128kbps)"
+		}
+	]
+}
