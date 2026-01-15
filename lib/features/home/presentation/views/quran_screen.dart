@@ -64,46 +64,80 @@ class _QuranScreenState extends State<QuranScreen>
               ),
               verticalSpace(8),
               
-              // Quick access buttons for new features
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildQuickAccessButton(
-                      context,
-                      icon: Icons.menu_book,
-                      label: 'المصحف الكامل',
-                      onTap: () {
-                        Navigator.pushNamed(context, QuranFullMushafScreen.routeName);
-                      },
-                    ),
-                  ),
-                  horizontalSpace(12),
-                  Expanded(
-                    child: _buildQuickAccessButton(
-                      context,
-                      icon: Icons.headphones,
-                      label: 'قراءة سورة كاملة',
-                      onTap: () {
-                        Navigator.pushNamed(context, SurahFullAudioScreen.routeName);
-                      },
-                    ),
-                  ),
-                ],
+              // Features section title
+              Text(
+                'المميزات',
+                style: TextStyles.font20PrimaryText.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: FontFamilyHelper.fontFamily1,
+                ),
               ),
               verticalSpace(12),
-              // New API Features - Page View with Word-by-Word
-              _buildQuickAccessButton(
-                context,
-                icon: Icons.pages,
-                label: 'قراءة صفحة بصفحة (API جديد)',
-                onTap: () {
-                  Navigator.push(
+              
+              // Quick access buttons - each feature in separate button
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 2.5,
+                children: [
+                  // Full Mushaf feature
+                  _buildFeatureButton(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const QuranPageViewScreen(initialPage: 1),
-                    ),
-                  );
-                },
+                    icon: Icons.menu_book,
+                    label: 'المصحف الكامل',
+                    onTap: () {
+                      Navigator.pushNamed(context, QuranFullMushafScreen.routeName);
+                    },
+                  ),
+                  
+                  // Full Surah Audio feature
+                  _buildFeatureButton(
+                    context,
+                    icon: Icons.headphones,
+                    label: 'قراءة سورة كاملة',
+                    onTap: () {
+                      Navigator.pushNamed(context, SurahFullAudioScreen.routeName);
+                    },
+                  ),
+                  
+                  // Page by Page feature
+                  _buildFeatureButton(
+                    context,
+                    icon: Icons.pages,
+                    label: 'قراءة صفحة بصفحة',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QuranPageViewScreen(initialPage: 1),
+                        ),
+                      );
+                    },
+                  ),
+                  
+                  // Read Surah feature (from tab)
+                  _buildFeatureButton(
+                    context,
+                    icon: Icons.book,
+                    label: 'قراءة السورة',
+                    onTap: () {
+                      _tabController.animateTo(0);
+                    },
+                  ),
+                  
+                  // Play Surah feature (from tab)
+                  _buildFeatureButton(
+                    context,
+                    icon: Icons.play_circle_outline,
+                    label: 'تشغيل السور',
+                    onTap: () {
+                      _tabController.animateTo(1);
+                    },
+                  ),
+                ],
               ),
               verticalSpace(16),
               
@@ -156,7 +190,7 @@ class _QuranScreenState extends State<QuranScreen>
     );
   }
 
-  Widget _buildQuickAccessButton(
+  Widget _buildFeatureButton(
     BuildContext context, {
     required IconData icon,
     required String label,
@@ -166,7 +200,7 @@ class _QuranScreenState extends State<QuranScreen>
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         decoration: BoxDecoration(
           color: AppColors.primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
@@ -175,26 +209,26 @@ class _QuranScreenState extends State<QuranScreen>
             width: 1,
           ),
         ),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
               color: AppColors.primaryColor,
-              size: 20,
+              size: 28,
             ),
-            horizontalSpace(8),
-            Flexible(
-              child: Text(
-                label,
-                style: TextStyles.font14PrimaryText.copyWith(
-                  color: AppColors.primaryColor,
-                  fontFamily: FontFamilyHelper.fontFamily1,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
+            verticalSpace(8),
+            Text(
+              label,
+              style: TextStyles.font14PrimaryText.copyWith(
+                color: AppColors.primaryColor,
+                fontFamily: FontFamilyHelper.fontFamily1,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

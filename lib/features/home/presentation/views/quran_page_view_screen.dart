@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:yaqeen_app/core/services/quran_com_api_service.dart';
 import 'package:yaqeen_app/core/services/quran_word_pronunciation_service.dart';
 import 'package:yaqeen_app/core/services/quran_audio_service.dart';
@@ -443,19 +445,6 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                   ),
                 ),
               ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.volume_up, size: 20),
-                onPressed: () async {
-                  final audioService = QuranAudioService();
-                  await audioService.playAyah(
-                    surahNumber,
-                    verseNumber,
-                    reciter: _selectedReciter,
-                  );
-                },
-                color: AppColors.primaryColor,
-              ),
             ],
           ),
           verticalSpace(12),
@@ -512,8 +501,348 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
               ),
               textAlign: TextAlign.right,
             ),
+          
+          verticalSpace(12),
+          
+          // Action buttons row - each button for one feature
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Audio playback button
+              _buildActionButton(
+                icon: Icons.volume_up,
+                label: 'تشغيل',
+                onPressed: () async {
+                  final audioService = QuranAudioService();
+                  await audioService.playAyah(
+                    surahNumber,
+                    verseNumber,
+                    reciter: _selectedReciter,
+                  );
+                },
+              ),
+              
+              // Copy button
+              _buildActionButton(
+                icon: Icons.copy_outlined,
+                label: 'نسخ',
+                onPressed: () => _copyVerse(text, surahNumber, verseNumber),
+              ),
+              
+              // Share button
+              _buildActionButton(
+                icon: Icons.share_outlined,
+                label: 'مشاركة',
+                onPressed: () => _shareVerse(text, surahNumber, verseNumber),
+              ),
+              
+              // Tafsir button
+              _buildActionButton(
+                icon: Icons.menu_book_outlined,
+                label: 'تفسير',
+                onPressed: () => _showTafsirDialog(surahNumber, verseNumber),
+              ),
+              
+              // Word-by-word toggle button
+              _buildActionButton(
+                icon: _isWordByWordMode ? Icons.text_fields : Icons.format_textdirection_r_to_l,
+                label: _isWordByWordMode ? 'عادي' : 'كلمة',
+                onPressed: () {
+                  setState(() {
+                    _isWordByWordMode = !_isWordByWordMode;
+                  });
+                },
+              ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: AppColors.primaryColor,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyles.font12PrimaryText.copyWith(
+                color: AppColors.primaryColor,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _copyVerse(String text, int surahNumber, int verseNumber) async {
+    await Clipboard.setData(
+      ClipboardData(text: '$text [سورة $surahNumber - آية $verseNumber]'),
+    );
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              const Text(
+                'تم نسخ الآية',
+                style: TextStyle(fontFamily: 'Tajawal', fontSize: 14),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.primaryColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _shareVerse(String text, int surahNumber, int verseNumber) {
+    Share.share(
+      '$text\n\n[سورة $surahNumber - آية $verseNumber]',
+      subject: 'آية من القرآن الكريم',
+    );
+  }
+
+  void _showTafsirDialog(int surahNumber, int verseNumber) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              
+              // Header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withOpacity(0.1),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey[200]!),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.menu_book, color: AppColors.primaryColor),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'التفسير',
+                            style: TextStyles.font20PrimaryText.copyWith(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'سورة $surahNumber - آية $verseNumber',
+                            style: TextStyles.font14PrimaryText.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Tafsir content
+              Expanded(
+                child: _TafsirContent(
+                  surahNumber: surahNumber,
+                  ayahNumber: verseNumber,
+                  scrollController: scrollController,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Tafsir content widget
+class _TafsirContent extends StatefulWidget {
+  final int surahNumber;
+  final int ayahNumber;
+  final ScrollController scrollController;
+
+  const _TafsirContent({
+    required this.surahNumber,
+    required this.ayahNumber,
+    required this.scrollController,
+  });
+
+  @override
+  State<_TafsirContent> createState() => _TafsirContentState();
+}
+
+class _TafsirContentState extends State<_TafsirContent> {
+  String? _selectedTafsir;
+  Map<String, String?> _tafsirData = {};
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTafsir = QuranTafsirService.availableTafsirs.keys.first;
+    _loadTafsir();
+  }
+
+  Future<void> _loadTafsir() async {
+    if (_selectedTafsir == null) return;
+    
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final tafsirText = await QuranTafsirService.getVerseTafsir(
+        tafsirIdentifier: _selectedTafsir!,
+        surahNumber: widget.surahNumber,
+        ayahNumber: widget.ayahNumber,
+      );
+      
+      setState(() {
+        _tafsirData[_selectedTafsir!] = tafsirText;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'فشل تحميل التفسير';
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Tafsir selector
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: QuranTafsirService.availableTafsirs.entries.map((entry) {
+                final isSelected = _selectedTafsir == entry.key;
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: ChoiceChip(
+                    label: Text(
+                      entry.value['name'] ?? entry.key,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : AppColors.primaryColor,
+                        fontFamily: 'Tajawal',
+                        fontSize: 12,
+                      ),
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() {
+                          _selectedTafsir = entry.key;
+                        });
+                        _loadTafsir();
+                      }
+                    },
+                    selectedColor: AppColors.primaryColor,
+                    backgroundColor: Colors.grey[200],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        
+        // Tafsir content
+        Expanded(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
+              : _errorMessage != null
+                  ? Center(
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyles.font16PrimaryText.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    )
+                  : _tafsirData[_selectedTafsir] == null
+                      ? Center(
+                          child: Text(
+                            'لا يوجد تفسير متاح',
+                            style: TextStyles.font16PrimaryText.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          controller: widget.scrollController,
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            _tafsirData[_selectedTafsir] ?? '',
+                            style: TextStyles.font16PrimaryText.copyWith(
+                              height: 2.0,
+                              fontFamily: 'Tajawal',
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
+        ),
+      ],
     );
   }
 }
