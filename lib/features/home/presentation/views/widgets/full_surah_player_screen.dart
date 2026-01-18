@@ -460,7 +460,7 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                       ),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: screenWidth > 600 ? 3 : 2,
-                        childAspectRatio: 0.85,
+                        childAspectRatio: 0.75, // Adjusted to prevent overflow
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -561,15 +561,16 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
 
             // Content
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Surah Number Badge
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: 10,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.25),
@@ -579,57 +580,68 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                       '${surah.number}',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontFamily: 'Tajawal',
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
 
-                  // Surah Names
-                  Column(
-                    children: [
-                      Text(
-                        surah.name,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontFamily: 'Amiri Quran',
-                          fontWeight: FontWeight.w700,
+                  verticalSpace(8),
+
+                  // Surah Names - with flexible to prevent overflow
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            surah.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: 'Amiri Quran',
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      verticalSpace(6),
-                      Text(
-                        surah.englishName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 14,
-                          fontFamily: 'Tajawal',
-                          fontWeight: FontWeight.w600,
+                        verticalSpace(4),
+                        Flexible(
+                          child: Text(
+                            surah.englishName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 12,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      verticalSpace(4),
-                      Text(
-                        '${surah.numberOfAyahs} آيات',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 12,
-                          fontFamily: 'Tajawal',
-                          fontWeight: FontWeight.w500,
+                        verticalSpace(4),
+                        Text(
+                          '${surah.numberOfAyahs} آيات',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 11,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+
+                  verticalSpace(8),
 
                   // Play Button
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.25),
                       shape: BoxShape.circle,
@@ -642,12 +654,12 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                         ? const Icon(
                             Icons.pause,
                             color: Colors.white,
-                            size: 28,
+                            size: 24,
                           )
                         : const Icon(
                             Icons.play_arrow,
                             color: Colors.white,
-                            size: 28,
+                            size: 24,
                           ),
                   ),
                 ],
