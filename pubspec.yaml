@@ -65,6 +65,15 @@ dependencies:
   audioplayers: ^6.1.0
   intl: ^0.20.2
 
+  # Offline Quran data with tafsir and audio URLs
+  quran_with_tafsir: ^1.0.1
+
+  # Prayer times calculation with full offline support
+  adhan_dart: ^2.0.1
+
+  # Google Maps for nearest mosque finder
+  google_maps_flutter: ^2.5.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

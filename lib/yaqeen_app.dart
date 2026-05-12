@@ -8,7 +8,12 @@ import 'features/home/presentation/views/quran_screen.dart';
 import 'features/home/presentation/views/quran_full_mushaf_screen.dart';
 import 'features/home/presentation/views/surah_full_audio_screen.dart';
 import 'features/home/presentation/views/adhan_full_screen.dart';
+import 'features/home/presentation/views/bottom_nav_bar.dart';
+import 'features/home/presentation/views/quran_read_screen.dart';
+import 'features/home/presentation/views/quran_audio_screen.dart';
+import 'features/home/presentation/views/quran_tafsir_screen.dart';
 import 'features/splach/presentation/views/splach_screen.dart';
+import 'features/vendor/presentation/views/vendor_dashboard_screen.dart';
 
 class YaqeenApp extends StatelessWidget {
   const YaqeenApp({super.key});
@@ -44,11 +49,16 @@ class YaqeenApp extends StatelessWidget {
       initialRoute: SplashScreen.routeName,
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
+        BottomNavBar.routeName: (context) => const BottomNavBar(),
         MesphaScreen.routeName: (context) => const MesphaScreen(),
         QuranScreen.routeName: (context) => const QuranScreen(),
+        QuranReadScreen.routeName: (context) => const QuranReadScreen(),
+        QuranAudioScreen.routeName: (context) => const QuranAudioScreen(),
+        QuranTafsirScreen.routeName: (context) => const QuranTafsirScreen(),
         QuranFullMushafScreen.routeName: (context) => const QuranFullMushafScreen(),
         SurahFullAudioScreen.routeName: (context) => const SurahFullAudioScreen(),
         AdhanFullScreen.routeName: (context) => const AdhanFullScreen(),
+        VendorDashboardScreen.routeName: (context) => const VendorDashboardScreen(),
         // Add more routes here as needed
       },
     );

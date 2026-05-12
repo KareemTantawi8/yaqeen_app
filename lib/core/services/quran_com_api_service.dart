@@ -1,91 +1,59 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:quran_with_tafsir/quran_with_tafsir.dart';
 
-/// Service for Quran.com API v4 - Get verses by page number
+/// Offline Quran "API" adapter backed by `quran_with_tafsir`.
 /// 
-/// Endpoint: https://api.quran.com/api/v4/verses/by_page/{page_number}
-/// 
-/// Total Pages: 604
-/// 
-/// Query Parameters:
-/// - words: true (to include word-level data)
-/// - word_fields: v2_page,location,text_uthmani,codeV2
-/// - fields: text_uthmani_simple
+/// This keeps the old method signature but no longer performs any
+/// HTTP requests. All data is loaded from the embedded Quran dataset.
 class QuranComApiService {
-  static const String _baseUrl = 'https://api.quran.com/api/v4';
-  
-  static final Dio _dio = Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ),
-  );
-
   /// Fetch verses by page number with word-level data
   /// 
   /// [pageNumber] - Page number (1-604)
-  /// [includeWords] - Whether to include word-level data (default: true)
-  /// [wordFields] - Fields to include for words (default: v2_page,location,text_uthmani,codeV2)
-  /// [verseFields] - Fields to include for verses (default: text_uthmani_simple)
+  /// 
+  /// The returned map mimics the old Quran.com v4 response shape
+  /// for the fields actually used in the app:
+  /// 
+  /// {
+  ///   "verses": [
+  ///     {
+  ///       "verse_key": "1:1",
+  ///       "text_uthmani_simple": "...",
+  ///       "page": 1,
+  ///       "juz": 1,
+  ///       // "words": [] // left empty, since we do not have word data
+  ///     },
+  ///     ...
+  ///   ]
+  /// }
   static Future<Map<String, dynamic>> getVersesByPage({
     required int pageNumber,
-    bool includeWords = true,
-    String wordFields = 'v2_page,location,text_uthmani,codeV2',
-    String verseFields = 'text_uthmani_simple',
   }) async {
     try {
       if (pageNumber < 1 || pageNumber > 604) {
         throw Exception('Page number must be between 1 and 604');
       }
 
-      final url = '$_baseUrl/verses/by_page/$pageNumber';
-      
-      final queryParams = <String, dynamic>{
-        'words': includeWords.toString(),
-        'word_fields': wordFields,
-        'fields': verseFields,
+      final service = QuranService.instance;
+      final List<Ayah> ayahs = service.getPage(pageNumber);
+
+      final verses = ayahs
+          .map((ayah) => {
+                'verse_key': '${ayah.surahNumber}:${ayah.id}',
+                'text_uthmani_simple': ayah.text,
+                'page': ayah.page,
+                'juz': ayah.juz,
+                // Word-level data is not available from quran_with_tafsir.
+                'words': <Map<String, dynamic>>[],
+              })
+          .toList();
+
+      return {
+        'verses': verses,
       };
-
-      debugPrint('Fetching verses by page from: $url');
-      debugPrint('Query params: $queryParams');
-
-      final response = await _dio.get(
-        url,
-        queryParameters: queryParams,
-      );
-
-      if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
-      } else {
-        throw Exception('Failed to fetch verses: ${response.statusCode}');
-      }
-    } on DioException catch (e) {
-      debugPrint('DioException: ${e.message}');
-      debugPrint('Response: ${e.response?.data}');
-      throw Exception(_handleDioError(e));
     } catch (e, stackTrace) {
       debugPrint('Error: $e');
       debugPrint('StackTrace: $stackTrace');
       throw Exception('فشل تحميل الآيات: $e');
-    }
-  }
-
-  /// Helper method to handle Dio errors
-  static String _handleDioError(DioException e) {
-    if (e.response != null) {
-      return 'خطأ في الاتصال: ${e.response?.statusCode}';
-    } else if (e.type == DioExceptionType.connectionTimeout) {
-      return 'انتهت مهلة الاتصال';
-    } else if (e.type == DioExceptionType.receiveTimeout) {
-      return 'انتهت مهلة استقبال البيانات';
-    } else if (e.type == DioExceptionType.connectionError) {
-      return 'خطأ في الاتصال بالإنترنت';
-    } else {
-      return 'حدث خطأ غير متوقع';
     }
   }
 }

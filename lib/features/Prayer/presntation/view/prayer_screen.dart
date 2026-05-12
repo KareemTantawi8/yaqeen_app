@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'package:adhan_dart/adhan_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
+import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/prayer_times_service.dart';
 import 'package:yaqeen_app/features/Prayer/data/models/prayer_stats_model.dart';
 import 'package:yaqeen_app/features/Prayer/data/repo/prayer_tracker_service.dart';
+import 'package:yaqeen_app/features/Prayer/presentation/views/widgets/night_portions_card.dart';
 import 'package:yaqeen_app/features/Prayer/presentation/views/widgets/prayer_times_section.dart';
 import 'package:yaqeen_app/features/Prayer/presentation/views/widgets/prayer_stats_widget.dart';
 import 'package:yaqeen_app/features/Prayer/presentation/views/widgets/quick_actions_widget.dart';
@@ -21,6 +24,7 @@ class PrayerScreen extends StatefulWidget {
 class _PrayerScreenState extends State<PrayerScreen> {
   PrayerTimingsModel? prayerTimings;
   PrayerStatsModel? prayerStats;
+  SunnahTimes? sunnahTimes;
   bool isLoading = true;
   bool hasError = false;
   String? errorMessage;
@@ -78,9 +82,17 @@ class _PrayerScreenState extends State<PrayerScreen> {
         longitude: currentLongitude,
       );
 
+      // Calculate Sunnah times using adhan_dart
+      final prayerTimes = PrayerCalculatorService.calculate(
+        latitude: currentLatitude,
+        longitude: currentLongitude,
+      );
+      final sunnah = PrayerCalculatorService.getSunnahTimes(prayerTimes);
+
       setState(() {
         prayerTimings = response;
         nextPrayer = PrayerTimesService.getNextPrayer(response.timings);
+        sunnahTimes = sunnah;
       });
 
       // Start countdown timer
@@ -155,6 +167,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
                               countdown: countdown,
                               onRefresh: _refreshData,
                             ),
+                          verticalSpace(20),
+
+                          // Night Portions Section
+                          if (sunnahTimes != null)
+                            NightPortionsCard(sunnahTimes: sunnahTimes!),
                           verticalSpace(20),
 
                           // Quick Actions

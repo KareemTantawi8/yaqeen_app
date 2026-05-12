@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/styles/images/app_image.dart';
-import '../../../../home/presentation/views/bottom_nav_bar.dart';
 
 class SplashScreenBody extends StatefulWidget {
   const SplashScreenBody({Key? key}) : super(key: key);
@@ -25,12 +24,7 @@ class _SplashScreenBodyState extends State<SplashScreenBody>
     controler.forward();
 
     Future.delayed(const Duration(seconds: 4), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BottomNavBar(),
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/main');
     });
   }
 

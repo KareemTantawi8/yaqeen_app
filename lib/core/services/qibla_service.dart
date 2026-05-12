@@ -1,36 +1,19 @@
-import 'dart:math';
 import 'package:geolocator/geolocator.dart';
+import 'package:adhan_dart/adhan_dart.dart';
 
 class QiblaService {
-  // Kaaba coordinates in Mecca
+  // Kaaba coordinates in Mecca (for reference/documentation)
   static const double kaabaLatitude = 21.4225;
   static const double kaabaLongitude = 39.8262;
 
-  /// Calculate Qibla direction (angle from North) from user's location
+  /// Calculate Qibla direction using adhan_dart's static method
   static double calculateQiblaDirection(double userLat, double userLng) {
-    // Convert to radians
-    final userLatRad = _degreesToRadians(userLat);
-    final userLngRad = _degreesToRadians(userLng);
-    final kaabaLatRad = _degreesToRadians(kaabaLatitude);
-    final kaabaLngRad = _degreesToRadians(kaabaLongitude);
-
-    // Calculate using spherical trigonometry
-    final deltaLng = kaabaLngRad - userLngRad;
-
-    final y = sin(deltaLng);
-    final x = cos(userLatRad) * tan(kaabaLatRad) -
-        sin(userLatRad) * cos(deltaLng);
-
-    // Calculate angle (azimuth)
-    double angle = atan2(y, x);
-    
-    // Convert to degrees
-    angle = _radiansToDegrees(angle);
-    
-    // Normalize to 0-360
-    angle = (angle + 360) % 360;
-
-    return angle;
+    try {
+      final coordinates = Coordinates(userLat, userLng);
+      return Qibla.qibla(coordinates);
+    } catch (e) {
+      return 0.0; // Fallback to North if calculation fails
+    }
   }
 
   /// Calculate distance to Kaaba in kilometers
@@ -41,14 +24,6 @@ class QiblaService {
       kaabaLatitude,
       kaabaLongitude,
     ) / 1000; // Convert meters to kilometers
-  }
-
-  static double _degreesToRadians(double degrees) {
-    return degrees * pi / 180;
-  }
-
-  static double _radiansToDegrees(double radians) {
-    return radians * 180 / pi;
   }
 
   /// Format distance with appropriate unit
@@ -62,4 +37,3 @@ class QiblaService {
     }
   }
 }
-

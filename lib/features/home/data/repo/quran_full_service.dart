@@ -1,68 +1,51 @@
-import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:quran_with_tafsir/quran_with_tafsir.dart';
 import '../models/quran_full_model.dart';
 
 class QuranFullService {
-  // Use AlQuran Cloud API - External Public API
-  static const String _baseUrl = 'https://api.alquran.cloud/v1';
   static const String _cdnBaseUrl = 'https://cdn.islamic.network/quran/images';
-  
-  static final Dio _dio = Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 60),
-      receiveTimeout: const Duration(seconds: 60),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ),
-  );
 
-  /// Fetch full Quran in text format from AlQuran Cloud API
-  /// [edition] - Type of Quran edition (quran-uthmani, quran-simple, etc.)
+  /// Fetch full Quran in text format using the offline `quran_with_tafsir` data.
+  /// 
+  /// [edition] is kept for backward compatibility but has no effect on the
+  /// underlying dataset (which is always Uthmani script from the package).
   static Future<QuranFullTextModel> getFullQuranText({
     String edition = 'quran-uthmani',
   }) async {
     try {
-      // AlQuran Cloud API endpoint for full Quran
-      final url = '$_baseUrl/quran/$edition';
-      
-      debugPrint('Fetching full Quran text from: $url');
+      final service = QuranService.instance;
+      final List<SurahMetadata> surahsMeta = service.getAllSurahs();
 
-      final response = await _dio.get(
-        url,
-        options: Options(
-          followRedirects: true,
-          validateStatus: (status) => status != null && status < 500,
-        ),
-      );
+      final surahsJson = surahsMeta.map((meta) {
+        final surah = service.getSurah(meta.number);
 
-      if (response.statusCode == 200) {
-        final data = response.data;
+        final ayahsJson = surah.verses
+            .map((ayah) => {
+                  'ayah_id': ayah.id,
+                  'text': ayah.text,
+                  'page': ayah.page,
+                  'juz': ayah.juz,
+                })
+            .toList();
 
-        if (data is Map<String, dynamic> && data['code'] == 200) {
-          // Extract the 'data' object which contains surahs
-          final quranData = data['data'];
-          
-          // Transform AlQuran Cloud format to our model format
-          final transformedData = {
-            'mushaf': edition,
-            'total_surahs': quranData['surahs']?.length ?? 114,
-            'surahs': quranData['surahs'],
-          };
-          
-          return QuranFullTextModel.fromJson(transformedData);
-        } else {
-          throw Exception('Unexpected response format: ${data['status']}');
-        }
-      } else {
-        throw Exception('Failed to load full Quran: ${response.statusCode}');
-      }
-    } on DioException catch (e) {
-      debugPrint('DioException: ${e.message}');
-      debugPrint('Response: ${e.response?.data}');
-      throw Exception(_handleDioError(e));
+        return {
+          'surah_id': meta.number,
+          'name': meta.nameAr,
+          'name_english': meta.nameEn,
+          'revelation_type':
+              meta.revelationType ?? (meta.isMeccan ? 'Meccan' : 'Medinan'),
+          'number_of_ayahs': meta.ayahCount,
+          'ayahs': ayahsJson,
+        };
+      }).toList();
+
+      final transformedData = {
+        'mushaf': edition,
+        'total_surahs': surahsMeta.length,
+        'surahs': surahsJson,
+      };
+
+      return QuranFullTextModel.fromJson(transformedData);
     } catch (e, stackTrace) {
       debugPrint('Error: $e');
       debugPrint('StackTrace: $stackTrace');
@@ -70,8 +53,9 @@ class QuranFullService {
     }
   }
 
-  /// Fetch full Quran in image format (pages 1-604)
-  /// Uses CDN images from Islamic Network
+  /// Fetch full Quran in image format (pages 1-604).
+  /// 
+  /// This still uses static CDN image URLs but does not rely on any JSON APIs.
   static Future<QuranFullImageModel> getFullQuranImages() async {
     try {
       debugPrint('Generating Quran page URLs from CDN');
@@ -96,26 +80,37 @@ class QuranFullService {
     }
   }
 
-  /// Fetch a specific surah by ID from AlQuran Cloud API
+  /// Fetch a specific surah by ID using `quran_with_tafsir`.
   static Future<SurahTextModel> getSurahById(int surahId, {String edition = 'quran-uthmani'}) async {
     try {
       if (surahId < 1 || surahId > 114) {
         throw Exception('رقم السورة غير صحيح: $surahId');
       }
 
-      final url = '$_baseUrl/surah/$surahId/$edition';
-      debugPrint('Fetching surah from: $url');
+      final service = QuranService.instance;
+      final meta = service.getSurahMetadata(surahId);
+      final surah = service.getSurah(surahId);
 
-      final response = await _dio.get(url);
+      final ayahsJson = surah.verses
+          .map((ayah) => {
+                'ayah_id': ayah.id,
+                'text': ayah.text,
+                'page': ayah.page,
+                'juz': ayah.juz,
+              })
+          .toList();
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data is Map<String, dynamic> && data['code'] == 200) {
-          return SurahTextModel.fromJson(data['data']);
-        }
-      }
-      
-      throw Exception('فشل تحميل السورة');
+      final surahJson = {
+        'surah_id': meta.number,
+        'name': meta.nameAr,
+        'name_english': meta.nameEn,
+        'revelation_type':
+            meta.revelationType ?? (meta.isMeccan ? 'Meccan' : 'Medinan'),
+        'number_of_ayahs': meta.ayahCount,
+        'ayahs': ayahsJson,
+      };
+
+      return SurahTextModel.fromJson(surahJson);
     } catch (e) {
       debugPrint('Error fetching surah: $e');
       rethrow;
@@ -125,22 +120,21 @@ class QuranFullService {
   /// Get surah info (which pages it spans)
   static Future<Map<String, dynamic>> getSurahPageInfo(int surahId) async {
     try {
-      final surah = await getSurahById(surahId);
+      final service = QuranService.instance;
+      final surah = service.getSurah(surahId);
       
       // Get first and last page from ayahs
       int? firstPage;
       int? lastPage;
       
-      for (final ayah in surah.ayahs) {
-        if (ayah.page != null) {
-          firstPage ??= ayah.page;
-          lastPage = ayah.page;
-        }
+      for (final ayah in surah.verses) {
+        firstPage ??= ayah.page;
+        lastPage = ayah.page;
       }
       
       return {
         'surah_id': surahId,
-        'name': surah.name,
+        'name': service.getSurahNameArabic(surahId),
         'first_page': firstPage,
         'last_page': lastPage,
         'total_pages': (lastPage != null && firstPage != null) ? (lastPage - firstPage + 1) : 0,
@@ -148,21 +142,6 @@ class QuranFullService {
     } catch (e) {
       debugPrint('Error getting surah page info: $e');
       rethrow;
-    }
-  }
-
-  /// Helper method to handle Dio errors
-  static String _handleDioError(DioException e) {
-    if (e.response != null) {
-      return 'خطأ في الاتصال: ${e.response?.statusCode}';
-    } else if (e.type == DioExceptionType.connectionTimeout) {
-      return 'انتهت مهلة الاتصال';
-    } else if (e.type == DioExceptionType.receiveTimeout) {
-      return 'انتهت مهلة استقبال البيانات';
-    } else if (e.type == DioExceptionType.connectionError) {
-      return 'خطأ في الاتصال بالإنترنت';
-    } else {
-      return 'حدث خطأ غير متوقع';
     }
   }
 }

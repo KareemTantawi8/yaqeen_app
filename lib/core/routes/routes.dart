@@ -20,6 +20,7 @@ class Routes {
   static const String walletScreen = '/WalletScreen';
   static const String homeScreen = '/HomeScreen';
   static const String profileScreen = '/ProfileScreen';
+  static const String vendorDashboardScreen = '/VendorDashboardScreen';
   static const String bottomNabPar = '/BottomNavBar';
   static const String busInformation = '/BusInformation';
   static const String busManagement = '/BusManagementScreen';

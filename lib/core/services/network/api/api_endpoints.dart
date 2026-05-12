@@ -39,4 +39,7 @@ class EndPoints {
   static String getFullQuran = 'quran'; // GET /api/quran
   static String getFullSurah(int surahId) => 'surah/$surahId/full'; // GET /api/surah/{id}/full
   static String getAdhanByLocation = 'adhan'; // GET /api/adhan
+
+  // Vendor profile endpoints
+  static String updateVendorLocation = 'v1/profile/location'; // PUT - Update vendor GPS location
 }

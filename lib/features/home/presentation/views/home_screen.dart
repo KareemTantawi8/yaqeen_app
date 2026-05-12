@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
+import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/prayer_times_service.dart';
-import 'package:yaqeen_app/features/home/presentation/views/quran_screen.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/Prayer_name_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/clip_shadow_path.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/curved_top_clipper.dart';
@@ -18,8 +18,7 @@ import 'package:yaqeen_app/features/home/presentation/views/widgets/recent_quran
 import 'package:yaqeen_app/features/home/presentation/views/widgets/rectangle_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/time_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/qibla_card.dart';
-import 'package:yaqeen_app/features/qibla/presentation/views/qibla_screen.dart';
-import 'package:yaqeen_app/features/home/presentation/views/adhan_full_screen.dart';
+import 'package:yaqeen_app/features/events/presentation/views/events_screen.dart';
 
 import 'widgets/prayer_times_loading_skeleton.dart';
 import '../../../../core/extension/context_extension.dart';
@@ -28,7 +27,9 @@ import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/styles/images/app_image.dart';
 import '../../../../core/utils/spacing.dart';
 import 'ahadis_screen.dart';
+import 'adhan_full_screen.dart';
 import 'mespha_screen.dart';
+import '../../../qibla/presentation/views/qibla_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double? currentLatitude;
   double? currentLongitude;
   String locationDescription = '';
+  String? currentPrayerName;
 
   @override
   void initState() {
@@ -111,9 +113,17 @@ class _HomeScreenState extends State<HomeScreen> {
         longitude: currentLongitude,
       );
 
+      // Calculate current prayer for highlighting
+      final prayerTimes = PrayerCalculatorService.calculate(
+        latitude: currentLatitude,
+        longitude: currentLongitude,
+      );
+      final currentPrayer = PrayerCalculatorService.getCurrentPrayerName(prayerTimes);
+
       setState(() {
         prayerTimings = response;
         nextPrayer = PrayerTimesService.getNextPrayer(response.timings);
+        currentPrayerName = currentPrayer;
         isLoading = false;
       });
 
@@ -264,26 +274,31 @@ class _HomeScreenState extends State<HomeScreen> {
                         prayer: 'العشاء',
                         image: AppImages.moonImage,
                         time: prayerTimings!.timings.isha,
+                        isHighlighted: currentPrayerName == 'العشاء',
                       ),
                       PrayerTimeCard(
                         prayer: 'المغرب',
                         image: AppImages.cloudSunnyImage,
                         time: prayerTimings!.timings.maghrib,
+                        isHighlighted: currentPrayerName == 'المغرب',
                       ),
                       PrayerTimeCard(
                         prayer: 'العصر',
                         image: AppImages.sunImage,
                         time: prayerTimings!.timings.asr,
+                        isHighlighted: currentPrayerName == 'العصر',
                       ),
                       PrayerTimeCard(
                         prayer: 'الظهر',
                         image: AppImages.sunnyImage,
                         time: prayerTimings!.timings.dhuhr,
+                        isHighlighted: currentPrayerName == 'الظهر',
                       ),
                       PrayerTimeCard(
                         prayer: 'الفجر',
                         image: AppImages.cloudefog,
                         time: prayerTimings!.timings.fajr,
+                        isHighlighted: currentPrayerName == 'الفجر',
                       ),
                     ],
                   ),
@@ -322,60 +337,73 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       verticalSpace(10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          FeatureIconButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const AdhanFullScreen(),
-                                ),
-                              );
-                            },
-                            image: AppImages.azanIcon,
-                            text: 'أذان',
-                          ),
-                          FeatureIconButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AhadisScreen(),
-                                ),
-                              );
-                            },
-                            image: AppImages.socityIcon,
-                            text: 'الاحاديث',
-                          ),
-                          FeatureIconButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const QiblaScreen(),
-                                ),
-                              );
-                            },
-                            image: AppImages.qeplaIcon,
-                            text: 'قبلة',
-                          ),
-                          FeatureIconButton(
-                            onTap: () {
-                              context.pushName(MesphaScreen.routeName);
-                            },
-                            image: AppImages.mesphaIcon,
-                            text: 'مسبحة',
-                          ),
-                          FeatureIconButton(
-                            onTap: () {
-                              context.pushName(QuranScreen.routeName);
-                            },
-                            image: AppImages.quranIcon,
-                            text: 'قرأن',
-                          ),
-                        ],
+                      // 5 Feature circles in one row
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            FeatureIconButton(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AdhanFullScreen(),
+                                  ),
+                                );
+                              },
+                              image: AppImages.azanIcon,
+                              text: 'أذان',
+                            ),
+                            horizontalSpace(8),
+                            FeatureIconButton(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AhadisScreen(),
+                                  ),
+                                );
+                              },
+                              image: AppImages.socityIcon,
+                              text: 'الاحاديث',
+                            ),
+                            horizontalSpace(8),
+                            FeatureIconButton(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const QiblaScreen(),
+                                  ),
+                                );
+                              },
+                              image: AppImages.qeplaIcon,
+                              text: 'قبلة',
+                            ),
+                            horizontalSpace(8),
+                            FeatureIconButton(
+                              onTap: () {
+                                Navigator.pushNamed(context, MesphaScreen.routeName);
+                              },
+                              image: AppImages.mesphaIcon,
+                              text: 'مسبحة',
+                            ),
+                            horizontalSpace(8),
+                            FeatureIconButton(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const EventsScreen(),
+                                  ),
+                                );
+                              },
+                              image: AppImages.eventIcon,
+                              text: 'التقويم',
+                            ),
+                          ],
+                        ),
                       ),
                       verticalSpace(30),
                       const RecentQuranRead(

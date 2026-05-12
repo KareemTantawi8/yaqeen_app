@@ -11,6 +11,7 @@ import '../../../../core/utils/spacing.dart';
 import 'allah_names_screen.dart';
 import 'books_screen.dart';
 import 'radio_screen.dart';
+import '../../../events/presentation/views/events_screen.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -88,15 +89,15 @@ class SettingScreen extends StatelessWidget {
                     },
                   ),
                   CustomServiceWidget(
-                    image: AppImages.yaqeenImage,
-                    title: 'أسأل يقين ؟',
+                    image: AppImages.eventIcon,
+                    title: 'التقويم',
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => YaqeenScreen(),
-                      //   ),YaqeenScreen
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EventsScreen(),
+                        ),
+                      );
                     },
                   ),
                 ],

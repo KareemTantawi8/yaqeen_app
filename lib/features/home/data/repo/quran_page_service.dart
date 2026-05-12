@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:yaqeen_app/core/services/quran_com_api_service.dart';
+import 'package:quran_with_tafsir/quran_with_tafsir.dart';
 
-/// Service for loading Quran pages using Quran.com API
-/// Replaces the old alquran.cloud API with the new Quran.com API
+/// Service for loading Quran pages using the offline `quran_with_tafsir` data.
 class QuranPageService {
   /// Get verses for a specific page (1-604)
   static Future<Map<String, dynamic>> getPageVerses(int pageNumber) async {
@@ -11,12 +10,23 @@ class QuranPageService {
         throw Exception('Page number must be between 1 and 604');
       }
 
-      final data = await QuranComApiService.getVersesByPage(
-        pageNumber: pageNumber,
-        includeWords: true,
-        wordFields: 'v2_page,location,text_uthmani,codeV2',
-        verseFields: 'text_uthmani_simple',
-      );
+      final service = QuranService.instance;
+      final List<Ayah> ayahs = service.getPage(pageNumber);
+
+      final verses = ayahs
+          .map((ayah) => {
+                'verse_key': '${ayah.surahNumber}:${ayah.id}',
+                'text_uthmani_simple': ayah.text,
+                'page': ayah.page,
+                'juz': ayah.juz,
+                'words': <Map<String, dynamic>>[],
+              })
+          .toList();
+
+      final data = {
+        'page': pageNumber,
+        'verses': verses,
+      };
 
       return data;
     } catch (e) {
