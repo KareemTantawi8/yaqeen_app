@@ -4,7 +4,7 @@ import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
-import 'package:yaqeen_app/features/mosque/data/services/mosque_data_service.dart';
+import 'package:yaqeen_app/features/mosque/data/services/mosque_service.dart';
 
 class MosqueListScreen extends StatefulWidget {
   static const String routeName = '/mosque_list';
@@ -45,7 +45,7 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
       debugPrint(
           'Loading mosques near: $userLat, $userLng with radius: ${_searchRadiusKm}km');
 
-      final mosques = await MosqueDataService.getNearbyMosques(
+      final mosques = await MosqueService.getNearbyMosques(
         latitude: userLat,
         longitude: userLng,
         radiusMeters: _searchRadiusKm * 1000,
