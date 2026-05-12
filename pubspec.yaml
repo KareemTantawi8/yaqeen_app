@@ -71,9 +71,6 @@ dependencies:
   # Prayer times calculation with full offline support
   adhan_dart: ^2.0.1
 
-  # Google Maps for nearest mosque finder
-  google_maps_flutter: ^2.5.3
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

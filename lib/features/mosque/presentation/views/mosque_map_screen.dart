@@ -49,30 +49,40 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
         _userLocation = LatLng(userLat, userLng);
       });
 
-      // Move map to user location
-      _mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(userLat, userLng),
-            zoom: 14,
-          ),
-        ),
-      );
+      // Wait a moment for map controller to be ready
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      // Load nearby mosques
-      await _loadNearbyMosques();
+      if (mounted) {
+        // Move map to user location
+        await _mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(userLat, userLng),
+              zoom: 14,
+            ),
+          ),
+        );
+
+        // Load nearby mosques
+        await _loadNearbyMosques();
+      }
     } catch (e) {
       debugPrint('Failed to initialize map: $e');
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-        _errorMessage = 'فشل تحميل الخريطة';
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _errorMessage = 'فشل تحميل الخريطة: $e';
+        });
+      }
     }
   }
 
   Future<void> _loadNearbyMosques() async {
-    if (_userLocation == null) return;
+    if (_userLocation == null) {
+      debugPrint('User location is null');
+      return;
+    }
 
     try {
       setState(() {
@@ -82,16 +92,23 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
         _selectedMosque = null;
       });
 
+      debugPrint(
+          'Loading mosques near: ${_userLocation!.latitude}, ${_userLocation!.longitude}');
+
       final mosques = await MosqueService.getNearbyMosques(
         latitude: _userLocation!.latitude,
         longitude: _userLocation!.longitude,
         radiusMeters: _searchRadiusKm * 1000,
       );
 
+      debugPrint('Found ${mosques.length} mosques');
+
       // Create markers
       final markers = <Marker>{};
 
       for (final mosque in mosques) {
+        debugPrint(
+            'Adding marker for: ${mosque.name} at ${mosque.latitude}, ${mosque.longitude}');
         markers.add(
           Marker(
             markerId: MarkerId(mosque.placeId),
@@ -101,6 +118,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
               snippet: '${mosque.distanceKm.toStringAsFixed(1)} كم',
             ),
             onTap: () {
+              debugPrint('Mosque tapped: ${mosque.name}');
               setState(() {
                 _selectedMosque = mosque;
               });
@@ -121,17 +139,22 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
         ),
       );
 
-      setState(() {
-        _markers = markers;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _markers = markers;
+          _isLoading = false;
+        });
+        debugPrint('Markers updated: ${markers.length} total markers');
+      }
     } catch (e) {
       debugPrint('Failed to load nearby mosques: $e');
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-        _errorMessage = 'فشل تحميل المساجد القريبة';
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _errorMessage = 'فشل تحميل المساجد: $e';
+        });
+      }
     }
   }
 

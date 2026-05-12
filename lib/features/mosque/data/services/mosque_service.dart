@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
 
 class MosqueService {
@@ -16,21 +17,49 @@ class MosqueService {
       final url =
           '$_baseUrl/nearbysearch/json?location=$latitude,$longitude&radius=${radiusMeters.toInt()}&type=mosque&key=$_apiKey';
 
+      debugPrint('Fetching mosques from: $url');
+
       final response = await http.get(Uri.parse(url));
+
+      debugPrint(
+          'API Response status: ${response.statusCode}, Body length: ${response.body.length}');
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
-        final results = json['results'] as List? ?? [];
+        final status = json['status'] as String?;
+        debugPrint('API Status: $status');
 
-        return results
-            .map((result) =>
-                MosqueModel.fromJson(result as Map<String, dynamic>, latitude, longitude))
+        if (status != 'OK') {
+          final errorMessage = json['error_message'] as String? ?? 'Unknown error';
+          debugPrint('API Error Message: $errorMessage');
+          throw Exception('Google Places API Error: $status - $errorMessage');
+        }
+
+        final results = json['results'] as List? ?? [];
+        debugPrint('Found ${results.length} results from API');
+
+        final mosques = results
+            .map((result) {
+              try {
+                return MosqueModel.fromJson(
+                    result as Map<String, dynamic>, latitude, longitude);
+              } catch (e) {
+                debugPrint('Error parsing mosque: $e');
+                return null;
+              }
+            })
+            .whereType<MosqueModel>()
             .toList()
           ..sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+
+        debugPrint('Successfully created ${mosques.length} mosque models');
+        return mosques;
       } else {
+        debugPrint('API Error Response: ${response.body}');
         throw Exception('Failed to load nearby mosques: ${response.statusCode}');
       }
     } catch (e) {
+      debugPrint('Error fetching nearby mosques: $e');
       throw Exception('Error fetching nearby mosques: $e');
     }
   }

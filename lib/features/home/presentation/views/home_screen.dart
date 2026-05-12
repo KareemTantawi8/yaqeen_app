@@ -325,24 +325,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(18),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          'المميزات',
-                          style: TextStyles.font24WhiteText.copyWith(
-                            color: AppColors.primaryColor,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            'المميزات',
+                            style: TextStyles.font24WhiteText.copyWith(
+                              color: AppColors.primaryColor,
+                            ),
                           ),
                         ),
-                      ),
-                      verticalSpace(10),
-                      // 5 Feature circles in one row
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                        verticalSpace(10),
+                        // 5 Feature circles in one row
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
                             FeatureIconButton(
                               onTap: () {
                                 Navigator.push(
@@ -411,7 +412,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       verticalSpace(16),
                       const QiblaCard(),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

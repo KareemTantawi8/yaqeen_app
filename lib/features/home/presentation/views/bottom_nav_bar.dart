@@ -4,7 +4,7 @@ import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/images/app_image.dart';
 import '../../../Azkar/presentation/views/azkar_screen.dart';
 import '../../../Settings/presentation/views/setting_screen.dart';
-import '../../../mosque/presentation/views/mosque_map_screen.dart';
+import '../../../mosque/presentation/views/mosque_list_screen.dart';
 import 'quran_audio_screen.dart';
 import 'home_screen.dart';
 
@@ -48,7 +48,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const AzkarScreen(),
     const QuranAudioScreen(),
     const HomeScreen(),
-    const MosqueMapScreen(),
+    const MosqueListScreen(),
     const SettingScreen(),
   ];
 
