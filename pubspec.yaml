@@ -79,7 +79,7 @@ dependencies:
   # Prayer notifications + timezone scheduling
   flutter_local_notifications: ^18.0.1
   timezone: ^0.9.4
-  flutter_timezone: ^1.0.4
+  flutter_timezone: ^4.1.1
 
 dev_dependencies:
   flutter_test:
