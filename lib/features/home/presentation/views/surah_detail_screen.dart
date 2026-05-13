@@ -150,31 +150,39 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     );
   }
 
-  Future<void> _toggleAyahAudio(Ayah ayah) async {
-    try {
-      if (_audioService.isAyahPlaying(widget.surah.number, ayah.numberInSurah)) {
-        await _audioService.pause();
-      } else {
-        await _audioService.playAyah(
+  void _toggleAyahAudio(Ayah ayah) {
+    if (_audioService.isAyahPlaying(widget.surah.number, ayah.numberInSurah)) {
+      _audioService.pause().then((_) { if (mounted) setState(() {}); });
+      setState(() {}); // instant icon change
+      return;
+    }
+
+    // playAyah sets _isPlaying synchronously before any await,
+    // so setState here immediately shows the pause icon.
+    _audioService
+        .playAyah(
           widget.surah.number,
           ayah.numberInSurah,
           reciter: _selectedReciter,
-        );
-      }
-      setState(() {});
-    } catch (e) {
+        )
+        .catchError((e) {
+      debugPrint('Playback error: $e');
       if (mounted) {
+        setState(() {});
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
-              'فشل تشغيل الصوت',
-              style: const TextStyle(fontFamily: 'Tajawal'),
+              'فشل تشغيل الصوت — تأكد من الاتصال بالإنترنت',
+              style: TextStyle(fontFamily: 'Tajawal'),
+              textAlign: TextAlign.right,
             ),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
-    }
+    });
+    setState(() {}); // fires immediately — icon flips on first tap
   }
 
   void _updateScrollProgress() {

@@ -161,7 +161,7 @@ class _AllahNamesScreenState extends State<AllahNamesScreen> {
                         ),
                         itemCount: allahNames.length,
                         itemBuilder: (context, index) {
-                          final name = allahNames[index];
+                          final   name = allahNames[index];
                           return AllahNamesWidget(
                             title: name.title,
                             enTitle: name.enTitle,

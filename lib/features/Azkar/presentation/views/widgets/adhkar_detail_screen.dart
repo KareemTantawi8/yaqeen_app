@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/model/adhkar_category_model.dart';
@@ -93,7 +94,18 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
       }
 
       debugPrint('Loading audio from: $audioUrl');
-      await _audioPlayer.setUrl(audioUrl);
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(audioUrl),
+          tag: MediaItem(
+            id: audioUrl,
+            title: widget.item.text.length > 60
+                ? '${widget.item.text.substring(0, 60)}...'
+                : widget.item.text,
+            album: widget.category.category,
+          ),
+        ),
+      );
       
       setState(() {
         _isLoadingAudio = false;

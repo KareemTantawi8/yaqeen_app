@@ -1,11 +1,17 @@
 import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:yaqeen_app/core/services/service_locator.dart';
 import 'package:yaqeen_app/yaqeen_app.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.yaqeen.audio',
+    androidNotificationChannelName: 'القرآن الكريم',
+    androidNotificationOngoing: true,
+    androidStopForegroundOnPause: true,
+  );
 
   // Initialize service locator for dependency injection
   await setupServiceLocator();

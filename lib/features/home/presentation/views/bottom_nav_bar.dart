@@ -5,7 +5,7 @@ import '../../../../core/styles/images/app_image.dart';
 import '../../../Azkar/presentation/views/azkar_screen.dart';
 import '../../../Settings/presentation/views/setting_screen.dart';
 import '../../../mosque/presentation/views/mosque_list_screen.dart';
-import 'quran_audio_screen.dart';
+import 'quran_hub_screen.dart';
 import 'home_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -22,7 +22,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<IconData?> icons = [
     null, // Will use asset for azkar
-    Icons.headphones,
+    Icons.auto_stories_rounded,
     null, // Will use asset for home
     Icons.mosque,
     null, // Will use asset for settings
@@ -38,7 +38,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<String> labels = [
     "الأذكار",
-    "الاستماع",
+    "القرآن",
     "الرئيسية",
     "مساجد",
     "المزيد",
@@ -46,7 +46,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<Widget> screens = [
     const AzkarScreen(),
-    const QuranAudioScreen(),
+    const QuranHubScreen(),
     const HomeScreen(),
     const MosqueListScreen(),
     const SettingScreen(),
@@ -64,7 +64,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
       backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
-          screens[currentIndex],
+          IndexedStack(
+            index: currentIndex,
+            children: screens,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

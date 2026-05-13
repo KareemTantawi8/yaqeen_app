@@ -1,19 +1,29 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/home/data/models/reciter_model.dart';
 
 class QuranAudioService {
   static final QuranAudioService _instance = QuranAudioService._internal();
   factory QuranAudioService() => _instance;
-  QuranAudioService._internal();
+
+  QuranAudioService._internal() {
+    _audioPlayer.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        _isPlaying = false;
+        _currentSurahNumber = null;
+        _currentAyahNumber = null;
+      } else {
+        _isPlaying = state.playing;
+      }
+    });
+  }
 
   final AudioPlayer _audioPlayer = AudioPlayer();
   static const String _keySelectedReciter = 'selected_reciter';
-  
-  // Currently playing ayah info
+
   int? _currentSurahNumber;
   int? _currentAyahNumber;
   bool _isPlaying = false;
@@ -23,18 +33,14 @@ class QuranAudioService {
   int? get currentSurahNumber => _currentSurahNumber;
   int? get currentAyahNumber => _currentAyahNumber;
 
-  // Get saved reciter or default
   Future<Reciter> getSelectedReciter() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final reciterJson = prefs.getString(_keySelectedReciter);
-      
       if (reciterJson != null) {
         final json = jsonDecode(reciterJson) as Map<String, dynamic>;
         return Reciter.fromJson(json);
       }
-      
-      // Default reciter
       return RecitersList.popular[0];
     } catch (e) {
       debugPrint('Error getting selected reciter: $e');
@@ -42,68 +48,62 @@ class QuranAudioService {
     }
   }
 
-  // Save selected reciter
   Future<void> saveSelectedReciter(Reciter reciter) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final jsonString = jsonEncode(reciter.toJson());
-      await prefs.setString(_keySelectedReciter, jsonString);
+      await prefs.setString(_keySelectedReciter, jsonEncode(reciter.toJson()));
     } catch (e) {
       debugPrint('Error saving selected reciter: $e');
     }
   }
 
-  // Play ayah audio using everyayah.com API
   Future<void> playAyah(int surahNumber, int ayahNumber, {Reciter? reciter}) async {
-    try {
-      reciter ??= await getSelectedReciter();
-      
-      // Format: https://everyayah.com/data/{reader_identifier}/{surah_id}{verse_id}.mp3
-      // Surah and verse IDs are zero-padded to 3 digits
-      final surahId = surahNumber.toString().padLeft(3, '0');
-      final verseId = ayahNumber.toString().padLeft(3, '0');
-      
-      // Use everyayah.com API
-      final audioUrl = 'https://everyayah.com/data/${reciter.identifier}/$surahId$verseId.mp3';
-      
-      debugPrint('Playing ayah audio: $audioUrl');
-      debugPrint('Surah: $surahNumber, Ayah: $ayahNumber');
-      
-      await _audioPlayer.setUrl(audioUrl);
-      await _audioPlayer.play();
-      
-      _currentSurahNumber = surahNumber;
-      _currentAyahNumber = ayahNumber;
-      _isPlaying = true;
+    reciter ??= await getSelectedReciter();
 
-      // Listen to completion
-      _audioPlayer.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed) {
-          _isPlaying = false;
-          _currentSurahNumber = null;
-          _currentAyahNumber = null;
-        }
-      });
+    final surahId = surahNumber.toString().padLeft(3, '0');
+    final verseId = ayahNumber.toString().padLeft(3, '0');
+    final audioUrl =
+        'https://everyayah.com/data/${reciter.identifier}/$surahId$verseId.mp3';
+
+    // Set synchronously before any await — isAyahPlaying() returns true instantly
+    _currentSurahNumber = surahNumber;
+    _currentAyahNumber = ayahNumber;
+    _isPlaying = true;
+
+    debugPrint('Playing ayah: $audioUrl');
+
+    try {
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(audioUrl),
+          tag: MediaItem(
+            id: audioUrl,
+            title: 'آية $ayahNumber',
+            album: 'سورة $surahNumber',
+            artist: reciter.name,
+          ),
+        ),
+      );
+      await _audioPlayer.play();
     } catch (e) {
       debugPrint('Error playing ayah: $e');
       _isPlaying = false;
-      throw Exception('Failed to play audio: $e');
+      _currentSurahNumber = null;
+      _currentAyahNumber = null;
+      rethrow;
     }
   }
 
-  // Pause audio
   Future<void> pause() async {
     await _audioPlayer.pause();
     _isPlaying = false;
   }
 
-  // Resume audio
   Future<void> resume() async {
     await _audioPlayer.play();
     _isPlaying = true;
   }
 
-  // Stop audio
   Future<void> stop() async {
     await _audioPlayer.stop();
     _isPlaying = false;
@@ -111,21 +111,18 @@ class QuranAudioService {
     _currentAyahNumber = null;
   }
 
-  // Check if specific ayah is playing
   bool isAyahPlaying(int surahNumber, int ayahNumber) {
-    return _isPlaying && 
-           _currentSurahNumber == surahNumber && 
-           _currentAyahNumber == ayahNumber;
+    return _isPlaying &&
+        _currentSurahNumber == surahNumber &&
+        _currentAyahNumber == ayahNumber;
   }
 
-  // Get audio URL for ayah (for use in other services)
   String getAyahAudioUrl(int surahNumber, int ayahNumber, Reciter reciter) {
     final surahId = surahNumber.toString().padLeft(3, '0');
     final verseId = ayahNumber.toString().padLeft(3, '0');
     return 'https://everyayah.com/data/${reciter.identifier}/$surahId$verseId.mp3';
   }
 
-  // Dispose
   void dispose() {
     _audioPlayer.dispose();
   }
