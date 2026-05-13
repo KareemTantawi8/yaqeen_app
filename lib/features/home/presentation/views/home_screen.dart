@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
@@ -118,12 +117,17 @@ class _HomeScreenState extends State<HomeScreen> {
       final prayerTimes = PrayerCalculatorService.calculate(
         latitude: currentLatitude,
         longitude: currentLongitude,
+        calculationMethodId: 4,
       );
       final currentPrayer = PrayerCalculatorService.getCurrentPrayerName(prayerTimes);
 
       setState(() {
         prayerTimings = response;
-        nextPrayer = PrayerTimesService.getNextPrayer(response.timings);
+        nextPrayer = PrayerTimesService.getNextPrayer(
+          response.timings,
+          latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
+          longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+        );
         currentPrayerName = currentPrayer;
         isLoading = false;
       });
@@ -144,7 +148,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (prayerTimings != null && mounted) {
-        final next = PrayerTimesService.getNextPrayer(prayerTimings!.timings);
+        final next = PrayerTimesService.getNextPrayer(
+          prayerTimings!.timings,
+          latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
+          longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+        );
         setState(() {
           nextPrayer = next;
           countdown = next['countdown'];
@@ -159,8 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
-    @override
     const double notchRadius = 55;
 
     return Scaffold(

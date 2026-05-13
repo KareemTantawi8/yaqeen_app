@@ -27,12 +27,33 @@ class AdhkarDetailScreen extends StatefulWidget {
 }
 
 class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
+  static const String _adhkarAudioBase =
+      'https://raw.githubusercontent.com/rn0x/Adhkar-json/refs/heads/main';
+
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoadingAudio = false;
   bool _hasAudioError = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+
+  String? _resolveItemAudioUrl() {
+    final raw = widget.item.audio?.trim();
+    if (raw != null && raw.isNotEmpty) {
+      if (raw.startsWith('http://') || raw.startsWith('https://')) {
+        return raw;
+      }
+      final path = raw.startsWith('/') ? raw : '/$raw';
+      return '$_adhkarAudioBase$path';
+    }
+    final fn = widget.item.filename?.trim();
+    if (fn != null && fn.isNotEmpty) {
+      final baseName =
+          fn.endsWith('.mp3') ? fn.substring(0, fn.length - 4) : fn;
+      return '$_adhkarAudioBase/audio/$baseName.mp3';
+    }
+    return null;
+  }
 
   @override
   void initState() {
@@ -49,7 +70,8 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
           if (state.processingState == ProcessingState.ready) {
             _isLoadingAudio = false;
             _hasAudioError = false;
-          } else if (state.processingState == ProcessingState.loading) {
+          } else if (state.processingState == ProcessingState.loading ||
+              state.processingState == ProcessingState.buffering) {
             _isLoadingAudio = true;
           } else if (state.processingState == ProcessingState.idle) {
             _isLoadingAudio = false;
@@ -76,7 +98,8 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
   }
 
   Future<void> _loadAudio() async {
-    if (widget.item.audio == null || widget.item.audio!.isEmpty) {
+    final audioUrl = _resolveItemAudioUrl();
+    if (audioUrl == null) {
       return;
     }
 
@@ -85,14 +108,6 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
         _isLoadingAudio = true;
         _hasAudioError = false;
       });
-
-      String audioUrl = widget.item.audio!;
-      
-      // If the audio URL is relative, construct the full URL
-      if (!audioUrl.startsWith('http')) {
-        const baseAudioUrl = 'https://raw.githubusercontent.com/rn0x/Adhkar-json/refs/heads/main';
-        audioUrl = '$baseAudioUrl$audioUrl';
-      }
 
       debugPrint('Loading audio from: $audioUrl');
       await _audioPlayer.setAudioSource(
@@ -233,9 +248,8 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
   Widget build(BuildContext context) {
     final hasPrevious = _getPreviousItem() != null;
     final hasNext = _getNextItem() != null;
-    final hasAudio = widget.item.audio != null && 
-                      widget.item.audio!.isNotEmpty && 
-                      !_hasAudioError;
+    final hasAudio =
+        _resolveItemAudioUrl() != null && !_hasAudioError;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 

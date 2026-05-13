@@ -6,18 +6,55 @@ class PrayerCalculatorService {
   static const double defaultLatitude = 24.7406086;
   static const double defaultLongitude = 46.8060108;
 
-  /// Calculate prayer times using adhan_dart (fully offline, locally)
+  /// Maps aladhan-style method ids (used in UI) to [adhan_dart] parameters.
+  static CalculationParameters parametersForAladhanMethodId(int methodId) {
+    switch (methodId) {
+      case 1:
+        return CalculationMethodParameters.karachi();
+      case 2:
+        return CalculationMethodParameters.northAmerica();
+      case 3:
+        return CalculationMethodParameters.muslimWorldLeague();
+      case 4:
+        return CalculationMethodParameters.ummAlQura();
+      case 5:
+        return CalculationMethodParameters.egyptian();
+      case 7:
+        return CalculationMethodParameters.tehran();
+      case 8:
+        return CalculationMethodParameters.gulfRegion();
+      case 9:
+        return CalculationMethodParameters.kuwait();
+      case 10:
+        return CalculationMethodParameters.qatar();
+      case 11:
+        return CalculationMethodParameters.singapore();
+      case 12:
+        return CalculationMethodParameters.france();
+      case 13:
+        return CalculationMethodParameters.turkiye();
+      case 14:
+        return CalculationMethodParameters.russia();
+      default:
+        return CalculationMethodParameters.ummAlQura();
+    }
+  }
+
+  /// Calculate prayer times using adhan_dart (fully offline, locally).
+  ///
+  /// [calculationMethodId] matches the prayer-method picker (aladhan-style ids: 1–14).
   static PrayerTimes calculate({
     double? latitude,
     double? longitude,
     DateTime? date,
+    int calculationMethodId = 4,
   }) {
     final lat = latitude ?? defaultLatitude;
     final lon = longitude ?? defaultLongitude;
     final d = date ?? DateTime.now();
 
     final coordinates = Coordinates(lat, lon);
-    final params = CalculationMethodParameters.ummAlQura();
+    final params = parametersForAladhanMethodId(calculationMethodId);
 
     return PrayerTimes(
       coordinates: coordinates,
@@ -43,6 +80,7 @@ class PrayerCalculatorService {
       'sunrise': formatTime(prayerTimes.sunrise),
       'dhuhr': formatTime(prayerTimes.dhuhr),
       'asr': formatTime(prayerTimes.asr),
+      'sunset': formatTime(prayerTimes.sunset),
       'maghrib': formatTime(prayerTimes.maghrib),
       'isha': formatTime(prayerTimes.isha),
     };

@@ -12,6 +12,7 @@ class PrayerTimesService {
     double? latitude,
     double? longitude,
     DateTime? date,
+    int calculationMethodId = 4,
   }) async {
     try {
       final lat = latitude ?? defaultLatitude;
@@ -25,6 +26,7 @@ class PrayerTimesService {
         latitude: lat,
         longitude: lon,
         date: targetDate,
+        calculationMethodId: calculationMethodId,
       );
 
       // Get all times as formatted strings
@@ -77,7 +79,7 @@ class PrayerTimesService {
         sunrise: timesMap['sunrise'] ?? '00:00',
         dhuhr: timesMap['dhuhr'] ?? '00:00',
         asr: timesMap['asr'] ?? '00:00',
-        sunset: timesMap['asr'] ?? '00:00',
+        sunset: timesMap['sunset'] ?? '00:00',
         maghrib: timesMap['maghrib'] ?? '00:00',
         isha: timesMap['isha'] ?? '00:00',
         imsak: timesMap['fajr'] ?? '00:00',
@@ -93,11 +95,21 @@ class PrayerTimesService {
     );
   }
 
-  /// Get the next upcoming prayer
-  static Map<String, dynamic> getNextPrayer(Timings timings) {
-    // Re-calculate prayer times to get the PrayerTimes object
+  /// Next prayer for [latitude] / [longitude] (must match the request used to build [timings]).
+  static Map<String, dynamic> getNextPrayer(
+    Timings timings, {
+    required double latitude,
+    required double longitude,
+    int calculationMethodId = 4,
+    DateTime? date,
+  }) {
     try {
-      final prayerTimes = PrayerCalculatorService.calculate();
+      final prayerTimes = PrayerCalculatorService.calculate(
+        latitude: latitude,
+        longitude: longitude,
+        date: date ?? DateTime.now(),
+        calculationMethodId: calculationMethodId,
+      );
       return PrayerCalculatorService.getNextPrayer(prayerTimes);
     } catch (e) {
       debugPrint('Error getting next prayer: $e');

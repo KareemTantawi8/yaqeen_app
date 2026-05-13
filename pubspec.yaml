@@ -52,6 +52,7 @@ dependencies:
   dartz: ^0.10.1
   http: ^1.6.0
   just_audio: ^0.10.5
+  audio_session: ^0.2.2
   carousel_slider: ^5.1.1
   shared_preferences: ^2.5.4
   dio: ^5.9.0
@@ -74,6 +75,11 @@ dependencies:
   # Google Maps for nearest mosque finder
   google_maps_flutter: ^2.5.3
   just_audio_background: ^0.0.1-beta.17
+
+  # Prayer notifications + timezone scheduling
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
+  flutter_timezone: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -132,6 +138,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/audio/adhan/
     - assets/images/cloud_image.png
     # JSON files removed - data now loaded from API endpoints
     # - assets/data/surahs.json

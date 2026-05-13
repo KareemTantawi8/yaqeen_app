@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/localization/app_localizations.dart';
+import 'core/utils/navigator_key.dart';
 import 'features/home/presentation/views/mespha_screen.dart';
 import 'features/home/presentation/views/quran_screen.dart';
 import 'features/home/presentation/views/quran_full_mushaf_screen.dart';
@@ -14,6 +15,7 @@ import 'features/home/presentation/views/quran_audio_screen.dart';
 import 'features/home/presentation/views/quran_tafsir_screen.dart';
 import 'features/splach/presentation/views/splach_screen.dart';
 import 'features/vendor/presentation/views/vendor_dashboard_screen.dart';
+import 'features/Prayer/presentation/views/adhan_settings_screen.dart';
 
 class YaqeenApp extends StatelessWidget {
   const YaqeenApp({super.key});
@@ -45,6 +47,7 @@ class YaqeenApp extends StatelessWidget {
           child: child ?? const SizedBox(),
         );
       },
+      navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       initialRoute: SplashScreen.routeName,
       routes: {
@@ -58,8 +61,8 @@ class YaqeenApp extends StatelessWidget {
         QuranFullMushafScreen.routeName: (context) => const QuranFullMushafScreen(),
         SurahFullAudioScreen.routeName: (context) => const SurahFullAudioScreen(),
         AdhanFullScreen.routeName: (context) => const AdhanFullScreen(),
+        AdhanSettingsScreen.routeName: (context) => const AdhanSettingsScreen(),
         VendorDashboardScreen.routeName: (context) => const VendorDashboardScreen(),
-        // Add more routes here as needed
       },
     );
   }

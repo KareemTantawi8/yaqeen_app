@@ -8,19 +8,27 @@ class AdhanService {
   static const double defaultLatitude = 24.7406086;
   static const double defaultLongitude = 46.8060108;
 
-  // Adhan audio files URLs
+  // Bundled adhan assets (same set as AdhanAudioPlayerService; URLs were removed after CDN 404).
   static const Map<String, Map<String, String>> adhanSounds = {
     'makkah': {
       'name': 'أذان مكة المكرمة',
-      'url': 'https://download.quranicaudio.com/quran/adhan/makkah.mp3',
+      'asset': 'assets/audio/adhan/makkah.mp3',
     },
-    'madina': {
+    'madinah': {
       'name': 'أذان المدينة المنورة',
-      'url': 'https://download.quranicaudio.com/quran/adhan/madina.mp3',
+      'asset': 'assets/audio/adhan/madinah.mp3',
+    },
+    'mishary': {
+      'name': 'مشاري راشد العفاسي',
+      'asset': 'assets/audio/adhan/mishary.mp3',
     },
     'abdulbasit': {
-      'name': 'أذان عبد الباسط',
-      'url': 'https://download.quranicaudio.com/quran/adhan/abdulbasit.mp3',
+      'name': 'عبد الباسط عبد الصمد',
+      'asset': 'assets/audio/adhan/abdulbasit.mp3',
+    },
+    'sudais': {
+      'name': 'عبد الرحمن السديس',
+      'asset': 'assets/audio/adhan/sudais.mp3',
     },
   };
 
@@ -60,6 +68,7 @@ class AdhanService {
         latitude: latitude,
         longitude: longitude,
         date: today,
+        calculationMethodId: method,
       );
 
       // Get all times as formatted strings
@@ -92,11 +101,16 @@ class AdhanService {
     }
   }
 
-  /// Get selected Adhan sound
+  /// Get selected Adhan sound id (aligned with [AdhanAudioPlayerService]).
   static Future<String> getSelectedAdhanSound() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_selectedAdhanKey) ?? 'makkah'; // Default to Makkah
+      String? id = prefs.getString('selected_adhan_voice_id') ??
+          prefs.getString(_selectedAdhanKey);
+      id ??= 'makkah';
+      if (id == 'madina') id = 'madinah';
+      if (!adhanSounds.containsKey(id)) id = 'makkah';
+      return id;
     } catch (e) {
       debugPrint('Error getting selected adhan sound: $e');
       return 'makkah';
@@ -107,18 +121,25 @@ class AdhanService {
   static Future<void> saveSelectedAdhanSound(String adhanId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_selectedAdhanKey, adhanId);
-      debugPrint('Saved selected adhan sound: $adhanId');
+      final id = adhanSounds.containsKey(adhanId) ? adhanId : 'makkah';
+      await prefs.setString(_selectedAdhanKey, id);
+      await prefs.setString('selected_adhan_voice_id', id);
+      debugPrint('Saved selected adhan sound: $id');
     } catch (e) {
       debugPrint('Error saving selected adhan sound: $e');
     }
   }
 
-  /// Get selected Adhan sound URL
-  static Future<String> getSelectedAdhanUrl() async {
+  /// Bundled asset path for the selected adhan (not a network URL).
+  static Future<String> getSelectedAdhanAssetPath() async {
     final selectedId = await getSelectedAdhanSound();
-    return adhanSounds[selectedId]?['url'] ?? adhanSounds['makkah']!['url']!;
+    return adhanSounds[selectedId]?['asset'] ??
+        adhanSounds['makkah']!['asset']!;
   }
+
+  /// Same as [getSelectedAdhanAssetPath]; kept for older call sites.
+  static Future<String> getSelectedAdhanUrl() async =>
+      getSelectedAdhanAssetPath();
 
   /// Get selected Adhan sound name
   static Future<String> getSelectedAdhanName() async {
@@ -126,11 +147,20 @@ class AdhanService {
     return adhanSounds[selectedId]?['name'] ?? adhanSounds['makkah']!['name']!;
   }
 
-  /// Get next prayer time and countdown
-  static Map<String, dynamic> getNextPrayer(AdhanTimings timings) {
-    // Re-calculate to get the PrayerTimes object
+  /// Next prayer using the same location and calculation method as [getAdhanByLocation].
+  static Map<String, dynamic> getNextPrayer(
+    AdhanTimings timings, {
+    required double latitude,
+    required double longitude,
+    int calculationMethodId = 4,
+  }) {
     try {
-      final prayerTimes = PrayerCalculatorService.calculate();
+      final prayerTimes = PrayerCalculatorService.calculate(
+        latitude: latitude,
+        longitude: longitude,
+        date: DateTime.now(),
+        calculationMethodId: calculationMethodId,
+      );
       return PrayerCalculatorService.getNextPrayer(prayerTimes);
     } catch (e) {
       debugPrint('Error getting next prayer: $e');

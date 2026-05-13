@@ -3,8 +3,10 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
+import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
+import 'package:yaqeen_app/features/Prayer/presentation/views/adhan_settings_screen.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/prayer_times_service.dart';
 import 'package:yaqeen_app/features/Prayer/data/models/prayer_stats_model.dart';
@@ -62,6 +64,13 @@ class _PrayerScreenState extends State<PrayerScreen> {
         _loadPrayerStats(),
       ]);
 
+      // Request notification permission once, then schedule today's prayers
+      await PrayerNotificationService.requestPermissions();
+      await PrayerNotificationService.schedulePrayerNotifications(
+        latitude: location['latitude']!,
+        longitude: location['longitude']!,
+      );
+
       setState(() {
         isLoading = false;
       });
@@ -86,12 +95,17 @@ class _PrayerScreenState extends State<PrayerScreen> {
       final prayerTimes = PrayerCalculatorService.calculate(
         latitude: currentLatitude,
         longitude: currentLongitude,
+        calculationMethodId: 4,
       );
       final sunnah = PrayerCalculatorService.getSunnahTimes(prayerTimes);
 
       setState(() {
         prayerTimings = response;
-        nextPrayer = PrayerTimesService.getNextPrayer(response.timings);
+        nextPrayer = PrayerTimesService.getNextPrayer(
+          response.timings,
+          latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
+          longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+        );
         sunnahTimes = sunnah;
       });
 
@@ -118,7 +132,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
     _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (prayerTimings != null && mounted) {
-        final next = PrayerTimesService.getNextPrayer(prayerTimings!.timings);
+        final next = PrayerTimesService.getNextPrayer(
+          prayerTimings!.timings,
+          latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
+          longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+        );
         setState(() {
           nextPrayer = next;
           countdown = next['countdown'];
@@ -229,6 +247,22 @@ class _PrayerScreenState extends State<PrayerScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+        // Adhan / notification settings button
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            onPressed: () => Navigator.of(context)
+                .pushNamed(AdhanSettingsScreen.routeName),
+            icon: Icon(
+              Icons.notifications_active_outlined,
+              color: AppColors.primaryColor,
+            ),
+            tooltip: 'إعدادات الأذان',
           ),
         ),
       ],
