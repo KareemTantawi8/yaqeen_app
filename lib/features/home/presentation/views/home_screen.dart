@@ -29,6 +29,7 @@ import '../../../../core/utils/spacing.dart';
 import 'ahadis_screen.dart';
 import 'adhan_full_screen.dart';
 import 'mespha_screen.dart';
+import 'widgets/hadith_daily_card.dart';
 import '../../../qibla/presentation/views/qibla_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -412,6 +413,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       verticalSpace(16),
                       const QiblaCard(),
+                      verticalSpace(16),
+                      const HadithDailyCard(),
                       ],
                     ),
                   ),

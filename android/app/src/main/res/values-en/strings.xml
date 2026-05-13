@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- English locale fallback so non-Arabic users see a Latinized name. -->
+    <string name="app_name">Yaqeen</string>
+</resources>

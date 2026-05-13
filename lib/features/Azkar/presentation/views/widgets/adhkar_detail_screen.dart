@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/model/adhkar_category_model.dart';
@@ -166,6 +167,11 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
     return '$minutes:$seconds';
   }
 
+  Future<void> _shareText() async {
+    final text = '${widget.category.category}\n\n${widget.item.text}\n\nعدد المرات: ${widget.item.count}';
+    await Share.share(text);
+  }
+
   Future<void> _copyToClipboard() async {
     try {
       final textToCopy = '${widget.category.category}\n\n${widget.item.text}\n\nعدد المرات: ${widget.item.count}';
@@ -281,6 +287,26 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
+                  // Share button
+                  Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    elevation: 2,
+                    shadowColor: AppColors.primaryColor.withOpacity(0.1),
+                    child: InkWell(
+                      onTap: _shareText,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        child: Icon(
+                          Icons.share_outlined,
+                          color: AppColors.primaryColor,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   // Copy button
                   Material(
                     color: Colors.white,

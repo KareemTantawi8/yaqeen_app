@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default app name: Arabic "Yaqeen" as required by the brand. -->
+    <string name="app_name">يقين</string>
+</resources>
