@@ -114,10 +114,13 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 
   Future<void> _toggleRadio(RadioModel radio) async {
+    // Capture previous state before any mutation
+    final previousId = _currentlyPlayingId;
+
     try {
-      // If clicking the same radio that's playing, pause it
-      if (_currentlyPlayingId == radio.id && _isPlaying) {
-        await _audioPlayer.pause();
+      // Tapping the currently-playing station → pause and stop
+      if (previousId == radio.id && _isPlaying) {
+        await _audioPlayer.stop();
         setState(() {
           _currentlyPlayingId = null;
           _loadingRadioId = null;
@@ -125,28 +128,23 @@ class _RadioScreenState extends State<RadioScreen> {
         return;
       }
 
-      // Set loading state immediately for UI feedback
       setState(() {
         _loadingRadioId = radio.id;
         _currentlyPlayingId = radio.id;
         _isPlaying = false;
       });
 
-      // If clicking a different radio, stop current and play new one
-      if (_currentlyPlayingId != null && _currentlyPlayingId != radio.id) {
-        await _audioPlayer.stop();
-      }
+      // Always stop first so iOS AVPlayer releases the previous stream
+      await _audioPlayer.stop();
 
-      // Play the selected radio
-      await _audioPlayer.setUrl(radio.url);
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(radio.url),
+          headers: const {'User-Agent': 'YaqeenApp/1.0'},
+        ),
+        preload: false,
+      );
       await _audioPlayer.play();
-      
-      // Update state after play is called
-      if (mounted) {
-        setState(() {
-          _currentlyPlayingId = radio.id;
-        });
-      }
     } catch (e) {
       debugPrint('Error playing radio: $e');
       if (mounted) {
@@ -156,7 +154,7 @@ class _RadioScreenState extends State<RadioScreen> {
             _currentlyPlayingId = null;
           }
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(

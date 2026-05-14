@@ -114,23 +114,27 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
 
       // Try to set the URL with error handling
       try {
-        await _audioPlayer.setUrl(audioUrl);
+        await _audioPlayer.setAudioSource(
+          AudioSource.uri(Uri.parse(audioUrl)),
+        );
         debugPrint('✅ Audio URL set successfully');
         await _audioPlayer.play();
         debugPrint('✅ Audio playback started');
       } catch (audioError) {
         debugPrint('❌ Audio player error: $audioError');
-        
+
         // Try alternative URL format without the language prefix
         final alternativeEdition = edition.replaceAll('ar.', '');
-        final alternativeUrl = 
+        final alternativeUrl =
             'https://cdn.islamic.network/quran/audio-surah/$bitrate/$alternativeEdition/$surahNumber.mp3';
-        
+
         debugPrint('🔄 Trying alternative URL without ar. prefix:');
         debugPrint('URL: $alternativeUrl');
-        
+
         try {
-          await _audioPlayer.setUrl(alternativeUrl);
+          await _audioPlayer.setAudioSource(
+            AudioSource.uri(Uri.parse(alternativeUrl)),
+          );
           debugPrint('✅ Alternative URL set successfully');
           await _audioPlayer.play();
           debugPrint('✅ Alternative audio playback started');

@@ -63,7 +63,6 @@ dependencies:
   geolocator: ^13.0.2
   permission_handler: ^11.3.1
   flutter_compass: ^0.8.0
-  audioplayers: ^6.1.0
   intl: ^0.20.2
 
   # Offline Quran data with tafsir and audio URLs
@@ -74,7 +73,6 @@ dependencies:
 
   # Google Maps for nearest mosque finder
   google_maps_flutter: ^2.5.3
-  just_audio_background: ^0.0.1-beta.17
 
   # Prayer notifications + timezone scheduling
   flutter_local_notifications: ^18.0.1

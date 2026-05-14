@@ -67,7 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 
-  /// Initialize location and load prayer times
+  /// Initialize location and load prayer times.
+  /// Loads immediately with cached/default location, then refreshes from GPS.
   Future<void> _initializeLocation() async {
     try {
       setState(() {
@@ -76,20 +77,26 @@ class _HomeScreenState extends State<HomeScreen> {
         errorMessage = null;
       });
 
-      // Get location with fallback
-      final location = await LocationService.getLocationWithFallback();
-      
-      setState(() {
-        currentLatitude = location['latitude'];
-        currentLongitude = location['longitude'];
-        locationDescription = LocationService.getLocationDescription(
-          location['latitude']!,
-          location['longitude']!,
-        );
-      });
+      // Step 1: Use saved or default location immediately (instant — no GPS wait)
+      final saved = await LocationService.getSavedLocation();
+      final immediate = saved ??
+          {
+            'latitude': LocationService.defaultLatitude,
+            'longitude': LocationService.defaultLongitude,
+          };
 
-      // Load prayer times with the obtained location
+      currentLatitude = immediate['latitude'];
+      currentLongitude = immediate['longitude'];
+      locationDescription = LocationService.getLocationDescription(
+        currentLatitude!,
+        currentLongitude!,
+      );
+
+      // Show prayer times right away
       await _loadPrayerTimes();
+
+      // Step 2: Try GPS in background; silently refresh if location changed
+      _refreshFromGps();
     } catch (e) {
       debugPrint('Failed to initialize location: $e');
       setState(() {
@@ -100,13 +107,37 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadPrayerTimes() async {
+  Future<void> _refreshFromGps() async {
     try {
-      setState(() {
-        isLoading = true;
-        hasError = false;
-        errorMessage = null;
-      });
+      final position = await LocationService.getCurrentLocation()
+          .timeout(const Duration(seconds: 10));
+      if (position == null || !mounted) return;
+
+      final latDiff = (position.latitude - (currentLatitude ?? 0)).abs();
+      final lngDiff = (position.longitude - (currentLongitude ?? 0)).abs();
+      if (latDiff < 0.01 && lngDiff < 0.01) return; // no meaningful change
+
+      currentLatitude = position.latitude;
+      currentLongitude = position.longitude;
+      locationDescription = LocationService.getLocationDescription(
+        position.latitude,
+        position.longitude,
+      );
+      await _loadPrayerTimes(silent: true);
+    } catch (_) {
+      // GPS failed or timed out — prayer times already shown from cache
+    }
+  }
+
+  Future<void> _loadPrayerTimes({bool silent = false}) async {
+    try {
+      if (!silent) {
+        setState(() {
+          isLoading = true;
+          hasError = false;
+          errorMessage = null;
+        });
+      }
 
       final response = await PrayerTimesService.getPrayerTimes(
         latitude: currentLatitude,
@@ -121,13 +152,16 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       final currentPrayer = PrayerCalculatorService.getCurrentPrayerName(prayerTimes);
 
+      final next = PrayerTimesService.getNextPrayer(
+        response.timings,
+        latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
+        longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+      );
+
       setState(() {
         prayerTimings = response;
-        nextPrayer = PrayerTimesService.getNextPrayer(
-          response.timings,
-          latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
-          longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
-        );
+        nextPrayer = next;
+        countdown = next['countdown'] as String;
         currentPrayerName = currentPrayer;
         isLoading = false;
       });

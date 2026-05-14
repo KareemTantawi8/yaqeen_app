@@ -1,7 +1,5 @@
-import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdhanAudioPlayerService {
@@ -94,13 +92,6 @@ class AdhanAudioPlayerService {
   // Playback
   // ---------------------------------------------------------------------------
 
-  /// Activates a media audio session so playback can continue in background (with [JustAudioBackground]).
-  Future<void> _ensureBackgroundPlaybackSession() async {
-    final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration.music());
-    await session.setActive(true);
-  }
-
   Future<void> playAdhan({String? voiceId}) async {
     if (_isLoading) return;
 
@@ -117,20 +108,8 @@ class AdhanAudioPlayerService {
         _isPlaying = false;
       }
 
-      await _ensureBackgroundPlaybackSession();
-
       await _player.setAudioSource(
-        AudioSource.asset(
-          assetPath,
-          tag: MediaItem(
-            id: 'adhan_$id',
-            title: 'الأذان',
-            album: name,
-            artist: name,
-            displayTitle: 'الأذان',
-            displaySubtitle: name,
-          ),
-        ),
+        AudioSource.asset(assetPath),
       );
 
       _isLoading = false;

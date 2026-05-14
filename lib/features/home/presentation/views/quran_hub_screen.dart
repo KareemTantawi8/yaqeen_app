@@ -1,5 +1,4 @@
 import 'package:just_audio/just_audio.dart' as ja;
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 
@@ -549,22 +548,13 @@ class _AudioTabState extends State<_AudioTab>
     final meta = widget.surahs.firstWhere((s) => s.number == surahNumber);
     setState(() => _playingSurah = surahNumber);
     try {
-      final reciterName = _reciters[_reciter] ?? '';
       final sources = List.generate(meta.ayahCount, (i) {
         final url = qwt.QuranService.instance.getAudioUrl(
           surahNumber,
           i + 1,
           reciterIdentifier: _reciter,
         );
-        return ja.AudioSource.uri(
-          Uri.parse(url),
-          tag: MediaItem(
-            id: '$surahNumber-${i + 1}',
-            title: 'آية ${i + 1} — ${meta.nameAr}',
-            album: meta.nameAr,
-            artist: reciterName,
-          ),
-        );
+        return ja.AudioSource.uri(Uri.parse(url));
       });
 
       await _player.setAudioSource(

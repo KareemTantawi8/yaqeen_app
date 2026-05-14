@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/utils/spacing.dart';
@@ -22,7 +22,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
   int currentAyah = 1;
   bool isPlaying = false;
 
-  late AudioPlayer audioPlayer;
+  final AudioPlayer audioPlayer = AudioPlayer();
 
   final List<String> reciters = [
     'Alafasy_128kbps',
@@ -41,7 +41,6 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
   @override
   void initState() {
     super.initState();
-    audioPlayer = AudioPlayer();
     _loadSurahs();
   }
 
@@ -68,7 +67,10 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
         ayahNumber,
         reciterIdentifier: selectedReciter,
       );
-      await audioPlayer.play(UrlSource(audioUrl));
+      await audioPlayer.setAudioSource(
+        AudioSource.uri(Uri.parse(audioUrl)),
+      );
+      await audioPlayer.play();
       setState(() {
         selectedSurahNumber = surahNumber;
         currentAyah = ayahNumber;
@@ -87,7 +89,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
   }
 
   Future<void> _resumeAudio() async {
-    await audioPlayer.resume();
+    await audioPlayer.play();
     setState(() {
       isPlaying = true;
     });

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:yaqeen_app/core/services/quran_com_api_service.dart';
 import 'package:yaqeen_app/core/services/quran_word_pronunciation_service.dart';
@@ -116,7 +116,10 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
         _highlightedWords[wordKey] = true;
       });
 
-      await _wordAudioPlayer.play(UrlSource(url));
+      await _wordAudioPlayer.setAudioSource(
+        AudioSource.uri(Uri.parse(url)),
+      );
+      await _wordAudioPlayer.play();
       
       // Reset highlight after a delay
       Future.delayed(const Duration(milliseconds: 1000), () {

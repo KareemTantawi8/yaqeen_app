@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:audioplayers/audioplayers.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 
@@ -23,13 +22,11 @@ class _MesphaScreenState extends State<MesphaScreen>
   int _todayCount = 0;
   int _streak = 0;
   bool _soundEnabled = true;
-  
+
   late AnimationController _beadController;
   late AnimationController _particleController;
   late AnimationController _bounceController;
   late Animation<double> _bounceAnimation;
-  
-  final AudioPlayer _audioPlayer = AudioPlayer();
 
   final List<Map<String, dynamic>> _dhikrOptions = [
     {
@@ -106,7 +103,6 @@ class _MesphaScreenState extends State<MesphaScreen>
     _beadController.dispose();
     _particleController.dispose();
     _bounceController.dispose();
-    _audioPlayer.dispose();
     super.dispose();
   }
   

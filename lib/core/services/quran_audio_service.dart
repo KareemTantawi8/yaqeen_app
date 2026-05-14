@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/home/data/models/reciter_model.dart';
 
@@ -74,15 +73,7 @@ class QuranAudioService {
 
     try {
       await _audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(audioUrl),
-          tag: MediaItem(
-            id: audioUrl,
-            title: 'آية $ayahNumber',
-            album: 'سورة $surahNumber',
-            artist: reciter.name,
-          ),
-        ),
+        AudioSource.uri(Uri.parse(audioUrl)),
       );
       await _audioPlayer.play();
     } catch (e) {

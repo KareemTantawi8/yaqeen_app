@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../data/models/surah_full_model.dart';
 import '../../data/repo/surah_full_service.dart';
 import '../../../../../core/styles/colors/app_color.dart';
@@ -27,6 +27,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
   
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
+  bool _sourceLoaded = false;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
   int? _currentPlayingAyah;
@@ -162,36 +163,32 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
   }
 
   void _setupAudioPlayer() {
-    _audioPlayer.onPlayerStateChanged.listen((state) {
+    _audioPlayer.playerStateStream.listen((state) {
       if (mounted) {
         setState(() {
-          _isPlaying = state == PlayerState.playing;
+          _isPlaying = state.playing;
+          if (state.processingState == ProcessingState.completed) {
+            _isPlaying = false;
+            _currentPosition = Duration.zero;
+            _currentPlayingAyah = null;
+            _sourceLoaded = false;
+          }
         });
       }
     });
 
-    _audioPlayer.onDurationChanged.listen((duration) {
+    _audioPlayer.durationStream.listen((duration) {
       if (mounted) {
         setState(() {
-          _totalDuration = duration;
+          _totalDuration = duration ?? Duration.zero;
         });
       }
     });
 
-    _audioPlayer.onPositionChanged.listen((position) {
+    _audioPlayer.positionStream.listen((position) {
       if (mounted) {
         setState(() {
           _currentPosition = position;
-        });
-      }
-    });
-
-    _audioPlayer.onPlayerComplete.listen((_) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-          _currentPosition = Duration.zero;
-          _currentPlayingAyah = null;
         });
       }
     });
@@ -237,16 +234,14 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
         });
       } else {
         debugPrint('Playing Surah audio from URL: ${_surahData!.audioUrl}');
-        
-        // Configure audio player for iOS
-        await _audioPlayer.setReleaseMode(ReleaseMode.stop);
-        await _audioPlayer.setVolume(1.0);
-        
-        if (_currentPosition == Duration.zero) {
-          await _audioPlayer.play(UrlSource(_surahData!.audioUrl!));
-        } else {
-          await _audioPlayer.resume();
+
+        if (!_sourceLoaded) {
+          await _audioPlayer.setAudioSource(
+            AudioSource.uri(Uri.parse(_surahData!.audioUrl!)),
+          );
+          _sourceLoaded = true;
         }
+        await _audioPlayer.play();
         setState(() {
           _isLoadingAudio = false;
         });
@@ -278,13 +273,14 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
       });
 
       debugPrint('Playing Ayah audio from URL: ${ayah!.audio}');
-      
-      // Configure audio player for iOS
+
       await _audioPlayer.stop();
-      await _audioPlayer.setReleaseMode(ReleaseMode.stop);
-      await _audioPlayer.setVolume(1.0);
-      
-      await _audioPlayer.play(UrlSource(ayah.audio!));
+      _sourceLoaded = false;
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(Uri.parse(ayah.audio!)),
+      );
+      _sourceLoaded = true;
+      await _audioPlayer.play();
       
       setState(() {
         _currentPlayingAyah = ayahIndex;
@@ -448,6 +444,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
                       _selectedSurahId = value;
                       _surahData = null;
                       _audioPlayer.stop();
+                      _sourceLoaded = false;
                     });
                   }
                 },
@@ -500,6 +497,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
                       _selectedReciter = value;
                       _surahData = null;
                       _audioPlayer.stop();
+                      _sourceLoaded = false;
                     });
                   }
                 },

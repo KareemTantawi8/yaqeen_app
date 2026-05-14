@@ -123,8 +123,10 @@ class _QuranReaderScreenState extends State<QuranReaderScreen> {
         // Construct full surah audio URL
         final audioUrl = 'https://cdn.islamic.network/quran/audio-surah/128/${widget.reciter.identifier}/${widget.surah.number}.mp3';
         debugPrint('Playing full surah audio: $audioUrl');
-        
-        await _fullSurahPlayer.setUrl(audioUrl);
+
+        await _fullSurahPlayer.setAudioSource(
+          AudioSource.uri(Uri.parse(audioUrl)),
+        );
         await _fullSurahPlayer.play();
         setState(() => _isPlayingFullSurah = true);
       }

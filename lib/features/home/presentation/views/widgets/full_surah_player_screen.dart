@@ -91,7 +91,9 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
         _showPlayer = true;
       });
 
-      await _audioPlayer.setUrl(audioUrl);
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(Uri.parse(audioUrl)),
+      );
       await _audioPlayer.play();
 
       debugPrint('✅ Playing ${surah.englishName}');
