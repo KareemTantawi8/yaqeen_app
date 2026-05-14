@@ -450,14 +450,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         key: ValueKey('recent_quran_read'),
                       ),
                       verticalSpace(14),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Expanded(child: QiblaCard()),
-                          SizedBox(width: 12),
-                          Expanded(child: HadithDailyCard()),
-                        ],
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: const [
+                            Expanded(child: QiblaCard()),
+                            SizedBox(width: 12),
+                            Expanded(child: HadithDailyCard()),
+                          ],
+                        ),
                       ),
+                      verticalSpace(90),
                       ],
                     ),
                   ),

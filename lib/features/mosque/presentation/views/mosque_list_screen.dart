@@ -398,15 +398,21 @@ class _MosqueCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            _buildStatusChip(),
-                            const Spacer(),
+                            _buildIconBadge(),
+                            const SizedBox(width: 12),
                             Expanded(
-                              flex: 6,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
+                                  if (mosque.isOpen != null) ...[
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: _buildStatusChip(),
+                                    ),
+                                    const SizedBox(height: 6),
+                                  ],
                                   Text(
                                     mosque.name,
                                     textAlign: TextAlign.right,
@@ -422,7 +428,7 @@ class _MosqueCard extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   if (mosque.vicinity != null) ...[
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 5),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
@@ -453,8 +459,6 @@ class _MosqueCard extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            _buildIconBadge(),
                           ],
                         ),
                         const SizedBox(height: 14),

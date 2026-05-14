@@ -18,7 +18,7 @@ class QiblaCard extends StatelessWidget {
         );
       },
       child: Container(
-        height: 168,
+        constraints: const BoxConstraints(minHeight: 170),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -52,7 +52,6 @@ class QiblaCard extends StatelessWidget {
                   ),
                 ),
               ),
-
               Positioned(
                 right: -28,
                 bottom: -22,
@@ -81,7 +80,6 @@ class QiblaCard extends StatelessWidget {
                   ),
                 ),
               ),
-
               Positioned(
                 top: -28,
                 left: -22,
@@ -100,6 +98,7 @@ class QiblaCard extends StatelessWidget {
                 ),
               ),
 
+              // Non-positioned so IntrinsicHeight can measure it
               Padding(
                 padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                 child: Column(
@@ -169,6 +168,8 @@ class QiblaCard extends StatelessWidget {
                       ],
                     ),
 
+                    const SizedBox(height: 10),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -177,26 +178,28 @@ class QiblaCard extends StatelessWidget {
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 16,
                             fontFamily: 'Tajawal',
                             fontWeight: FontWeight.w800,
                             height: 1.1,
                             letterSpacing: -0.2,
                           ),
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 6),
                         Text(
                           'اعرف اتجاه القبلة',
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.78),
-                            fontSize: 11.5,
+                            fontSize: 11,
                             fontFamily: 'Tajawal',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
+
+                    const SizedBox(height: 10),
 
                     Container(
                       width: double.infinity,
@@ -210,16 +213,16 @@ class QiblaCard extends StatelessWidget {
                           width: 1,
                         ),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.arrow_back_ios_new_rounded,
                             color: Colors.white,
                             size: 11,
                           ),
-                          const SizedBox(width: 6),
-                          const Text(
+                          SizedBox(width: 6),
+                          Text(
                             'فتح البوصلة',
                             style: TextStyle(
                               color: Colors.white,

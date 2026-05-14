@@ -71,7 +71,6 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
     return GestureDetector(
       onTap: _navigateToSurah,
       child: Container(
-        height: 132,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
           gradient: const LinearGradient(
@@ -142,13 +141,14 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
               ),
 
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                padding: EdgeInsetsGeometry.symmetric(horizontal: 12 , vertical: 12 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     SizedBox(
-                      width: 78,
-                      height: 78,
+                      width: 88,
+                      height: 88,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
@@ -230,101 +230,190 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    // const SizedBox(width: 30),30
 
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                hasProgress ? 'تابع القراءة' : 'القرآن الكريم',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.82),
-                                  fontSize: 12,
-                                  fontFamily: 'Tajawal',
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.3,
-                                ),
+                    // Expanded(
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.end,
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.end,
+                    //         children: [
+                    //           Text(
+                    //             hasProgress ? 'تابع القراءة' : 'القرآن الكريم',
+                    //             textAlign: TextAlign.right,
+                    //             style: TextStyle(
+                    //               color: Colors.white.withOpacity(0.82),
+                    //               fontSize: 12,
+                    //               fontFamily: 'Tajawal',
+                    //               fontWeight: FontWeight.w600,
+                    //               letterSpacing: 0.3,
+                    //             ),
+                    //           ),
+                    //           const SizedBox(width: 6),
+                    //           Container(
+                    //             width: 5,
+                    //             height: 5,
+                    //             decoration: BoxDecoration(
+                    //               color: const Color(0xFFE0A93B),
+                    //               shape: BoxShape.circle,
+                    //               boxShadow: [
+                    //                 BoxShadow(
+                    //                   color: const Color(0xFFE0A93B)
+                    //                       .withOpacity(0.7),
+                    //                   blurRadius: 6,
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       const SizedBox(height: 6),
+                    //       Text(
+                    //         hasProgress
+                    //             ? readingProgress.surahEnglishName
+                    //             : 'ابدأ رحلة القراءة',
+                    //         textAlign: TextAlign.right,
+                    //         maxLines: 1,
+                    //         overflow: TextOverflow.ellipsis,
+                    //         style: const TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 20,
+                    //           fontFamily: 'Tajawal',
+                    //           fontWeight: FontWeight.w800,
+                    //           height: 1.1,
+                    //           letterSpacing: -0.3,
+                    //         ),
+                    //       ),
+                    //       const SizedBox(height: 10),
+                    //       Container(
+                    //         padding: const EdgeInsets.symmetric(
+                    //             horizontal: 10, vertical: 5),
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.white.withOpacity(0.18),
+                    //           borderRadius: BorderRadius.circular(20),
+                    //           border: Border.all(
+                    //             color: Colors.white.withOpacity(0.25),
+                    //             width: 1,
+                    //           ),
+                    //         ),
+                    //         child: Row(
+                    //           mainAxisSize: MainAxisSize.min,
+                    //           children: [
+                    //             const Icon(
+                    //               Icons.play_arrow_rounded,
+                    //               color: Colors.white,
+                    //               size: 14,
+                    //             ),
+                    //             const SizedBox(width: 4),
+                    //             Text(
+                    //               hasProgress
+                    //                   ? 'آية ${readingProgress.ayahNumber} / ${readingProgress.totalAyahs}'
+                    //                   : 'اضغط للبدء',
+                    //               style: const TextStyle(
+                    //                 color: Colors.white,
+                    //                 fontFamily: 'Tajawal',
+                    //                 fontSize: 11.5,
+                    //                 fontWeight: FontWeight.w700,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              hasProgress ? 'تابع القراءة' : 'القرآن الكريم',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.82),
+                                fontSize: 12,
+                                fontFamily: 'Tajawal',
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.3,
                               ),
-                              const SizedBox(width: 6),
-                              Container(
-                                width: 5,
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE0A93B),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFE0A93B)
-                                          .withOpacity(0.7),
-                                      blurRadius: 6,
-                                    ),
-                                  ],
+                            ),
+                            const SizedBox(width: 6),
+                            Container(
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE0A93B),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFE0A93B)
+                                        .withOpacity(0.7),
+                                    blurRadius: 6,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          hasProgress
+                              ? readingProgress.surahEnglishName
+                              : 'ابدأ رحلة القراءة',
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w800,
+                            height: 1.1,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.18),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.25),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.play_arrow_rounded,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                hasProgress
+                                    ? 'آية ${readingProgress.ayahNumber} / ${readingProgress.totalAyahs}'
+                                    : 'اضغط للبدء',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Tajawal',
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            hasProgress
-                                ? readingProgress.surahEnglishName
-                                : 'ابدأ رحلة القراءة',
-                            textAlign: TextAlign.right,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Tajawal',
-                              fontWeight: FontWeight.w800,
-                              height: 1.1,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.18),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.25),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: Colors.white,
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  hasProgress
-                                      ? 'آية ${readingProgress.ayahNumber} / ${readingProgress.totalAyahs}'
-                                      : 'اضغط للبدء',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Tajawal',
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-
                     Container(
                       width: 44,
                       height: 44,

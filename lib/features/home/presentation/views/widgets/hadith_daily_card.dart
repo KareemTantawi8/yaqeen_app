@@ -44,7 +44,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
         MaterialPageRoute(builder: (_) => const AhadisScreen()),
       ),
       child: Container(
-        height: 168,
+        constraints: const BoxConstraints(minHeight: 170),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -79,7 +79,6 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                   ),
                 ),
               ),
-
               Positioned(
                 top: -28,
                 left: -28,
@@ -115,6 +114,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                 ),
               ),
 
+              // Non-positioned so IntrinsicHeight can measure it
               Padding(
                 padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                 child: Column(
@@ -172,8 +172,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    AppColors.primaryColor.withOpacity(0.35),
+                                color: AppColors.primaryColor.withOpacity(0.35),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                                 spreadRadius: -1,
@@ -189,6 +188,8 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                       ],
                     ),
 
+                    const SizedBox(height: 10),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -197,14 +198,14 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             color: _ink,
-                            fontSize: 18,
+                            fontSize: 16,
                             fontFamily: 'Tajawal',
                             fontWeight: FontWeight.w800,
                             height: 1.1,
                             letterSpacing: -0.2,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         if (_isLoading)
                           SizedBox(
                             height: 14,
@@ -240,10 +241,10 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: _ink.withOpacity(0.72),
-                              fontSize: 11.5,
+                              fontSize: 11,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w500,
-                              height: 1.45,
+                              height: 1.4,
                             ),
                           )
                         else
@@ -253,12 +254,14 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                             style: TextStyle(
                               color: _ink.withOpacity(0.6),
                               fontFamily: 'Tajawal',
-                              fontSize: 11.5,
+                              fontSize: 11,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                       ],
                     ),
+
+                    const SizedBox(height: 10),
 
                     Container(
                       width: double.infinity,
