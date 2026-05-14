@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/services/quran_reading_service.dart';
 import '../../../../../core/services/reading_progress_notifier.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/images/app_image.dart';
@@ -38,7 +37,7 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
 
   void _navigateToSurah() async {
     final readingProgress = _notifier.progress;
-    
+
     if (readingProgress != null) {
       final surah = Surah(
         number: readingProgress.surahNumber,
@@ -58,352 +57,301 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
           ),
         ),
       );
-      
-      // Reload progress when returning
+
       _notifier.loadProgress();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     final readingProgress = _notifier.progress;
+    final hasProgress = readingProgress != null;
+    final percent = hasProgress ? readingProgress.progressPercentage / 100 : 0.0;
 
-    return Container(
-      height: screenHeight * 0.24,
-      margin: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.01,
-        vertical: screenHeight * 0.01,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primaryColor,
-            AppColors.primaryColor.withOpacity(0.85),
-            const Color(0xFF1a5f54),
+    return GestureDetector(
+      onTap: _navigateToSurah,
+      child: Container(
+        height: 132,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1A5F54),
+              AppColors.primaryColor,
+              Color(0xFF2A8A78),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryColor.withOpacity(0.32),
+              blurRadius: 22,
+              offset: const Offset(0, 10),
+              spreadRadius: -4,
+            ),
           ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryColor.withOpacity(0.4),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Stack(
-          children: [
-            // Animated background pattern
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.08,
-                child: Image.asset(
-                  AppImages.triangleImage,
-                  fit: BoxFit.cover,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            
-            // Glassmorphic overlay
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.white.withOpacity(0.1),
-                      Colors.white.withOpacity(0.05),
-                    ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 0.07,
+                  child: Image.asset(
+                    AppImages.triangleImage,
+                    fit: BoxFit.cover,
+                    color: Colors.white,
                   ),
                 ),
               ),
-            ),
+              Positioned(
+                top: -40,
+                right: -30,
+                child: Container(
+                  width: 130,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.14),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -50,
+                left: -30,
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.08),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
-            // Content
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.05),
-              child: Row(
-                children: [
-                  // Left side - Text content
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Header with icon
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.menu_book_rounded,
-                                color: Colors.white,
-                                size: screenWidth * 0.05,
-                              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 78,
+                      height: 78,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.12),
                             ),
-                            SizedBox(width: screenWidth * 0.03),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    readingProgress != null ? 'القراءة مؤخراً' : 'ابدأ القراءة',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                      fontSize: screenWidth * 0.032,
-                                      fontFamily: 'Tajawal',
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  if (readingProgress != null)
-                                    Text(
-                                      '${readingProgress.progressPercentage.toStringAsFixed(0)}% مكتمل',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.7),
-                                        fontSize: screenWidth * 0.028,
-                                        fontFamily: 'Tajawal',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Surah name and ayah
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              readingProgress?.surahEnglishName ?? 'القرآن الكريم',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: screenWidth * 0.065,
-                                fontFamily: 'Tajawal',
-                                fontWeight: FontWeight.w800,
-                                height: 1.2,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 4,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.005),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.025,
-                                vertical: screenHeight * 0.006,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.25),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
-                                  width: 1,
+                          ),
+                          if (hasProgress)
+                            SizedBox(
+                              width: 78,
+                              height: 78,
+                              child: CircularProgressIndicator(
+                                value: percent,
+                                strokeWidth: 4.5,
+                                backgroundColor: Colors.white.withOpacity(0.18),
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
                                 ),
                               ),
-                              child: Text(
-                                readingProgress != null
-                                    ? 'آية ${readingProgress.ayahNumber} من ${readingProgress.totalAyahs}'
-                                    : 'اختر سورة للبدء',
+                            ),
+                          Container(
+                            width: 58,
+                            height: 58,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.white.withOpacity(0.95),
+                                  Colors.white.withOpacity(0.78),
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.menu_book_rounded,
+                              color: AppColors.primaryColor,
+                              size: 28,
+                            ),
+                          ),
+                          if (hasProgress)
+                            Positioned(
+                              bottom: -2,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE0A93B),
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '${readingProgress.progressPercentage.toStringAsFixed(0)}%',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Tajawal',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                hasProgress ? 'تابع القراءة' : 'القرآن الكريم',
+                                textAlign: TextAlign.right,
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: screenWidth * 0.032,
+                                  color: Colors.white.withOpacity(0.82),
+                                  fontSize: 12,
                                   fontFamily: 'Tajawal',
                                   fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.3,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-
-                        // Progress bar (if reading)
-                        if (readingProgress != null)
-                          Column(
-                            children: [
-                              Stack(
-                                children: [
-                                  Container(
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(10),
+                              const SizedBox(width: 6),
+                              Container(
+                                width: 5,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE0A93B),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFE0A93B)
+                                          .withOpacity(0.7),
+                                      blurRadius: 6,
                                     ),
-                                  ),
-                                  FractionallySizedBox(
-                                    widthFactor: readingProgress.progressPercentage / 100,
-                                    child: Container(
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Colors.white,
-                                            Colors.white.withOpacity(0.8),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.white.withOpacity(0.5),
-                                            blurRadius: 8,
-                                            spreadRadius: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-
-                        // Action button
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: _navigateToSurah,
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.05,
-                                vertical: screenHeight * 0.015,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    readingProgress != null ? 'استمرار القراءة' : 'ابدأ الآن',
-                                    style: TextStyle(
-                                      color: AppColors.primaryColor,
-                                      fontSize: screenWidth * 0.038,
-                                      fontFamily: 'Tajawal',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  SizedBox(width: screenWidth * 0.02),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: AppColors.primaryColor,
-                                    size: screenWidth * 0.05,
-                                  ),
-                                ],
-                              ),
+                          const SizedBox(height: 4),
+                          Text(
+                            hasProgress
+                                ? readingProgress.surahEnglishName
+                                : 'ابدأ رحلة القراءة',
+                            textAlign: TextAlign.right,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w800,
+                              height: 1.1,
+                              letterSpacing: -0.3,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Right side - Decorative illustration
-                  Expanded(
-                    flex: 2,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Glow effect
-                        Container(
-                          width: screenWidth * 0.35,
-                          height: screenWidth * 0.35,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                Colors.white.withOpacity(0.15),
-                                Colors.transparent,
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.25),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  hasProgress
+                                      ? 'آية ${readingProgress.ayahNumber} / ${readingProgress.totalAyahs}'
+                                      : 'اضغط للبدء',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Tajawal',
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
-                        // Quran image
-                        Transform.rotate(
-                          angle: 0.1,
-                          child: Image.asset(
-                            AppImages.mosafImage,
-                            height: screenHeight * 0.22,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
 
-            // Decorative circles
-            Positioned(
-              top: -20,
-              right: -20,
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      Colors.white.withOpacity(0.1),
-                      Colors.transparent,
-                    ],
-                  ),
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppColors.primaryColor,
+                        size: 18,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Positioned(
-              bottom: -30,
-              left: -30,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      Colors.white.withOpacity(0.08),
-                      Colors.transparent,
-                    ]),
-                  ),
-                ),
-    ),
-
-          ],
+            ],
+          ),
         ),
       ),
-             );
+    );
   }
 }

@@ -10,33 +10,19 @@ class LocationService {
   static const double defaultLatitude = 24.7406086;
   static const double defaultLongitude = 46.8060108;
 
-  /// Get current location with permission handling
+  /// Get current location.
+  /// Only proceeds if permission is ALREADY granted — never triggers the
+  /// system dialog. Call [requestPermission] first when you need to ask.
   static Future<Position?> getCurrentLocation() async {
     try {
-      // Check if location services are enabled
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        debugPrint('Location services are disabled.');
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.always &&
+          permission != LocationPermission.whileInUse) {
         return null;
       }
 
-      // Check location permission
-      LocationPermission permission = await Geolocator.checkPermission();
-      
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          debugPrint('Location permissions are denied');
-          return null;
-        }
-      }
-      
-      if (permission == LocationPermission.deniedForever) {
-        debugPrint('Location permissions are permanently denied');
-        return null;
-      }
-
-      // Get current position
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
@@ -44,13 +30,24 @@ class LocationService {
         ),
       );
 
-      // Save location to preferences
       await _saveLocation(position.latitude, position.longitude);
-      
       return position;
     } catch (e) {
       debugPrint('Error getting location: $e');
       return null;
+    }
+  }
+
+  /// Request location permission from the user (shows the system dialog).
+  /// Returns true if granted.
+  static Future<bool> requestPermission() async {
+    try {
+      final permission = await Geolocator.requestPermission();
+      return permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse;
+    } catch (e) {
+      debugPrint('Error requesting location permission: $e');
+      return false;
     }
   }
 

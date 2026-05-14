@@ -1,113 +1,144 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
 
+/// Uses OpenStreetMap's Overpass API — free, no API key, no billing required.
 class MosqueService {
-  static const String _apiKey = 'AIzaSyDVjB-dVk0Fy325gPWUaJGAbatgTSLD-PU';
-  static const String _baseUrl = 'https://maps.googleapis.com/maps/api/place';
+  // Multiple mirrors so if one is down or rate-limits, we try the next
+  static const List<String> _mirrors = [
+    'https://overpass.openstreetmap.fr/api/interpreter',
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+  ];
 
-  /// Get nearby mosques using Google Places Nearby Search API
+  static final Map<String, String> _headers = {
+    'User-Agent': 'YaqeenApp/1.0 (Islamic prayer and mosque finder)',
+    'Accept': 'application/json',
+  };
+
   static Future<List<MosqueModel>> getNearbyMosques({
     required double latitude,
     required double longitude,
     double radiusMeters = 5000,
   }) async {
-    try {
-      final url =
-          '$_baseUrl/nearbysearch/json?location=$latitude,$longitude&radius=${radiusMeters.toInt()}&type=mosque&key=$_apiKey';
+    final radius = radiusMeters.toInt();
+    final query =
+        '[out:json][timeout:15];'
+        '(nwr["amenity"="place_of_worship"]["religion"="muslim"]'
+        '(around:$radius,$latitude,$longitude);'
+        'nwr["amenity"="mosque"]'
+        '(around:$radius,$latitude,$longitude);'
+        ');out center;';
 
-      debugPrint('Fetching mosques from: $url');
+    debugPrint('MosqueService: querying ${radius}m around $latitude,$longitude');
 
-      final response = await http.get(Uri.parse(url));
+    String? lastError;
+    for (int i = 0; i < _mirrors.length; i++) {
+      final url = _mirrors[i];
+      // Short pause between mirror attempts to avoid rate-limit cascading
+      if (i > 0) await Future.delayed(const Duration(milliseconds: 800));
 
-      debugPrint(
-          'API Response status: ${response.statusCode}, Body length: ${response.body.length}');
+      try {
+        // POST with Map<String,String> body — Dart http package automatically
+        // URL-encodes the values and sets Content-Type: application/x-www-form-urlencoded
+        final response = await http
+            .post(
+              Uri.parse(url),
+              headers: _headers,
+              body: {'data': query},
+            )
+            .timeout(const Duration(seconds: 22));
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        final status = json['status'] as String?;
-        debugPrint('API Status: $status');
+        debugPrint(
+            'MosqueService: $url → HTTP ${response.statusCode}, '
+            '${response.body.length} bytes');
 
-        if (status != 'OK') {
-          final errorMessage = json['error_message'] as String? ?? 'Unknown error';
-          debugPrint('API Error Message: $errorMessage');
-          throw Exception('Google Places API Error: $status - $errorMessage');
+        if (response.statusCode == 429) {
+          debugPrint('MosqueService: rate-limited by $url, trying next');
+          lastError = 'rate limited (429)';
+          continue;
+        }
+        if (response.statusCode != 200) {
+          debugPrint('MosqueService: body preview → '
+              '${response.body.substring(0, math.min(200, response.body.length))}');
+          lastError = 'HTTP ${response.statusCode}';
+          continue;
         }
 
-        final results = json['results'] as List? ?? [];
-        debugPrint('Found ${results.length} results from API');
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final elements = (json['elements'] as List?) ?? [];
 
-        final mosques = results
-            .map((result) {
-              try {
-                return MosqueModel.fromJson(
-                    result as Map<String, dynamic>, latitude, longitude);
-              } catch (e) {
-                debugPrint('Error parsing mosque: $e');
-                return null;
-              }
-            })
-            .whereType<MosqueModel>()
-            .toList()
-          ..sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+        final seen = <String>{};
+        final mosques = <MosqueModel>[];
+        for (final el in elements) {
+          final m = _parse(el as Map<String, dynamic>, latitude, longitude);
+          if (m != null && seen.add('${m.latitude},${m.longitude}')) {
+            mosques.add(m);
+          }
+        }
 
-        debugPrint('Successfully created ${mosques.length} mosque models');
+        mosques.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+        debugPrint('MosqueService: found ${mosques.length} mosques');
         return mosques;
-      } else {
-        debugPrint('API Error Response: ${response.body}');
-        throw Exception('Failed to load nearby mosques: ${response.statusCode}');
+      } catch (e) {
+        debugPrint('MosqueService: $url error → $e');
+        lastError = e.toString();
       }
-    } catch (e) {
-      debugPrint('Error fetching nearby mosques: $e');
-      throw Exception('Error fetching nearby mosques: $e');
+    }
+
+    throw Exception(lastError ?? 'All Overpass mirrors failed');
+  }
+
+  static MosqueModel? _parse(
+      Map<String, dynamic> el, double userLat, double userLng) {
+    try {
+      final tags = el['tags'] as Map<String, dynamic>? ?? {};
+      final name = (tags['name:ar'] as String?) ??
+          (tags['name'] as String?) ??
+          (tags['name:en'] as String?);
+      if (name == null || name.isEmpty) return null;
+
+      double? lat, lng;
+      if (el['type'] == 'node') {
+        lat = (el['lat'] as num?)?.toDouble();
+        lng = (el['lon'] as num?)?.toDouble();
+      } else {
+        final c = el['center'] as Map<String, dynamic>?;
+        lat = (c?['lat'] as num?)?.toDouble();
+        lng = (c?['lon'] as num?)?.toDouble();
+      }
+      if (lat == null || lng == null) return null;
+
+      final parts = <String>[
+        if (tags['addr:street'] != null) tags['addr:street'] as String,
+        if (tags['addr:district'] != null) tags['addr:district'] as String,
+        if (tags['addr:city'] != null) tags['addr:city'] as String,
+      ];
+
+      return MosqueModel(
+        placeId: '${el['type']}_${el['id']}',
+        name: name,
+        latitude: lat,
+        longitude: lng,
+        vicinity: parts.isEmpty ? null : parts.join('، '),
+        distanceKm: _haversineKm(userLat, userLng, lat, lng),
+      );
+    } catch (_) {
+      return null;
     }
   }
 
-  /// Get detailed information about a specific mosque
-  static Future<MosqueModel?> getMosqueDetails(
-    String placeId,
-    double userLat,
-    double userLng,
-  ) async {
-    try {
-      const fields = 'name,formatted_phone_number,opening_hours,geometry,rating,types,vicinity';
-      final url =
-          '$_baseUrl/details/json?place_id=$placeId&fields=$fields&key=$_apiKey';
-
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        final result = json['result'] as Map<String, dynamic>? ?? {};
-
-        if (result.isEmpty) return null;
-
-        final phoneNumber = result['formatted_phone_number'] as String?;
-        final openingHours = result['opening_hours']?['weekday_text'] as List?;
-
-        // Parse the result into MosqueModel
-        final mosque = MosqueModel.fromJson(result, userLat, userLng);
-
-        // Return enriched mosque with phone number
-        return MosqueModel(
-          placeId: mosque.placeId,
-          name: mosque.name,
-          latitude: mosque.latitude,
-          longitude: mosque.longitude,
-          rating: mosque.rating,
-          isOpen: result['opening_hours']?['open_now'] as bool?,
-          vicinity: mosque.vicinity,
-          phoneNumber: phoneNumber,
-          distanceKm: mosque.distanceKm,
-          types: mosque.types,
-          openingHours: openingHours?.join('\n'),
-        );
-      } else {
-        throw Exception('Failed to get mosque details: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error fetching mosque details: $e');
-    }
+  static double _haversineKm(
+      double lat1, double lon1, double lat2, double lon2) {
+    const p = math.pi / 180;
+    final a = 0.5 -
+        math.cos((lat2 - lat1) * p) / 2 +
+        math.cos(lat1 * p) *
+            math.cos(lat2 * p) *
+            (1 - math.cos((lon2 - lon1) * p)) /
+            2;
+    return 12742 * math.asin(math.sqrt(a));
   }
 }

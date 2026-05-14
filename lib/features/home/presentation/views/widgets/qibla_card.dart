@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/styles/colors/app_color.dart';
-import '../../../../../core/utils/spacing.dart';
+import '../../../../../core/styles/images/app_image.dart';
 import '../../../../qibla/presentation/views/qibla_screen.dart';
 
 class QiblaCard extends StatelessWidget {
@@ -8,9 +8,6 @@ class QiblaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -21,190 +18,226 @@ class QiblaCard extends StatelessWidget {
         );
       },
       child: Container(
-        height: screenHeight * 0.2,
-        margin: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.04,
-          vertical: screenHeight * 0.01,
-        ),
+        height: 168,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF1A5F54),
+              Color(0xFF0F3A33),
               AppColors.primaryColor,
-              AppColors.primaryColor.withOpacity(0.85),
             ],
           ),
-          borderRadius: BorderRadius.circular(screenWidth * 0.06),
+          borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryColor.withOpacity(0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              color: AppColors.primaryColor.withOpacity(0.28),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+              spreadRadius: -3,
             ),
           ],
         ),
-        child: Stack(
-          children: [
-            // Decorative circles
-            Positioned(
-              top: -screenHeight * 0.03,
-              right: -screenWidth * 0.08,
-              child: Container(
-                width: screenWidth * 0.3,
-                height: screenWidth * 0.3,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.1),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 0.08,
+                  child: Image.asset(
+                    AppImages.triangleImage,
+                    fit: BoxFit.cover,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: -screenHeight * 0.02,
-              left: -screenWidth * 0.06,
-              child: Container(
-                width: screenWidth * 0.2,
-                height: screenWidth * 0.2,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.08),
-                ),
-              ),
-            ),
 
-            // Content
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.05),
-              child: Row(
-                children: [
-                  // Icon section
-                  Container(
-                    width: screenWidth * 0.2,
-                    height: screenWidth * 0.2,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 2,
+              Positioned(
+                right: -28,
+                bottom: -22,
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.18),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 78,
+                      height: 78,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.14),
+                          width: 1,
+                        ),
                       ),
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(
-                          Icons.explore,
-                          color: Colors.white,
-                          size: screenWidth * 0.1,
-                        ),
-                        Positioned(
-                          top: screenWidth * 0.02,
-                          child: Icon(
-                            Icons.navigation,
-                            color: Colors.white.withOpacity(0.9),
-                            size: screenWidth * 0.06,
-                          ),
-                        ),
+                  ),
+                ),
+              ),
+
+              Positioned(
+                top: -28,
+                left: -22,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.16),
+                        Colors.transparent,
                       ],
                     ),
                   ),
-                  horizontalSpace(screenWidth * 0.04),
+                ),
+              ),
 
-                  // Text section
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(screenWidth * 0.015),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                              ),
-                              child: Icon(
-                                Icons.mosque,
-                                color: Colors.white,
-                                size: screenWidth * 0.05,
-                              ),
-                            ),
-                            horizontalSpace(screenWidth * 0.02),
-                            Text(
-                              'اتجاه القبلة',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: screenWidth * 0.06,
-                                fontFamily: 'Tajawal',
-                                fontWeight: FontWeight.w800,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        verticalSpace(screenHeight * 0.01),
-                        Text(
-                          'اعثر على اتجاه الكعبة المشرفة',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: screenWidth * 0.035,
-                            fontFamily: 'Tajawal',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        verticalSpace(screenHeight * 0.015),
                         Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.04,
-                            vertical: screenHeight * 0.01,
-                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
-                              width: 1,
-                            ),
+                            color: const Color(0xFFE0A93B),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFE0A93B).withOpacity(0.45),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              Icon(Icons.location_on_rounded,
+                                  color: Colors.white, size: 11),
+                              SizedBox(width: 3),
                               Text(
-                                'افتح البوصلة',
+                                'الكعبة',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: screenWidth * 0.035,
                                   fontFamily: 'Tajawal',
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.2,
                                 ),
-                              ),
-                              horizontalSpace(screenWidth * 0.02),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white,
-                                size: screenWidth * 0.04,
                               ),
                             ],
                           ),
                         ),
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white.withOpacity(0.28),
+                                Colors.white.withOpacity(0.12),
+                              ],
+                            ),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.35),
+                              width: 1.4,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.explore_rounded,
+                            color: Colors.white,
+                            size: 26,
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'اتجاه القبلة',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w800,
+                            height: 1.1,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'اعرف اتجاه القبلة',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.78),
+                            fontSize: 11.5,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.18),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.22),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 11,
+                          ),
+                          const SizedBox(width: 6),
+                          const Text(
+                            'فتح البوصلة',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

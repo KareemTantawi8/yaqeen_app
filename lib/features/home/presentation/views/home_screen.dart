@@ -68,65 +68,61 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Initialize location and load prayer times.
-  /// Loads immediately with cached/default location, then refreshes from GPS.
+  /// Step 1: show times instantly from saved/default (no GPS wait).
+  /// Step 2: if permission already granted → silent GPS refresh.
+  ///          if not granted → ask once AFTER times are visible, then refresh.
   Future<void> _initializeLocation() async {
     try {
-      setState(() {
-        isLoading = true;
-        hasError = false;
-        errorMessage = null;
-      });
+      setState(() { isLoading = true; hasError = false; errorMessage = null; });
 
-      // Step 1: Use saved or default location immediately (instant — no GPS wait)
       final saved = await LocationService.getSavedLocation();
-      final immediate = saved ??
-          {
-            'latitude': LocationService.defaultLatitude,
-            'longitude': LocationService.defaultLongitude,
-          };
-
+      final immediate = saved ?? {
+        'latitude': LocationService.defaultLatitude,
+        'longitude': LocationService.defaultLongitude,
+      };
       currentLatitude = immediate['latitude'];
       currentLongitude = immediate['longitude'];
       locationDescription = LocationService.getLocationDescription(
-        currentLatitude!,
-        currentLongitude!,
+        currentLatitude!, currentLongitude!,
       );
 
-      // Show prayer times right away
+      // Show prayer times immediately with the cached/default location
       await _loadPrayerTimes();
 
-      // Step 2: Try GPS in background; silently refresh if location changed
-      _refreshFromGps();
+      // Now handle GPS — check permission WITHOUT triggering a dialog
+      final hasPermission = await LocationService.isLocationPermissionGranted();
+      if (hasPermission) {
+        // Permission already granted → silent background refresh
+        _refreshFromGps();
+      } else {
+        // Ask for permission once, AFTER prayer times are already visible
+        final granted = await LocationService.requestPermission();
+        if (granted && mounted) _refreshFromGps();
+      }
     } catch (e) {
       debugPrint('Failed to initialize location: $e');
-      setState(() {
-        isLoading = false;
-        hasError = true;
-        errorMessage = 'فشل تحميل البيانات';
-      });
+      setState(() { isLoading = false; hasError = true; errorMessage = 'فشل تحميل البيانات'; });
     }
   }
 
   Future<void> _refreshFromGps() async {
     try {
+      // getCurrentLocation() only proceeds if permission is already granted
       final position = await LocationService.getCurrentLocation()
           .timeout(const Duration(seconds: 10));
       if (position == null || !mounted) return;
 
       final latDiff = (position.latitude - (currentLatitude ?? 0)).abs();
       final lngDiff = (position.longitude - (currentLongitude ?? 0)).abs();
-      if (latDiff < 0.01 && lngDiff < 0.01) return; // no meaningful change
+      if (latDiff < 0.01 && lngDiff < 0.01) return;
 
       currentLatitude = position.latitude;
       currentLongitude = position.longitude;
       locationDescription = LocationService.getLocationDescription(
-        position.latitude,
-        position.longitude,
+        position.latitude, position.longitude,
       );
       await _loadPrayerTimes(silent: true);
-    } catch (_) {
-      // GPS failed or timed out — prayer times already shown from cache
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadPrayerTimes({bool silent = false}) async {
@@ -449,14 +445,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      verticalSpace(30),
+                      verticalSpace(20),
                       const RecentQuranRead(
                         key: ValueKey('recent_quran_read'),
                       ),
-                      verticalSpace(16),
-                      const QiblaCard(),
-                      verticalSpace(16),
-                      const HadithDailyCard(),
+                      verticalSpace(14),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Expanded(child: QiblaCard()),
+                          SizedBox(width: 12),
+                          Expanded(child: HadithDailyCard()),
+                        ],
+                      ),
                       ],
                     ),
                   ),

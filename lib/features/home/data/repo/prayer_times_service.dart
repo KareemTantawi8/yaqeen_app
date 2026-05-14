@@ -95,7 +95,10 @@ class PrayerTimesService {
     );
   }
 
-  /// Next prayer for [latitude] / [longitude] (must match the request used to build [timings]).
+  /// Next prayer for [latitude] / [longitude].
+  /// Manually compares DateTime.now() against each prayer time in order
+  /// so there is no dependency on adhan_dart's nextPrayer() enum, which
+  /// returns Prayer.none after Isha and causes a crash → wrong Fajr fallback.
   static Map<String, dynamic> getNextPrayer(
     Timings timings, {
     required double latitude,
@@ -104,22 +107,60 @@ class PrayerTimesService {
     DateTime? date,
   }) {
     try {
-      final prayerTimes = PrayerCalculatorService.calculate(
+      final now = DateTime.now();
+
+      final todayPT = PrayerCalculatorService.calculate(
         latitude: latitude,
         longitude: longitude,
-        date: date ?? DateTime.now(),
+        date: now,
         calculationMethodId: calculationMethodId,
       );
-      return PrayerCalculatorService.getNextPrayer(prayerTimes);
+
+      // Walk today's prayers in order; return the first that is still future.
+      // Sunrise is not a prayer obligation so it is excluded from this list.
+      final candidates = <(String, DateTime)>[
+        ('الفجر', todayPT.fajr),
+        ('الظهر', todayPT.dhuhr),
+        ('العصر', todayPT.asr),
+        ('المغرب', todayPT.maghrib),
+        ('العشاء', todayPT.isha),
+      ];
+
+      for (final (name, time) in candidates) {
+        if (time.isAfter(now)) {
+          return _result(name, time, now);
+        }
+      }
+
+      // All of today's prayers have passed → show tomorrow's Fajr.
+      final tomorrowPT = PrayerCalculatorService.calculate(
+        latitude: latitude,
+        longitude: longitude,
+        date: now.add(const Duration(days: 1)),
+        calculationMethodId: calculationMethodId,
+      );
+      return _result('الفجر', tomorrowPT.fajr, now);
     } catch (e) {
       debugPrint('Error getting next prayer: $e');
-      // Fallback
-      return {
-        'name': 'الفجر',
-        'time': timings.fajr,
-        'countdown': '00:00:00',
-      };
+      return {'name': 'الفجر', 'time': timings.fajr, 'countdown': '00:00:00'};
     }
+  }
+
+  static Map<String, dynamic> _result(String name, DateTime time, DateTime now) {
+    final diff = time.difference(now);
+    return {
+      'name': name,
+      'time': PrayerCalculatorService.formatTime(time),
+      'countdown': _fmt(diff),
+      'duration': diff,
+    };
+  }
+
+  static String _fmt(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    final s = d.inSeconds.remainder(60);
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   /// Get prayer icon based on prayer name

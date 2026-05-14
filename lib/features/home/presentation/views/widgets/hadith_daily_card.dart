@@ -4,7 +4,6 @@ import 'package:yaqeen_app/features/home/data/repo/hadith_service.dart';
 import '../ahadis_screen.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/images/app_image.dart';
-import '../../../../../core/utils/spacing.dart';
 
 class HadithDailyCard extends StatefulWidget {
   const HadithDailyCard({super.key});
@@ -16,6 +15,11 @@ class HadithDailyCard extends StatefulWidget {
 class _HadithDailyCardState extends State<HadithDailyCard> {
   HadithModel? _hadith;
   bool _isLoading = true;
+
+  static const Color _cream = Color(0xFFFBF6EC);
+  static const Color _creamDeep = Color(0xFFF3EAD3);
+  static const Color _gold = Color(0xFFC79435);
+  static const Color _ink = Color(0xFF1F3D38);
 
   @override
   void initState() {
@@ -34,199 +38,261 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
 
   @override
   Widget build(BuildContext context) {
-    final sw = MediaQuery.of(context).size.width;
-    final sh = MediaQuery.of(context).size.height;
-
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const AhadisScreen()),
       ),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: sw * 0.01, vertical: sh * 0.005),
+        height: 168,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color(0xFF1A3A35),
-              Color(0xFF206B5E),
-              Color(0xFF2B8A7A),
-            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [_cream, _creamDeep],
           ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: _gold.withOpacity(0.25),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryColor.withOpacity(0.35),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              color: _gold.withOpacity(0.15),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+              spreadRadius: -3,
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(22),
           child: Stack(
             children: [
-              // Background pattern
               Positioned.fill(
                 child: Opacity(
-                  opacity: 0.06,
+                  opacity: 0.05,
                   child: Image.asset(
                     AppImages.triangleImage,
                     fit: BoxFit.cover,
-                    color: Colors.white,
+                    color: AppColors.primaryColor,
                   ),
                 ),
               ),
-              // Decorative circles
+
               Positioned(
-                top: -sw * 0.08,
-                left: -sw * 0.06,
-                child: _circle(sw * 0.3, 0.07),
+                top: -28,
+                left: -28,
+                child: Container(
+                  width: 90,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        _gold.withOpacity(0.18),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
               ),
               Positioned(
-                bottom: -sw * 0.06,
-                right: -sw * 0.04,
-                child: _circle(sw * 0.22, 0.05),
+                bottom: -22,
+                right: -22,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.primaryColor.withOpacity(0.08),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
               ),
 
               Padding(
-                padding: EdgeInsets.all(sw * 0.05),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Icon
-                    Container(
-                      width: sw * 0.13,
-                      height: sw * 0.13,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.18),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
-                      ),
-                      child: Icon(
-                        Icons.auto_stories_rounded,
-                        color: Colors.white,
-                        size: sw * 0.065,
-                      ),
-                    ),
-                    horizontalSpace(sw * 0.04),
-
-                    // Text content
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          // Header row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // "اقرأ المزيد" badge
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: sw * 0.03,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.white.withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.arrow_back_ios, color: Colors.white, size: sw * 0.03),
-                                    horizontalSpace(3),
-                                    Text(
-                                      'اقرأ المزيد',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: sw * 0.03,
-                                        fontFamily: 'Tajawal',
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primaryColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
                               ),
-                              // Title
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.today_rounded,
+                                  color: Colors.white, size: 11),
+                              SizedBox(width: 3),
                               Text(
-                                'حديث اليوم',
+                                'اليوم',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: sw * 0.048,
                                   fontFamily: 'Tajawal',
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
+                                  letterSpacing: 0.2,
                                 ),
                               ),
                             ],
                           ),
-                          verticalSpace(sh * 0.012),
-
-                          // Hadith content
-                          if (_isLoading)
-                            Center(
-                              child: SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white.withOpacity(0.7),
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            )
-                          else if (_hadith != null) ...[
-                            Text(
-                              _hadith!.arabicText,
-                              textAlign: TextAlign.right,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.95),
-                                fontSize: sw * 0.038,
-                                fontFamily: 'Amiri Quran',
-                                height: 1.9,
-                              ),
+                        ),
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.primaryColor,
+                                Color(0xFF1A5F54),
+                              ],
                             ),
-                            verticalSpace(sh * 0.008),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: sw * 0.025,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  _hadith!.bookName,
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.85),
-                                    fontSize: sw * 0.028,
-                                    fontFamily: 'Tajawal',
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    AppColors.primaryColor.withOpacity(0.35),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                                spreadRadius: -1,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.auto_stories_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'حديث اليوم',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            color: _ink,
+                            fontSize: 18,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w800,
+                            height: 1.1,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        if (_isLoading)
+                          SizedBox(
+                            height: 14,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(
+                                    color: _gold,
+                                    strokeWidth: 1.6,
                                   ),
                                 ),
-                              ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'جاري التحميل...',
+                                  style: TextStyle(
+                                    color: _ink.withOpacity(0.55),
+                                    fontFamily: 'Tajawal',
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ] else
-                            Text(
-                              'اضغط لقراءة الأحاديث الشريفة',
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: sw * 0.038,
-                                fontFamily: 'Tajawal',
-                              ),
+                          )
+                        else if (_hadith != null)
+                          Text(
+                            _hadith!.arabicText,
+                            textAlign: TextAlign.right,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(0.72),
+                              fontSize: 11.5,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w500,
+                              height: 1.45,
                             ),
+                          )
+                        else
+                          Text(
+                            'اضغط لقراءة الأحاديث الشريفة',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: _ink.withOpacity(0.6),
+                              fontFamily: 'Tajawal',
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 11,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'اقرأ المزيد',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -236,17 +302,6 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _circle(double size, double opacity) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(opacity),
       ),
     );
   }

@@ -1,15 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
-import 'package:yaqeen_app/core/utils/spacing.dart';
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
 import 'package:yaqeen_app/features/mosque/data/services/mosque_service.dart';
 
 class MosqueMapScreen extends StatefulWidget {
   static const String routeName = '/mosque_map';
-
   const MosqueMapScreen({super.key});
 
   @override
@@ -17,181 +16,117 @@ class MosqueMapScreen extends StatefulWidget {
 }
 
 class _MosqueMapScreenState extends State<MosqueMapScreen> {
-  late GoogleMapController _mapController;
+  // Completer guards against calling the controller before onMapCreated fires
+  final Completer<GoogleMapController> _controller = Completer();
+
   LatLng? _userLocation;
   Set<Marker> _markers = {};
   MosqueModel? _selectedMosque;
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool _hasError = false;
-  String? _errorMessage;
   double _searchRadiusKm = 5.0;
 
-  final List<double> _radiusOptions = [1.0, 3.0, 5.0, 10.0];
+  static const List<double> _radiusOptions = [1.0, 3.0, 5.0, 10.0];
 
   @override
   void initState() {
     super.initState();
-    _initializeMap();
+    _initLocation();
   }
 
-  Future<void> _initializeMap() async {
+  Future<void> _initLocation() async {
+    final saved = await LocationService.getSavedLocation();
+    final immediate = saved ?? {
+      'latitude': LocationService.defaultLatitude,
+      'longitude': LocationService.defaultLongitude,
+    };
+    _userLocation = LatLng(
+      immediate['latitude'] as double,
+      immediate['longitude'] as double,
+    );
+    await _loadMosques();
+
+    // GPS refresh
     try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
-
-      final location = await LocationService.getLocationWithFallback();
-      final userLat = location['latitude'] as double;
-      final userLng = location['longitude'] as double;
-
-      setState(() {
-        _userLocation = LatLng(userLat, userLng);
-      });
-
-      // Wait a moment for map controller to be ready
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      if (mounted) {
-        // Move map to user location
-        await _mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(userLat, userLng),
-              zoom: 14,
-            ),
-          ),
-        );
-
-        // Load nearby mosques
-        await _loadNearbyMosques();
-      }
-    } catch (e) {
-      debugPrint('Failed to initialize map: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-          _errorMessage = 'فشل تحميل الخريطة: $e';
-        });
-      }
-    }
+      final pos = await LocationService.getCurrentLocation()
+          .timeout(const Duration(seconds: 12));
+      if (pos == null || !mounted) return;
+      final newLoc = LatLng(pos.latitude, pos.longitude);
+      final latDiff = (newLoc.latitude - _userLocation!.latitude).abs();
+      final lngDiff = (newLoc.longitude - _userLocation!.longitude).abs();
+      if (latDiff < 0.005 && lngDiff < 0.005) return;
+      _userLocation = newLoc;
+      final mapCtrl = await _controller.future;
+      await mapCtrl.animateCamera(CameraUpdate.newLatLng(_userLocation!));
+      await _loadMosques();
+    } catch (_) {}
   }
 
-  Future<void> _loadNearbyMosques() async {
-    if (_userLocation == null) {
-      debugPrint('User location is null');
-      return;
+  Future<void> _loadMosques() async {
+    if (_userLocation == null) return;
+    if (mounted) {
+      setState(() { _isLoading = true; _hasError = false; _selectedMosque = null; });
     }
 
     try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-        _errorMessage = null;
-        _selectedMosque = null;
-      });
-
-      debugPrint(
-          'Loading mosques near: ${_userLocation!.latitude}, ${_userLocation!.longitude}');
-
       final mosques = await MosqueService.getNearbyMosques(
         latitude: _userLocation!.latitude,
         longitude: _userLocation!.longitude,
         radiusMeters: _searchRadiusKm * 1000,
       );
 
-      debugPrint('Found ${mosques.length} mosques');
-
-      // Create markers
-      final markers = <Marker>{};
-
-      for (final mosque in mosques) {
-        debugPrint(
-            'Adding marker for: ${mosque.name} at ${mosque.latitude}, ${mosque.longitude}');
-        markers.add(
-          Marker(
-            markerId: MarkerId(mosque.placeId),
-            position: LatLng(mosque.latitude, mosque.longitude),
-            infoWindow: InfoWindow(
-              title: mosque.name,
-              snippet: '${mosque.distanceKm.toStringAsFixed(1)} كم',
-            ),
-            onTap: () {
-              debugPrint('Mosque tapped: ${mosque.name}');
-              setState(() {
-                _selectedMosque = mosque;
-              });
-            },
-          ),
-        );
-      }
-
-      // Add user location marker
-      markers.add(
+      final markers = <Marker>{
         Marker(
-          markerId: const MarkerId('user_location'),
+          markerId: const MarkerId('user'),
           position: _userLocation!,
           infoWindow: const InfoWindow(title: 'موقعك الحالي'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueBlue,
-          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ),
-      );
+        for (final m in mosques)
+          Marker(
+            markerId: MarkerId(m.placeId),
+            position: LatLng(m.latitude, m.longitude),
+            infoWindow: InfoWindow(
+              title: m.name,
+              snippet: _distanceLabel(m.distanceKm),
+            ),
+            onTap: () => setState(() => _selectedMosque = m),
+          ),
+      };
 
-      if (mounted) {
-        setState(() {
-          _markers = markers;
-          _isLoading = false;
-        });
-        debugPrint('Markers updated: ${markers.length} total markers');
-      }
-    } catch (e) {
-      debugPrint('Failed to load nearby mosques: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-          _errorMessage = 'فشل تحميل المساجد: $e';
-        });
-      }
+      if (mounted) setState(() { _markers = markers; _isLoading = false; });
+
+      // Animate to user location after markers are set
+      final mapCtrl = await _controller.future;
+      await mapCtrl.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: _userLocation!, zoom: 14),
+      ));
+    } catch (_) {
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
-  Future<void> _launchMaps(double latitude, double longitude) async {
-    final url =
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
+  Future<void> _launchDirections(double lat, double lng) async {
+    final uri = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
   }
 
   @override
   void dispose() {
-    _mapController.dispose();
+    _controller.future.then((c) => c.dispose());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'المساجد القريبة',
-          style: TextStyle(fontFamily: 'Tajawal'),
-        ),
-        backgroundColor: AppColors.primaryColor,
-        elevation: 0,
-      ),
       body: Stack(
         children: [
-          // Google Map
           GoogleMap(
-            onMapCreated: _onMapCreated,
+            onMapCreated: (c) => _controller.complete(c),
             initialCameraPosition: CameraPosition(
               target: _userLocation ?? const LatLng(21.4225, 39.8262),
               zoom: 14,
@@ -202,29 +137,101 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
             zoomControlsEnabled: false,
           ),
 
+          // Top bar
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                child: Row(
+                  children: [
+                    // Refresh
+                    _MapButton(
+                      icon: Icons.refresh_rounded,
+                      onTap: _loadMosques,
+                    ),
+                    const Spacer(),
+                    // Radius chips
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: _radiusOptions.map((r) {
+                          final sel = (_searchRadiusKm - r).abs() < 0.1;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() => _searchRadiusKm = r);
+                              _loadMosques();
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.symmetric(horizontal: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: sel
+                                    ? AppColors.primaryColor
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${r.toInt()}كم',
+                                style: TextStyle(
+                                  fontFamily: 'Tajawal',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: sel
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           // Loading overlay
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black26,
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 28, vertical: 20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Column(
+                  child: const Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(
-                        color: AppColors.primaryColor,
-                      ),
-                      verticalSpace(16),
-                      const Text(
+                      CircularProgressIndicator(color: AppColors.primaryColor),
+                      SizedBox(height: 12),
+                      Text(
                         'جاري تحميل المساجد...',
                         style: TextStyle(
                           fontFamily: 'Tajawal',
-                          fontSize: 16,
+                          fontSize: 15,
+                          color: Color(0xFF2D4A47),
                         ),
                       ),
                     ],
@@ -235,376 +242,247 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
 
           // Error overlay
           if (_hasError && !_isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 48,
-                        color: Colors.red[300],
+            Center(
+              child: Container(
+                margin: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.wifi_off_rounded,
+                        size: 48, color: Colors.grey),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'تعذّر تحميل المساجد',
+                      style: TextStyle(fontFamily: 'Tajawal', fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: _loadMosques,
+                      style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor),
+                      child: const Text(
+                        'إعادة المحاولة',
+                        style: TextStyle(fontFamily: 'Tajawal'),
                       ),
-                      verticalSpace(12),
-                      Text(
-                        _errorMessage ?? 'حدث خطأ',
-                        style: const TextStyle(
-                          fontFamily: 'Tajawal',
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      verticalSpace(16),
-                      ElevatedButton(
-                        onPressed: _loadNearbyMosques,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                        ),
-                        child: const Text(
-                          'إعادة المحاولة',
-                          style: TextStyle(
-                            fontFamily: 'Tajawal',
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
-          // Radius control - top right
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'نطاق البحث',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                      fontFamily: 'Tajawal',
-                    ),
-                  ),
-                  verticalSpace(8),
-                  Text(
-                    '${_searchRadiusKm.toStringAsFixed(1)} كم',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Tajawal',
-                    ),
-                  ),
-                  verticalSpace(8),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: _radiusOptions.map((radius) {
-                        final isSelected = (_searchRadiusKm - radius).abs() < 0.1;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _searchRadiusKm = radius;
-                            });
-                            _loadNearbyMosques();
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.primaryColor
-                                  : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '${radius.toInt()}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? Colors.white
-                                    : Colors.grey[700],
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Re-search button - top left
-          Positioned(
-            top: 16,
-            left: 16,
-            child: FloatingActionButton(
-              mini: true,
-              backgroundColor: Colors.white,
-              onPressed: _loadNearbyMosques,
-              child: Icon(
-                Icons.refresh,
-                color: AppColors.primaryColor,
-              ),
-            ),
-          ),
-
-          // Mosque info panel - bottom
+          // Bottom mosque info panel
           if (_selectedMosque != null && !_isLoading)
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.35,
-                minChildSize: 0.25,
-                maxChildSize: 0.7,
-                builder: (context, scrollController) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 12,
-                          offset: const Offset(0, -4),
-                        ),
-                      ],
-                    ),
-                    child: ListView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.all(20),
-                      children: [
-                        // Drag handle
-                        Center(
-                          child: Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ),
-                        verticalSpace(16),
-
-                        // Mosque name
-                        Text(
-                          _selectedMosque!.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Tajawal',
-                          ),
-                        ),
-                        verticalSpace(12),
-
-                        // Rating
-                        if (_selectedMosque!.rating != null)
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 20,
-                              ),
-                              horizontalSpace(8),
-                              Text(
-                                _selectedMosque!.rating!.toStringAsFixed(1),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Tajawal',
-                                ),
-                              ),
-                            ],
-                          ),
-                        verticalSpace(12),
-
-                        // Distance
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              color: AppColors.primaryColor,
-                              size: 20,
-                            ),
-                            horizontalSpace(8),
-                            Text(
-                              '${_selectedMosque!.distanceKm.toStringAsFixed(2)} كم',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Tajawal',
-                              ),
-                            ),
-                          ],
-                        ),
-                        verticalSpace(12),
-
-                        // Open/Closed status
-                        if (_selectedMosque!.isOpen != null)
-                          Row(
-                            children: [
-                              Icon(
-                                _selectedMosque!.isOpen! ? Icons.check_circle : Icons.cancel,
-                                color: _selectedMosque!.isOpen!
-                                    ? Colors.green
-                                    : Colors.red,
-                                size: 20,
-                              ),
-                              horizontalSpace(8),
-                              Text(
-                                _selectedMosque!.isOpen! ? 'مفتوح الآن' : 'مغلق الآن',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'Tajawal',
-                                  color: _selectedMosque!.isOpen!
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
-                              ),
-                            ],
-                          ),
-                        verticalSpace(16),
-
-                        // Address
-                        if (_selectedMosque!.vicinity != null)
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.location_on_outlined,
-                                  color: AppColors.primaryColor,
-                                  size: 20,
-                                ),
-                                horizontalSpace(8),
-                                Expanded(
-                                  child: Text(
-                                    _selectedMosque!.vicinity!,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Tajawal',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        verticalSpace(12),
-
-                        // Phone number
-                        if (_selectedMosque!.phoneNumber != null)
-                          GestureDetector(
-                            onTap: () async {
-                              final phoneUrl = 'tel:${_selectedMosque!.phoneNumber}';
-                              if (await canLaunchUrl(Uri.parse(phoneUrl))) {
-                                await launchUrl(Uri.parse(phoneUrl));
-                              }
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone,
-                                    color: AppColors.primaryColor,
-                                    size: 20,
-                                  ),
-                                  horizontalSpace(8),
-                                  Expanded(
-                                    child: Text(
-                                      _selectedMosque!.phoneNumber!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: 'Tajawal',
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        verticalSpace(16),
-
-                        // Navigation button
-                        ElevatedButton.icon(
-                          onPressed: () => _launchMaps(
-                            _selectedMosque!.latitude,
-                            _selectedMosque!.longitude,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          icon: const Icon(Icons.directions),
-                          label: const Text(
-                            'الاتجاهات',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Tajawal',
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              child: _MosqueInfoPanel(
+                mosque: _selectedMosque!,
+                onClose: () => setState(() => _selectedMosque = null),
+                onNavigate: (m) => _launchDirections(m.latitude, m.longitude),
               ),
             ),
         ],
       ),
     );
+  }
+
+  String _distanceLabel(double km) {
+    if (km < 1) return '${(km * 1000).toStringAsFixed(0)} م';
+    return '${km.toStringAsFixed(1)} كم';
+  }
+}
+
+class _MapButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _MapButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 8),
+          ],
+        ),
+        child: Icon(icon, color: AppColors.primaryColor, size: 20),
+      ),
+    );
+  }
+}
+
+class _MosqueInfoPanel extends StatelessWidget {
+  final MosqueModel mosque;
+  final VoidCallback onClose;
+  final void Function(MosqueModel) onNavigate;
+
+  const _MosqueInfoPanel({
+    required this.mosque,
+    required this.onClose,
+    required this.onNavigate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle + close
+          Row(
+            children: [
+              IconButton(
+                onPressed: onClose,
+                icon: const Icon(Icons.close, size: 20, color: Colors.grey),
+                padding: EdgeInsets.zero,
+              ),
+              const Spacer(),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Spacer(),
+              const SizedBox(width: 40),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            mosque.name,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              fontFamily: 'Tajawal',
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1A2221),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (mosque.isOpen != null) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: mosque.isOpen!
+                        ? const Color(0xFFE8F5E9)
+                        : const Color(0xFFFFEBEE),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    mosque.isOpen! ? 'مفتوح' : 'مغلق',
+                    style: TextStyle(
+                      fontFamily: 'Tajawal',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: mosque.isOpen!
+                          ? const Color(0xFF388E3C)
+                          : const Color(0xFFD32F2F),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (mosque.rating != null) ...[
+                Text(
+                  mosque.rating!.toStringAsFixed(1),
+                  style: const TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2D4A47),
+                  ),
+                ),
+                const SizedBox(width: 3),
+                const Icon(Icons.star_rounded,
+                    color: Color(0xFFFFC107), size: 16),
+                const SizedBox(width: 10),
+              ],
+              Text(
+                _distanceLabel(mosque.distanceKm),
+                style: const TextStyle(
+                  fontFamily: 'Tajawal',
+                  fontSize: 13,
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(Icons.near_me_rounded,
+                  size: 14, color: AppColors.primaryColor),
+            ],
+          ),
+          if (mosque.vicinity != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              mosque.vicinity!,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontFamily: 'Tajawal',
+                fontSize: 12,
+                color: Color(0xFF607D8B),
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () => onNavigate(mosque),
+              icon: const Icon(Icons.directions_rounded),
+              label: const Text(
+                'الاتجاهات',
+                style: TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700),
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _distanceLabel(double km) {
+    if (km < 1) return '${(km * 1000).toStringAsFixed(0)} م';
+    return '${km.toStringAsFixed(1)} كم';
   }
 }
