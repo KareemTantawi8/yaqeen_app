@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/reciter_model.dart';
@@ -378,10 +379,10 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                   children: [
                     Text(
                       _currentSurah.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 32,
                         fontFamily: 'Amiri Quran',
-                        color: Color(0xFF1A2221),
+                        color: context.highText,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

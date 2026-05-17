@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/reciter_model.dart';
@@ -105,7 +106,7 @@ class RecitersListTab extends StatelessWidget {
                     fontSize: screenWidth * 0.05,
                     fontFamily: 'Tajawal',
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1A2221),
+                    color: context.highText,
                   ),
                 ),
               ],

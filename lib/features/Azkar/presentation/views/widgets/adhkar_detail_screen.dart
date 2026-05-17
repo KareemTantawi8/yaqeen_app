@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/model/adhkar_category_model.dart';
@@ -244,7 +245,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -258,7 +259,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                 children: [
                   // Back button
                   Material(
-                    color: Colors.white,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(12),
                     elevation: 2,
                     shadowColor: AppColors.primaryColor.withOpacity(0.1),
@@ -281,7 +282,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                     child: Text(
                       widget.category.category,
                       style: TextStyle(
-                        color: const Color(0xFF1A2221),
+                        color: context.highText,
                         fontSize: screenWidth * 0.05,
                         fontFamily: 'Tajawal',
                         fontWeight: FontWeight.w700,
@@ -293,7 +294,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                   const SizedBox(width: 16),
                   // Share button
                   Material(
-                    color: Colors.white,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(12),
                     elevation: 2,
                     shadowColor: AppColors.primaryColor.withOpacity(0.1),
@@ -313,7 +314,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                   const SizedBox(width: 8),
                   // Copy button
                   Material(
-                    color: Colors.white,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(12),
                     elevation: 2,
                     shadowColor: AppColors.primaryColor.withOpacity(0.1),
@@ -384,7 +385,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                     // Main content card
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: context.cardBg,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
@@ -402,7 +403,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                             widget.item.text,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: const Color(0xFF1A2221),
+                              color: context.highText,
                               fontSize: screenWidth * 0.048,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w500,
@@ -638,9 +639,9 @@ class _NavigationButton extends StatelessWidget {
     final isEnabled = onTap != null;
     
     return Material(
-      color: isEnabled 
-          ? Colors.white 
-          : Colors.grey[100],
+      color: isEnabled
+          ? context.cardBg
+          : context.lightAccent,
       borderRadius: BorderRadius.circular(16),
       elevation: isEnabled ? 2 : 0,
       shadowColor: AppColors.primaryColor.withOpacity(0.1),
@@ -652,9 +653,9 @@ class _NavigationButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isEnabled 
+              color: isEnabled
                   ? AppColors.primaryColor.withOpacity(0.3)
-                  : Colors.grey[300]!,
+                  : context.dividerColor,
               width: 1,
             ),
           ),
@@ -663,18 +664,18 @@ class _NavigationButton extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: isEnabled 
-                    ? AppColors.primaryColor 
-                    : Colors.grey[400],
+                color: isEnabled
+                    ? AppColors.primaryColor
+                    : context.greyText400,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
-                  color: isEnabled 
-                      ? AppColors.primaryColor 
-                      : Colors.grey[400],
+                  color: isEnabled
+                      ? AppColors.primaryColor
+                      : context.greyText400,
                   fontSize: 15,
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.w600,

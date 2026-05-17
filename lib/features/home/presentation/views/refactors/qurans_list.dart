@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/images/app_image.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -133,10 +134,10 @@ class QuransList extends StatelessWidget {
                           ),
                           Text(
                             '${surah.number}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF1A2221),
+                              color: context.highText,
                             ),
                           ),
                         ],
@@ -150,8 +151,8 @@ class QuransList extends StatelessWidget {
                           children: [
                             Text(
                               surah.english,
-                              style: const TextStyle(
-                                color: Color(0xFF1A2221),
+                              style: TextStyle(
+                                color: context.highText,
                                 fontSize: 16,
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w400,
@@ -160,8 +161,8 @@ class QuransList extends StatelessWidget {
                             verticalSpace(4),
                             RichText(
                               text: TextSpan(
-                                style: const TextStyle(
-                                  color: Color(0xFF6F8F87),
+                                style: TextStyle(
+                                  color: context.secondaryText,
                                   fontSize: 14,
                                   fontFamily: 'Tajawal',
                                   fontWeight: FontWeight.w500,

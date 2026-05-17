@@ -2,6 +2,7 @@ import 'package:just_audio/just_audio.dart' as ja;
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../data/models/surah_model.dart';
 import 'surah_detail_screen.dart';
@@ -62,7 +63,7 @@ class _QuranHubScreenState extends State<QuranHubScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F6),
+      backgroundColor: context.scaffoldBg,
       body: NestedScrollView(
         headerSliverBuilder: (_, innerScrolled) => [_buildHeader()],
         body: _isLoading
@@ -307,6 +308,7 @@ class _StatChip extends StatelessWidget {
 // ─── Shared surah card ────────────────────────────────────────────────────────
 
 Widget _surahCard({
+  required BuildContext context,
   required qwt.SurahMetadata surah,
   required VoidCallback onTap,
   Widget? trailing,
@@ -317,7 +319,7 @@ Widget _surahCard({
   return Container(
     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
     decoration: BoxDecoration(
-      color: isSelected ? AppColors.primaryColor.withOpacity(0.06) : Colors.white,
+      color: isSelected ? AppColors.primaryColor.withOpacity(0.06) : context.cardBg,
       borderRadius: BorderRadius.circular(16),
       border: isSelected
           ? Border.all(color: AppColors.primaryColor.withOpacity(0.35), width: 1)
@@ -353,10 +355,10 @@ Widget _surahCard({
                     Text(
                       surah.nameAr,
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 19,
                         fontFamily: 'Amiri Quran',
-                        color: Color(0xFF1A2221),
+                        color: context.highText,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -368,7 +370,7 @@ Widget _surahCard({
                           surah.nameEn,
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey[500],
+                            color: context.greyText500,
                             fontFamily: 'Tajawal',
                           ),
                         ),
@@ -400,7 +402,7 @@ Widget _surahCard({
                           '${surah.ayahCount} آية',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey[500],
+                            color: context.greyText500,
                             fontFamily: 'Tajawal',
                           ),
                         ),
@@ -457,11 +459,12 @@ class _ReadingTab extends StatelessWidget {
       itemBuilder: (context, i) {
         final s = surahs[i];
         return _surahCard(
+          context: context,
           surah: s,
           trailing: Icon(
             Icons.menu_book_rounded,
             size: 20,
-            color: Colors.grey[400],
+            color: context.greyText400,
           ),
           onTap: () => Navigator.push(
             context,
@@ -593,9 +596,9 @@ class _AudioTabState extends State<_AudioTab>
         minChildSize: 0.3,
         maxChildSize: 0.9,
         builder: (ctx, scrollCtrl) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: context.cardBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
             children: [
@@ -605,18 +608,18 @@ class _AudioTabState extends State<_AudioTab>
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: context.greyText300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
-              const Text(
+              Text(
                 'اختر آية',
                 style: TextStyle(
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF1A2221),
+                  color: context.highText,
                 ),
               ),
               const SizedBox(height: 8),
@@ -703,13 +706,13 @@ class _AudioTabState extends State<_AudioTab>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 'القارئ',
                 style: TextStyle(
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
-                  color: Color(0xFF1A2221),
+                  color: context.highText,
                 ),
               ),
               const SizedBox(height: 8),
@@ -726,12 +729,12 @@ class _AudioTabState extends State<_AudioTab>
                           style: TextStyle(
                             fontFamily: 'Tajawal',
                             fontSize: 13,
-                            color: selected ? Colors.white : Colors.grey[700],
+                            color: selected ? Colors.white : context.greyText700,
                           ),
                         ),
                         selected: selected,
                         selectedColor: AppColors.primaryColor,
-                        backgroundColor: Colors.grey[100],
+                        backgroundColor: context.inputFillColor,
                         onSelected: (_) async {
                           final wasPlaying = _player.playing;
                           final prev = _playingSurah;
@@ -777,12 +780,13 @@ class _AudioTabState extends State<_AudioTab>
               : ListView.builder(
                   padding: const EdgeInsets.only(top: 10, bottom: 90),
                   itemCount: widget.surahs.length,
-                  itemBuilder: (_, i) {
+                  itemBuilder: (context, i) {
                     final s = widget.surahs[i];
                     final selected = _playingSurah == s.number;
                     final playing = selected && isPlaying;
 
                     return _surahCard(
+                      context: context,
                       surah: s,
                       isSelected: selected,
                       trailing: Container(
@@ -919,6 +923,7 @@ class _TafsirTab extends StatelessWidget {
       itemBuilder: (context, i) {
         final s = surahs[i];
         return _surahCard(
+          context: context,
           surah: s,
           trailing: Container(
             width: 36,
@@ -981,7 +986,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F6),
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
@@ -1118,10 +1123,10 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
                             child: Text(
                               v.text,
                               textAlign: TextAlign.right,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontFamily: 'Amiri Quran',
-                                color: Color(0xFF1A2221),
+                                color: context.highText,
                                 height: 2.1,
                               ),
                             ),

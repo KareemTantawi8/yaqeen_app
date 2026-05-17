@@ -3,6 +3,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:yaqeen_app/core/services/adhan_audio_player_service.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
 
@@ -123,7 +124,7 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         foregroundColor: Colors.white,
@@ -178,7 +179,7 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
   Widget _buildCard({required Widget child}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -292,7 +293,7 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
                           fontSize: 16,
                           fontFamily: 'Tajawal',
                           fontWeight: FontWeight.w600,
-                          color: enabled ? Colors.black87 : Colors.grey,
+                          color: enabled ? context.highText : context.greyText500,
                         ),
                       ),
                     ),
@@ -311,7 +312,7 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
                   height: 1,
                   indent: 68,
                   endIndent: 20,
-                  color: Colors.grey[200],
+                  color: context.dividerColor,
                 ),
             ],
           );
@@ -371,7 +372,7 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
                                 : FontWeight.normal,
                             color: isSelected
                                 ? AppColors.primaryColor
-                                : Colors.black87,
+                                : context.highText,
                           ),
                         ),
                       ),
@@ -387,7 +388,7 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
                   height: 1,
                   indent: 74,
                   endIndent: 20,
-                  color: Colors.grey[200],
+                  color: context.dividerColor,
                 ),
             ],
           );

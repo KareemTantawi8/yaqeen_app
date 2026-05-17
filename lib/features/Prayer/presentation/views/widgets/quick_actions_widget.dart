@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
 import 'package:yaqeen_app/core/styles/images/app_image.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
@@ -14,7 +15,7 @@ class QuickActionsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(

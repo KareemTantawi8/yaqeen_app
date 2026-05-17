@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
 import 'package:yaqeen_app/features/mosque/data/services/mosque_service.dart';
@@ -92,7 +93,7 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F8),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -333,20 +334,21 @@ class _MosqueCard extends StatelessWidget {
 
   const _MosqueCard({required this.mosque, required this.onNavigate});
 
-  static const Color _ink = Color(0xFF0F2A26);
-  static const Color _muted = Color(0xFF6B7F7B);
   static const Color _gold = Color(0xFFE0A93B);
-  static const Color _surface = Color(0xFFF6FAF9);
 
   @override
   Widget build(BuildContext context) {
+    final ink = context.highText;
+    final muted = context.greyText600;
+    final surface = context.inputFillColor;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Material(
         color: Colors.transparent,
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -416,11 +418,11 @@ class _MosqueCard extends StatelessWidget {
                                   Text(
                                     mosque.name,
                                     textAlign: TextAlign.right,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontFamily: 'Tajawal',
                                       fontSize: 17,
                                       fontWeight: FontWeight.w800,
-                                      color: _ink,
+                                      color: ink,
                                       height: 1.25,
                                       letterSpacing: -0.2,
                                     ),
@@ -436,10 +438,10 @@ class _MosqueCard extends StatelessWidget {
                                           child: Text(
                                             mosque.vicinity!,
                                             textAlign: TextAlign.right,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontFamily: 'Tajawal',
                                               fontSize: 12,
-                                              color: _muted,
+                                              color: muted,
                                               height: 1.45,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -448,10 +450,10 @@ class _MosqueCard extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(width: 4),
-                                        const Icon(
+                                        Icon(
                                           Icons.place_outlined,
                                           size: 13,
-                                          color: _muted,
+                                          color: muted,
                                         ),
                                       ],
                                     ),
@@ -465,7 +467,7 @@ class _MosqueCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                           decoration: BoxDecoration(
-                            color: _surface,
+                            color: surface,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: AppColors.primaryColor.withOpacity(0.05),
@@ -517,6 +519,8 @@ class _MosqueCard extends StatelessWidget {
                                 icon: Icons.near_me_rounded,
                                 label: _distanceLabel(mosque.distanceKm),
                                 iconColor: AppColors.primaryColor,
+                                textColor: ink,
+                                bgColor: context.cardBg,
                               ),
                               if (mosque.rating != null) ...[
                                 const SizedBox(width: 8),
@@ -524,6 +528,8 @@ class _MosqueCard extends StatelessWidget {
                                   icon: Icons.star_rounded,
                                   label: mosque.rating!.toStringAsFixed(1),
                                   iconColor: _gold,
+                                  textColor: ink,
+                                  bgColor: context.cardBg,
                                 ),
                               ],
                             ],
@@ -623,11 +629,13 @@ class _MosqueCard extends StatelessWidget {
     required IconData icon,
     required String label,
     required Color iconColor,
+    required Color textColor,
+    required Color bgColor,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: AppColors.primaryColor.withOpacity(0.1),
@@ -640,11 +648,11 @@ class _MosqueCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Tajawal',
               fontSize: 12,
               fontWeight: FontWeight.w800,
-              color: _ink,
+              color: textColor,
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/radio_model.dart';
@@ -61,8 +62,8 @@ class _RadioWidgetState extends State<RadioWidget>
                       AppColors.primaryColor.withOpacity(0.8),
                     ]
                   : [
-                      Colors.white,
-                      const Color(0xFFF5F9F8),
+                      context.cardBg,
+                      context.scaffoldBg,
                     ],
             ),
             borderRadius: BorderRadius.circular(20),
@@ -146,7 +147,7 @@ class _RadioWidgetState extends State<RadioWidget>
                       style: TextStyle(
                         color: isActive
                             ? Colors.white
-                            : const Color(0xFF1A2221),
+                            : context.highText,
                         fontSize: 16,
                         fontFamily: 'Tajawal',
                         fontWeight: FontWeight.w700,

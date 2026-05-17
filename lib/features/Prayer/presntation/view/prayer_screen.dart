@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
 import 'package:yaqeen_app/features/Prayer/presentation/views/adhan_settings_screen.dart';
@@ -158,7 +159,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: isLoading
             ? _buildLoadingState()
@@ -242,7 +243,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                 'تتبع صلواتك اليومية',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: context.greyText600,
                   fontFamily: 'Tajawal',
                 ),
               ),
@@ -308,7 +309,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
               errorMessage ?? 'حدث خطأ',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[700],
+                color: context.greyText700,
                 fontFamily: 'Tajawal',
               ),
               textAlign: TextAlign.center,

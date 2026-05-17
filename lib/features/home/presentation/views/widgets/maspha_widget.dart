@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../../core/extension/context_extension.dart';
 
 class MesphaWidget extends StatefulWidget {
   const MesphaWidget({super.key});
@@ -77,7 +78,7 @@ class _MesphaWidgetState extends State<MesphaWidget>
                     style: TextStyle(
                       fontSize: imageSize * 0.12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: context.highText,
                     ),
                   ),
                 ),

@@ -21,6 +21,7 @@ import 'package:yaqeen_app/features/events/presentation/views/events_screen.dart
 
 import 'widgets/prayer_times_loading_skeleton.dart';
 import '../../../../core/extension/context_extension.dart';
+
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/styles/images/app_image.dart';
@@ -262,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ElevatedButton(
                       onPressed: _initializeLocation,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: context.cardBg,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 32,
                           vertical: 12,
@@ -359,8 +360,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 offset: Offset(0, 10),
               ),
               child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.boldText,
+                decoration: BoxDecoration(
+                  color: context.cardBg,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(18),

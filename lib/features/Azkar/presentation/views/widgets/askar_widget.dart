@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/images/app_image.dart';
 import '../../../../../core/utils/spacing.dart';
 
@@ -42,10 +43,10 @@ class AzkarWidget extends StatelessWidget {
                   ),
                   Text(
                     number,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF1A2221),
+                      color: context.highText,
                     ),
                   ),
                 ],

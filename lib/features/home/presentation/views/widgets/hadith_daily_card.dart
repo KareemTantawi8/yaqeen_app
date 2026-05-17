@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/features/home/data/models/hadith_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/hadith_service.dart';
 import '../ahadis_screen.dart';
@@ -16,10 +17,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
   HadithModel? _hadith;
   bool _isLoading = true;
 
-  static const Color _cream = Color(0xFFFBF6EC);
-  static const Color _creamDeep = Color(0xFFF3EAD3);
   static const Color _gold = Color(0xFFC79435);
-  static const Color _ink = Color(0xFF1F3D38);
 
   @override
   void initState() {
@@ -38,6 +36,10 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
 
   @override
   Widget build(BuildContext context) {
+    final cardBg   = context.hadithCardBg;
+    final cardDeep = context.hadithCardDeep;
+    final ink      = context.hadithInk;
+
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -46,10 +48,10 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
       child: Container(
         constraints: const BoxConstraints(minHeight: 170),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [_cream, _creamDeep],
+            colors: [cardBg, cardDeep],
           ),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
@@ -114,7 +116,6 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                 ),
               ),
 
-              // Non-positioned so IntrinsicHeight can measure it
               Padding(
                 padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                 child: Column(
@@ -193,11 +194,11 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text(
+                        Text(
                           'حديث اليوم',
                           textAlign: TextAlign.right,
                           style: TextStyle(
-                            color: _ink,
+                            color: ink,
                             fontSize: 16,
                             fontFamily: 'Tajawal',
                             fontWeight: FontWeight.w800,
@@ -224,7 +225,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                                 Text(
                                   'جاري التحميل...',
                                   style: TextStyle(
-                                    color: _ink.withOpacity(0.55),
+                                    color: ink.withOpacity(0.55),
                                     fontFamily: 'Tajawal',
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
@@ -240,7 +241,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: _ink.withOpacity(0.72),
+                              color: ink.withOpacity(0.72),
                               fontSize: 11,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w500,
@@ -252,7 +253,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                             'اضغط لقراءة الأحاديث الشريفة',
                             textAlign: TextAlign.right,
                             style: TextStyle(
-                              color: _ink.withOpacity(0.6),
+                              color: ink.withOpacity(0.6),
                               fontFamily: 'Tajawal',
                               fontSize: 11,
                               fontWeight: FontWeight.w500,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/features/home/data/repo/hadith_service.dart';
 import 'package:yaqeen_app/features/home/data/models/hadith_model.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_styles.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -60,14 +61,14 @@ class _HadisListViewState extends State<HadisListView> {
             Icon(
               Icons.error_outline,
               size: 48,
-              color: Colors.grey[600],
+              color: context.greyText600,
             ),
             verticalSpace(16),
             Text(
               errorMessage ?? 'حدث خطأ في تحميل الحديث',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: context.greyText600,
               ),
             ),
             verticalSpace(16),
@@ -133,7 +134,7 @@ class _HadisListViewState extends State<HadisListView> {
                         currentHadith!.chapter,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[700],
+                          color: context.greyText700,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'Tajawal',
                         ),
@@ -150,11 +151,11 @@ class _HadisListViewState extends State<HadisListView> {
                   verticalSpace(16),
                   Text(
                     currentHadith!.arabicText,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontFamily: 'Amiri',
                       height: 2.0,
-                      color: Colors.black87,
+                      color: context.highText,
                     ),
                     textAlign: TextAlign.right,
                   ),
@@ -170,9 +171,9 @@ class _HadisListViewState extends State<HadisListView> {
                     verticalSpace(16),
                     Text(
                       currentHadith!.englishText,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
+                        color: context.greyText500,
                         height: 1.8,
                       ),
                       textAlign: TextAlign.left,

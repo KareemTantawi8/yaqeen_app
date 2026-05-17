@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/styles/images/app_image.dart';
@@ -45,7 +46,7 @@ class _QuranReadScreenState extends State<QuranReadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +126,7 @@ class _QuranReadScreenState extends State<QuranReadScreen> {
                           subtitle: Text(
                             '${surah.ayahCount} آية',
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                               fontSize: 12,
                             ),
                           ),

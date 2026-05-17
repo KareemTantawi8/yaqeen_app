@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 
@@ -26,7 +27,7 @@ class CustomServiceWidget extends StatelessWidget {
             width: 65,
             padding: const EdgeInsets.all(12.70),
             decoration: ShapeDecoration(
-              color: const Color(0xFFEAF9F4),
+              color: context.lightAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(800),
               ),
@@ -43,8 +44,8 @@ class CustomServiceWidget extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Color(0xFF2B7669) /* Primarycolor */,
+          style: TextStyle(
+            color: context.brandText,
             fontSize: 11.67,
             fontFamily: 'Tajawal',
             fontWeight: FontWeight.w700,

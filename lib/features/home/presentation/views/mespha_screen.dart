@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 
@@ -297,7 +298,7 @@ class _MesphaScreenState extends State<MesphaScreen>
     final sh = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -341,7 +342,7 @@ class _MesphaScreenState extends State<MesphaScreen>
                   fontSize: sw * 0.05,
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF1A2221),
+                  color: context.highText,
                 ),
               ),
               Row(
@@ -354,7 +355,7 @@ class _MesphaScreenState extends State<MesphaScreen>
                     style: TextStyle(
                       fontSize: sw * 0.03,
                       fontFamily: 'Tajawal',
-                      color: Colors.grey[600],
+                      color: context.greyText600,
                     ),
                   ),
                 ],
@@ -463,7 +464,7 @@ class _MesphaScreenState extends State<MesphaScreen>
                 fontSize: sw * 0.028,
                 fontFamily: 'Tajawal',
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: context.greyText700,
               ),
             ),
           ],
@@ -543,7 +544,7 @@ class _MesphaScreenState extends State<MesphaScreen>
                       fontSize: sw * 0.032,
                       fontFamily: 'Tajawal',
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[700],
+                      color: context.greyText700,
                     ),
                   ),
                 ],
@@ -767,13 +768,13 @@ class _MesphaScreenState extends State<MesphaScreen>
               child: ElevatedButton.icon(
                 onPressed: _resetCounter,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[100],
-                  foregroundColor: Colors.grey[800],
+                  backgroundColor: context.lightAccent,
+                  foregroundColor: context.highText,
                   padding: EdgeInsets.symmetric(vertical: sh * 0.022),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(sw * 0.04),
                     side: BorderSide(
-                      color: Colors.grey[300]!,
+                      color: context.dividerColor,
                       width: 2,
                     ),
                   ),
@@ -796,12 +797,12 @@ class _MesphaScreenState extends State<MesphaScreen>
             decoration: BoxDecoration(
               color: _soundEnabled
                   ? _currentColor.withOpacity(0.12)
-                  : Colors.grey[100],
+                  : context.lightAccent,
               borderRadius: BorderRadius.circular(sw * 0.04),
               border: Border.all(
                 color: _soundEnabled
                     ? _currentColor.withOpacity(0.3)
-                    : Colors.grey[300]!,
+                    : context.dividerColor,
                 width: 2,
               ),
               boxShadow: [
@@ -817,7 +818,7 @@ class _MesphaScreenState extends State<MesphaScreen>
             child: IconButton(
               icon: Icon(
                 _soundEnabled ? Icons.volume_up : Icons.volume_off,
-                color: _soundEnabled ? _currentColor : Colors.grey[600],
+                color: _soundEnabled ? _currentColor : context.greyText600,
                 size: sw * 0.07,
               ),
               onPressed: () {
@@ -867,9 +868,9 @@ class _MesphaScreenState extends State<MesphaScreen>
     final sh = MediaQuery.of(context).size.height;
     
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      decoration: BoxDecoration(
+        color: context.cardBg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
       ),
       padding: EdgeInsets.all(sw * 0.05),
       child: Column(
@@ -879,7 +880,7 @@ class _MesphaScreenState extends State<MesphaScreen>
             width: sw * 0.15,
             height: sh * 0.006,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: context.greyText300,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -909,12 +910,12 @@ class _MesphaScreenState extends State<MesphaScreen>
                     decoration: BoxDecoration(
                       color: isSelected
                           ? (dhikr['color'] as Color).withOpacity(0.1)
-                          : Colors.grey[50],
+                          : context.inputFillColor,
                       borderRadius: BorderRadius.circular(sw * 0.04),
                       border: Border.all(
                         color: isSelected
                             ? (dhikr['color'] as Color)
-                            : Colors.grey[200]!,
+                            : context.dividerColor,
                         width: 2,
                       ),
                     ),
@@ -949,7 +950,7 @@ class _MesphaScreenState extends State<MesphaScreen>
                                   fontWeight: FontWeight.w800,
                                   color: isSelected
                                       ? (dhikr['color'] as Color)
-                                      : Colors.grey[800],
+                                      : context.highText,
                                 ),
                               ),
                               Text(
@@ -957,7 +958,7 @@ class _MesphaScreenState extends State<MesphaScreen>
                                 style: TextStyle(
                                   fontSize: sw * 0.03,
                                   fontFamily: 'Tajawal',
-                                  color: Colors.grey[600],
+                                  color: context.greyText600,
                                 ),
                               ),
                             ],
@@ -1103,7 +1104,7 @@ class _MesphaScreenState extends State<MesphaScreen>
             style: TextStyle(
               fontSize: sw * 0.04,
               fontFamily: 'Tajawal',
-              color: Colors.grey[700],
+              color: context.greyText700,
             ),
           ),
           Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/utils/spacing.dart';
 
 class AzkarCard extends StatefulWidget {
@@ -89,7 +90,7 @@ class _AzkarCardState extends State<AzkarCard> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: const Color.fromARGB(255, 221, 246, 235),
+        color: context.lightAccent,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -108,8 +109,8 @@ class _AzkarCardState extends State<AzkarCard> {
                         height: 30,
                         decoration: BoxDecoration(
                           color: currentIndex == azkarList.length - 1
-                              ? Colors.grey
-                              : const Color(0xFF6F8F87),
+                              ? context.greyText500
+                              : context.secondaryText,
                           shape: BoxShape.circle,
                         ),
                         child: const Directionality(
@@ -130,8 +131,8 @@ class _AzkarCardState extends State<AzkarCard> {
                         height: 30,
                         decoration: BoxDecoration(
                           color: currentIndex == 0
-                              ? Colors.grey
-                              : const Color(0xFF6F8F87),
+                              ? context.greyText500
+                              : context.secondaryText,
                           shape: BoxShape.circle,
                         ),
                         child: const Directionality(
@@ -173,8 +174,8 @@ class _AzkarCardState extends State<AzkarCard> {
               child: Text(
                 arabic,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF2B7669),
+                style: TextStyle(
+                  color: context.brandText,
                   fontSize: 30,
                   fontFamily: 'Amiri Quran',
                   fontWeight: FontWeight.w400,
@@ -188,8 +189,8 @@ class _AzkarCardState extends State<AzkarCard> {
               child: Text(
                 'English: $english',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF6F8F87),
+                style: TextStyle(
+                  color: context.secondaryText,
                   fontSize: 20,
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.w500,

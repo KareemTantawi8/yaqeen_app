@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/reciter_model.dart';
@@ -179,7 +180,7 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                             fontFamily: 'Tajawal',
                             fontSize: 16,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AppColors.primaryColor : Colors.black87,
+                            color: isSelected ? AppColors.primaryColor : context.highText,
                           ),
                         ),
                         subtitle: Text(
@@ -492,11 +493,11 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                     children: [
                       Text(
                         surah.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Amiri Quran',
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: context.highText,
                         ),
                       ),
                       verticalSpace(4),

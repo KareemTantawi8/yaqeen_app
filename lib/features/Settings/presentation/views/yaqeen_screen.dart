@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../../../core/extension/context_extension.dart';
 
 // Model for chat messages
 class MessageModel {
@@ -130,16 +131,16 @@ class _YaqeenScreenState extends State<YaqeenScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: msg.role == "user"
-                          ? Colors.green[100]
-                          : Colors.grey[200],
+                          ? context.lightAccent
+                          : context.inputFillColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       msg.content,
                       style: TextStyle(
                         color: msg.role == "user"
-                            ? Colors.green[900]
-                            : Colors.black87,
+                            ? context.brandText
+                            : context.highText,
                         fontFamily: 'Tajawal',
                         fontSize: 16,
                       ),

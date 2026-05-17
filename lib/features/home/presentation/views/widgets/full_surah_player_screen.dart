@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/reciter_model.dart';
@@ -243,7 +244,7 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                           fontFamily: 'Tajawal',
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
-                          color: isSelected ? Colors.white : const Color(0xFF1A2221),
+                          color: isSelected ? Colors.white : context.highText,
                         ),
                       ),
                       subtitle: Text(

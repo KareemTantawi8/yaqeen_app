@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:yaqeen_app/features/home/data/models/hadith_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/hadith_favorite_service.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/images/app_image.dart';
 import '../../../../core/utils/spacing.dart';
@@ -72,7 +73,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFDFD),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -108,7 +109,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               decoration: BoxDecoration(
                 color: _isFavorite
                     ? Colors.red.withOpacity(0.12)
-                    : const Color(0xFFEAF9F4),
+                    : context.lightAccent,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -119,10 +120,10 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
             ),
           ),
           const Spacer(),
-          const Text(
+          Text(
             'تفاصيل الحديث',
             style: TextStyle(
-              color: Color(0xFF2B7669),
+              color: context.brandText,
               fontSize: 20,
               fontFamily: 'Tajawal',
               fontWeight: FontWeight.w700,
@@ -134,8 +135,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
             child: Container(
               width: 46,
               height: 46,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEAF9F4),
+              decoration: BoxDecoration(
+                color: context.lightAccent,
                 shape: BoxShape.circle,
               ),
               child:

@@ -5,6 +5,7 @@ import 'package:flutter_compass/flutter_compass.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../core/services/qibla_service.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 
@@ -137,7 +138,7 @@ class _QiblaScreenState extends State<QiblaScreen>
             end: Alignment.bottomCenter,
             colors: [
               _isAligned ? Colors.green.withOpacity(0.1) : AppColors.primaryColor.withOpacity(0.05),
-              Colors.white,
+              context.scaffoldBg,
             ],
           ),
         ),
@@ -205,7 +206,7 @@ class _QiblaScreenState extends State<QiblaScreen>
               style: TextStyle(
                 fontSize: sw * 0.04,
                 fontFamily: 'Tajawal',
-                color: Colors.grey[700],
+                color: context.greyText700,
               ),
             ),
             verticalSpace(sh * 0.04),
@@ -266,7 +267,7 @@ class _QiblaScreenState extends State<QiblaScreen>
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.cardBg,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -289,7 +290,7 @@ class _QiblaScreenState extends State<QiblaScreen>
                   fontSize: sw * 0.05,
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF1A2221),
+                  color: context.highText,
                 ),
               ),
               Text(
@@ -297,7 +298,7 @@ class _QiblaScreenState extends State<QiblaScreen>
                 style: TextStyle(
                   fontSize: sw * 0.03,
                   fontFamily: 'Tajawal',
-                  color: Colors.grey[600],
+                  color: context.greyText600,
                 ),
               ),
             ],
@@ -305,7 +306,7 @@ class _QiblaScreenState extends State<QiblaScreen>
           const Spacer(),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.cardBg,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -354,7 +355,7 @@ class _QiblaScreenState extends State<QiblaScreen>
       child: Container(
         padding: EdgeInsets.all(sw * 0.04),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(sw * 0.04),
           boxShadow: [
             BoxShadow(
@@ -382,7 +383,7 @@ class _QiblaScreenState extends State<QiblaScreen>
               style: TextStyle(
                 fontSize: sw * 0.03,
                 fontFamily: 'Tajawal',
-                color: Colors.grey[600],
+                color: context.greyText600,
               ),
             ),
           ],
@@ -444,7 +445,7 @@ class _QiblaScreenState extends State<QiblaScreen>
                               labels[index],
                               style: TextStyle(
                                 fontSize: sw * 0.03,
-                                color: Colors.grey[600],
+                                color: context.greyText600,
                               ),
                             ),
                           ],

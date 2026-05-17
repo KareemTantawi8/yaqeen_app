@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/utils/spacing.dart';
@@ -70,7 +71,7 @@ class _QuranTafsirScreenState extends State<QuranTafsirScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
         title: const Text('التفسير'),
         backgroundColor: AppColors.primaryColor,
@@ -200,7 +201,7 @@ class _QuranTafsirScreenState extends State<QuranTafsirScreen> {
           child: Text(
             'لا يوجد تفسير متاح لهذه السورة',
             style: TextStyle(
-              color: Colors.grey[600],
+              color: context.greyText600,
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
@@ -262,7 +263,7 @@ class _QuranTafsirScreenState extends State<QuranTafsirScreen> {
                   tafsir,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[700],
+                    color: context.greyText700,
                     height: 1.8,
                   ),
                   textAlign: TextAlign.right,

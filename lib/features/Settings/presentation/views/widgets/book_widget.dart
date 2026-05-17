@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/common/widgets/launch_utils.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -22,7 +23,7 @@ class BookWidget extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -74,8 +75,8 @@ class BookWidget extends StatelessWidget {
                       children: [
                         Text(
                           book.title,
-                          style: const TextStyle(
-                            color: Color(0xFF1A2221),
+                          style: TextStyle(
+                            color: context.highText,
                             fontSize: 18,
                             fontFamily: 'Tajawal',
                             fontWeight: FontWeight.w700,
@@ -88,8 +89,8 @@ class BookWidget extends StatelessWidget {
                           verticalSpace(8),
                           Text(
                             book.authors.map((a) => a.title).join('، '),
-                            style: const TextStyle(
-                              color: Color(0xFF6F8F87),
+                            style: TextStyle(
+                              color: context.secondaryText,
                               fontSize: 14,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w500,
@@ -114,8 +115,8 @@ class BookWidget extends StatelessWidget {
                   if (book.description.isNotEmpty) ...[
                     Text(
                       book.description,
-                      style: const TextStyle(
-                        color: Color(0xFF475466),
+                      style: TextStyle(
+                        color: context.greyText600,
                         fontSize: 14,
                         fontFamily: 'Tajawal',
                         fontWeight: FontWeight.w400,
