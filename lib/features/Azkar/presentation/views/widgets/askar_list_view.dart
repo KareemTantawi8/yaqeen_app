@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../data/model/adhkar_category_model.dart';
 import 'adhkar_category_detail_screen.dart';
@@ -58,8 +59,8 @@ class _CategoryCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFEAF9F4),
-            const Color(0xFFEAF9F4).withOpacity(0.8),
+            context.lightAccent,
+            context.lightAccent.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -133,8 +134,8 @@ class _CategoryCard extends StatelessWidget {
                     children: [
                       Text(
                         category.category,
-                        style: const TextStyle(
-                          color: Color(0xFF1A2221),
+                        style: TextStyle(
+                          color: context.highText,
                           fontSize: 18,
                           fontFamily: 'Tajawal',
                           fontWeight: FontWeight.w700,

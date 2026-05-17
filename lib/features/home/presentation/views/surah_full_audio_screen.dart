@@ -3,6 +3,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../data/models/surah_full_model.dart';
 import '../../data/repo/surah_full_service.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/styles/fonts/font_styles.dart';
@@ -714,7 +715,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
             style: TextStyles.font18PrimaryText.copyWith(
               fontFamily: 'Amiri Quran',
               height: 1.8,
-              color: Colors.black87,
+              color: context.highText,
               fontSize: 20,
             ),
             textAlign: TextAlign.justify,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -27,10 +28,10 @@ class AllahNamesWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: ShapeDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment(0.00, 0.50),
-            end: Alignment(1.00, 0.50),
-            colors: [Color(0xFFD3F9EC), Color(0xFFEAF9F4)],
+          gradient: LinearGradient(
+            begin: const Alignment(0.00, 0.50),
+            end: const Alignment(1.00, 0.50),
+            colors: [context.lightAccent, context.lightAccent],
           ),
           shadows: [
             BoxShadow(
@@ -56,8 +57,8 @@ class AllahNamesWidget extends StatelessWidget {
                     child: Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF1A2221),
+                      style: TextStyle(
+                        color: context.highText,
                         fontSize: 32,
                         fontFamily: 'Amiri',
                         fontWeight: FontWeight.w700,
@@ -68,8 +69,8 @@ class AllahNamesWidget extends StatelessWidget {
                   Text(
                     enTitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Color(0xFF1A2221),
+                    style: TextStyle(
+                      color: context.highText,
                       fontSize: 16,
                       fontFamily: FontFamilyHelper.fontFamily2,
                       fontWeight: FontWeight.w700,
@@ -81,8 +82,8 @@ class AllahNamesWidget extends StatelessWidget {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xFF9AB1AB),
+                    style: TextStyle(
+                      color: context.secondaryText,
                       fontSize: 14,
                       fontFamily: 'Tajawal',
                       fontWeight: FontWeight.w400,

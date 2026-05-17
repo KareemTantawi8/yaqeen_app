@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 import 'package:just_audio/just_audio.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/utils/spacing.dart';
@@ -104,7 +105,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,

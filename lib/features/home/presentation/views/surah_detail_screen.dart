@@ -5,6 +5,7 @@ import '../../../../core/services/quran_audio_service.dart';
 import '../../../../core/services/quran_reading_service.dart';
 import '../../../../core/services/quran_tafsir_service.dart';
 import '../../../../core/services/reading_progress_notifier.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../data/models/ayah_model.dart';
@@ -92,12 +93,12 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: isSelected 
-                      ? AppColors.primaryColor 
-                      : Colors.grey[200],
+                  backgroundColor: isSelected
+                      ? AppColors.primaryColor
+                      : context.lightAccent,
                   child: Icon(
                     isSelected ? Icons.check : Icons.person,
-                    color: isSelected ? Colors.white : Colors.grey[600],
+                    color: isSelected ? Colors.white : context.greyText600,
                   ),
                 ),
                 title: Text(
@@ -452,9 +453,9 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: context.cardBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
@@ -464,18 +465,18 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: context.greyText300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // Header
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withOpacity(0.1),
                   border: Border(
-                    bottom: BorderSide(color: Colors.grey[200]!),
+                    bottom: BorderSide(color: context.dividerColor),
                   ),
                 ),
                 child: Row(
@@ -499,7 +500,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                             '${widget.surah.name} - آية ${ayah.numberInSurah}',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                               fontFamily: 'Tajawal',
                             ),
                           ),
@@ -535,7 +536,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: context.scaffoldBg,
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -778,7 +779,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white,
+            context.cardBg,
             AppColors.primaryColor.withOpacity(0.05),
           ],
         ),
@@ -802,10 +803,10 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                   children: [
                     Text(
                       widget.surah.englishName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A2221),
+                        color: context.highText,
                         fontFamily: 'Tajawal',
                       ),
                     ),
@@ -814,7 +815,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                       widget.surah.englishNameTranslation,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: context.greyText600,
                         fontFamily: 'Tajawal',
                       ),
                     ),
@@ -896,7 +897,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -928,7 +929,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -1045,7 +1046,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               style: TextStyle(
                 fontSize: _fontSize,
                 fontFamily: 'Amiri Quran',
-                color: const Color(0xFF1A2221),
+                color: context.highText,
                 height: 2.0,
                 letterSpacing: 0.3,
               ),
@@ -1056,7 +1057,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: context.inputFillColor,
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20),
@@ -1113,7 +1114,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           '$label: ',
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[600],
+            color: context.greyText600,
             fontFamily: 'Tajawal',
           ),
         ),
@@ -1287,7 +1288,7 @@ class _TafsirContentState extends State<_TafsirContent> {
                       }
                     },
                     selectedColor: AppColors.primaryColor,
-                    backgroundColor: Colors.grey[100],
+                    backgroundColor: context.lightAccent,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 );
@@ -1320,7 +1321,7 @@ class _TafsirContentState extends State<_TafsirContent> {
                             'لا يوجد تفسير متاح',
                             style: TextStyle(
                               fontFamily: 'Tajawal',
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                             ),
                           ),
                         )
@@ -1331,16 +1332,16 @@ class _TafsirContentState extends State<_TafsirContent> {
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.grey[50],
+                                color: context.inputFillColor,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 _tafsirData[_selectedTafsir] ?? '',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontFamily: 'Tajawal',
                                   height: 1.8,
-                                  color: Color(0xFF1A2221),
+                                  color: context.highText,
                                 ),
                                 textAlign: TextAlign.right,
                               ),

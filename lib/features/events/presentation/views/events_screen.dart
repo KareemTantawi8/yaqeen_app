@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/common/widgets/default_app_bar.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 import 'widgets/events_list_view.dart';
@@ -10,7 +11,7 @@ class EventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F8),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

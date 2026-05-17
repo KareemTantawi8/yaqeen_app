@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/images/app_image.dart';
 import '../../../Azkar/presentation/views/azkar_screen.dart';
@@ -21,18 +22,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int currentIndex = 2; // Start with Home
 
   final List<IconData?> icons = [
-    null, // Will use asset for azkar
+    null, // asset icon for azkar
     Icons.auto_stories_rounded,
-    null, // Will use asset for home
+    null, // asset icon for home
     Icons.mosque,
-    null, // Will use asset for settings
+    null, // asset icon for settings
   ];
 
   final List<String> assetIcons = [
     AppImages.azkarIcon,
-    '', // Not used for headphones
+    '',
     AppImages.homeIcon,
-    '', // Not used for mosque
+    '',
     AppImages.settingIcons,
   ];
 
@@ -61,7 +62,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: context.scaffoldBg,
       body: Stack(
         children: [
           IndexedStack(
@@ -74,7 +75,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               height: 80,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.boldText,
+                color: context.navBarBg,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.08),
@@ -85,7 +86,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 ],
               ),
               child: Directionality(
-                textDirection: TextDirection.ltr, // Force left to right
+                textDirection: TextDirection.ltr,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: List.generate(icons.length, (index) {
@@ -112,7 +113,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                                       assetIcons[index],
                                       color: isSelected
                                           ? Colors.white
-                                          : Colors.grey[700],
+                                          : context.navIconUnselected,
                                       width: 22,
                                       height: 22,
                                     )
@@ -120,7 +121,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                                       icons[index],
                                       color: isSelected
                                           ? Colors.white
-                                          : Colors.grey[700],
+                                          : context.navIconUnselected,
                                       size: 22,
                                     ),
                             ),
@@ -131,7 +132,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                             style: TextStyle(
                               color: isSelected
                                   ? AppColors.primaryColor
-                                  : Colors.grey[500],
+                                  : context.greyText500,
                               fontSize: 14,
                               fontWeight: isSelected
                                   ? FontWeight.bold

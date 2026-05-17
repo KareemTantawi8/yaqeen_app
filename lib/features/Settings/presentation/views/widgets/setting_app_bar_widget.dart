@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/images/app_image.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -22,13 +23,13 @@ class SettingAppBarWidget extends StatelessWidget {
           image: AssetImage(AppImages.settingIcons),
         ),
         horizontalSpace(8),
-        const Center(
+        Center(
           // This ensures vertical alignment with the image
           child: SizedBox(
             child: Text(
               'المزيد',
               style: TextStyle(
-                color: Color(0xFF2B7669),
+                color: context.brandText,
                 fontSize: 24,
                 fontFamily: 'Tajawal',
                 fontWeight: FontWeight.w700,

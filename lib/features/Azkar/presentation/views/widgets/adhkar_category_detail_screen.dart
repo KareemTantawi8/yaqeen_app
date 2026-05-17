@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../data/model/adhkar_category_model.dart';
 import 'adhkar_detail_screen.dart';
@@ -19,7 +20,7 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -33,7 +34,7 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
                 children: [
                   // Back button
                   Material(
-                    color: Colors.white,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(12),
                     elevation: 2,
                     shadowColor: AppColors.primaryColor.withOpacity(0.1),
@@ -56,7 +57,7 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
                     child: Text(
                       category.category,
                       style: TextStyle(
-                        color: const Color(0xFF1A2221),
+                        color: context.highText,
                         fontSize: screenWidth * 0.05,
                         fontFamily: 'Tajawal',
                         fontWeight: FontWeight.w700,
@@ -81,8 +82,8 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFFEAF9F4),
-                          const Color(0xFFEAF9F4).withOpacity(0.7),
+                          context.lightAccent,
+                          context.lightAccent.withOpacity(0.7),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
@@ -158,8 +159,8 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
                                       item.text.length > 80
                                           ? '${item.text.substring(0, 80)}...'
                                           : item.text,
-                                      style: const TextStyle(
-                                        color: Color(0xFF1A2221),
+                                      style: TextStyle(
+                                        color: context.highText,
                                         fontSize: 15,
                                         fontFamily: 'Tajawal',
                                         fontWeight: FontWeight.w500,
@@ -228,4 +229,3 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
     );
   }
 }
-

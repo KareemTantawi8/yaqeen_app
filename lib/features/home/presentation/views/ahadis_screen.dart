@@ -7,6 +7,7 @@ import 'package:yaqeen_app/features/home/data/repo/hadith_service.dart';
 import 'hadith_favorites_screen.dart';
 import 'hadith_search_screen.dart';
 import 'hadith_detail_screen.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/images/app_image.dart';
 import '../../../../core/utils/spacing.dart';
@@ -83,7 +84,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFDFD),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -116,10 +117,10 @@ class _AhadisScreenState extends State<AhadisScreen> {
             )),
           ]),
           const Spacer(),
-          const Text(
+          Text(
             'الأحاديث الشريفة',
             style: TextStyle(
-              color: Color(0xFF2B7669),
+              color: context.brandText,
               fontSize: 22,
               fontFamily: 'Tajawal',
               fontWeight: FontWeight.w700,
@@ -192,7 +193,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
               curve: Curves.easeOut,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
-                color: selected ? AppColors.primaryColor : const Color(0xFFEAF9F4),
+                color: selected ? AppColors.primaryColor : context.lightAccent,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: selected
                     ? [BoxShadow(
@@ -205,7 +206,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
               child: Text(
                 book.arabicName,
                 style: TextStyle(
-                  color: selected ? Colors.white : const Color(0xFF2B7669),
+                  color: selected ? Colors.white : context.brandText,
                   fontSize: 13,
                   fontFamily: 'Tajawal',
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
@@ -248,12 +249,12 @@ class _AhadisScreenState extends State<AhadisScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.wifi_off_rounded, size: 60, color: Colors.grey[300]),
+              Icon(Icons.wifi_off_rounded, size: 60, color: context.greyText300),
               verticalSpace(14),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600], fontFamily: 'Tajawal', fontSize: 15),
+                style: TextStyle(color: context.greyText600, fontFamily: 'Tajawal', fontSize: 15),
               ),
               verticalSpace(20),
               ElevatedButton.icon(
@@ -309,7 +310,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEAF9F4),
+                  color: context.lightAccent,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
                 ),
@@ -342,7 +343,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
       child: Container(
         width: 46,
         height: 46,
-        decoration: const BoxDecoration(color: Color(0xFFEAF9F4), shape: BoxShape.circle),
+        decoration: BoxDecoration(color: context.lightAccent, shape: BoxShape.circle),
         child: Icon(icon, color: AppColors.primaryColor, size: 22),
       ),
     );
@@ -424,7 +425,7 @@ class _HadithListCardState extends State<_HadithListCard> {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -507,8 +508,8 @@ class _HadithListCardState extends State<_HadithListCard> {
                     textAlign: TextAlign.right,
                     maxLines: _expanded ? null : (isLong ? 4 : null),
                     overflow: _expanded ? null : (isLong ? TextOverflow.ellipsis : null),
-                    style: const TextStyle(
-                      color: Color(0xFF1A2221),
+                    style: TextStyle(
+                      color: context.highText,
                       fontSize: 19,
                       fontFamily: 'Amiri Quran',
                       height: 2.0,
@@ -551,7 +552,7 @@ class _HadithListCardState extends State<_HadithListCard> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAF9F4),
+                      color: context.lightAccent,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -606,7 +607,7 @@ class _HadithListCardState extends State<_HadithListCard> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: filled ? color.withOpacity(0.12) : const Color(0xFFEAF9F4),
+          color: filled ? color.withOpacity(0.12) : context.lightAccent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: color, size: 19),

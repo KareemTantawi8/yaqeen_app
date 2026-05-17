@@ -6,6 +6,7 @@ import '../../data/models/adhan_model.dart';
 import '../../data/repo/adhan_service.dart';
 import '../../../../../core/services/adhan_audio_player_service.dart';
 import '../../../../../core/services/location_service.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/styles/fonts/font_styles.dart';
@@ -220,7 +221,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -675,7 +676,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               prayer['name'] as String,
               style: TextStyles.font20PrimaryText.copyWith(
                 fontFamily: FontFamilyHelper.fontFamily1,
-                color: isNext ? AppColors.primaryColor : Colors.black87,
+                color: isNext ? AppColors.primaryColor : context.highText,
                 fontWeight:
                     isNext ? FontWeight.bold : FontWeight.w600,
               ),
@@ -845,7 +846,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                 methodName,
                 style: TextStyles.font16PrimaryText.copyWith(
                   fontFamily: FontFamilyHelper.fontFamily1,
-                  color: isSelected ? AppColors.primaryColor : Colors.black87,
+                  color: isSelected ? AppColors.primaryColor : context.highText,
                   fontWeight:
                       isSelected ? FontWeight.bold : FontWeight.normal,
                 ),

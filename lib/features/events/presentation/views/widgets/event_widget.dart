@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -45,9 +46,9 @@ class EventWidget extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: context.cardBg,
+            borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(12),
               bottomRight: Radius.circular(12),
             ),
@@ -64,8 +65,8 @@ class EventWidget extends StatelessWidget {
                 child: Text(
                   date,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    color: Color(0xFF1A2221), // Text color title
+                  style: TextStyle(
+                    color: context.highText,
                     fontSize: 16,
                     fontFamily: FontFamilyHelper.fontFamily1,
                     fontWeight: FontWeight.w500,

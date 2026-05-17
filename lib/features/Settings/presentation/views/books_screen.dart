@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/common/widgets/custom_loading_widget.dart';
 import '../../../../core/common/widgets/default_app_bar.dart';
 import '../../../../core/common/widgets/launch_utils.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../data/models/book_model.dart';
@@ -105,7 +106,7 @@ class _BooksScreenState extends State<BooksScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

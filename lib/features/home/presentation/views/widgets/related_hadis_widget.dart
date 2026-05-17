@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/tap_icon_widget.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/images/app_image.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -85,8 +86,8 @@ class RelatedHadisWidget extends StatelessWidget {
             child: Text(
               arHadis,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                color: Color(0xFF1A2221) /* Text_Color-TItle */,
+              style: TextStyle(
+                color: context.highText,
                 fontSize: 18,
                 fontFamily: 'Amiri Quran',
                 fontWeight: FontWeight.w400,
@@ -99,8 +100,8 @@ class RelatedHadisWidget extends StatelessWidget {
             width: 327,
             child: Text(
               enHadis,
-              style: const TextStyle(
-                color: Color(0xFF6F8F87) /* Text_Color-Sutitle */,
+              style: TextStyle(
+                color: context.secondaryText,
                 fontSize: 12,
                 fontFamily: 'Tajawal',
                 fontWeight: FontWeight.w400,

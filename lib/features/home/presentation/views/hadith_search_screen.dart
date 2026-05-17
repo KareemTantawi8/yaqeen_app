@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yaqeen_app/features/home/data/models/hadith_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/hadith_service.dart';
 import 'hadith_detail_screen.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
 
@@ -54,7 +55,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFDFD),
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -73,10 +74,10 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
       child: Row(
         children: [
           const Spacer(),
-          const Text(
+          Text(
             'البحث في الأحاديث',
             style: TextStyle(
-              color: Color(0xFF2B7669),
+              color: context.brandText,
               fontSize: 20,
               fontFamily: 'Tajawal',
               fontWeight: FontWeight.w700,
@@ -88,8 +89,8 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             child: Container(
               width: 46,
               height: 46,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEAF9F4),
+              decoration: BoxDecoration(
+                color: context.lightAccent,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.arrow_back, color: AppColors.primaryColor),
@@ -147,7 +148,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
                   fontSize: 14,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFEAF9F4),
+                fillColor: context.lightAccent,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -200,12 +201,12 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search, size: 72, color: Colors.grey[300]),
+            Icon(Icons.search, size: 72, color: context.greyText300),
             verticalSpace(16),
             Text(
               'ابحث في الأحاديث الشريفة',
               style: TextStyle(
-                color: Colors.grey[500],
+                color: context.greyText500,
                 fontFamily: 'Tajawal',
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -215,7 +216,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             Text(
               'أدخل كلمة أو جزء من متن الحديث',
               style: TextStyle(
-                color: Colors.grey[400],
+                color: context.greyText400,
                 fontFamily: 'Tajawal',
                 fontSize: 13,
               ),
@@ -230,12 +231,12 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off_rounded, size: 72, color: Colors.grey[300]),
+            Icon(Icons.search_off_rounded, size: 72, color: context.greyText300),
             verticalSpace(16),
             Text(
               'لا توجد نتائج',
               style: TextStyle(
-                color: Colors.grey[500],
+                color: context.greyText500,
                 fontFamily: 'Tajawal',
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -245,7 +246,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             Text(
               'جرب كلمة بحث مختلفة',
               style: TextStyle(
-                color: Colors.grey[400],
+                color: context.greyText400,
                 fontFamily: 'Tajawal',
                 fontSize: 13,
               ),
@@ -297,7 +298,7 @@ class _HadithSearchResultCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -317,7 +318,7 @@ class _HadithSearchResultCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF9F4),
+                    color: context.lightAccent,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -347,8 +348,8 @@ class _HadithSearchResultCard extends StatelessWidget {
               textAlign: TextAlign.right,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xFF1A2221),
+              style: TextStyle(
+                color: context.highText,
                 fontSize: 16,
                 fontFamily: 'Amiri Quran',
                 height: 1.9,
@@ -361,8 +362,8 @@ class _HadithSearchResultCard extends StatelessWidget {
                 textAlign: TextAlign.right,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Color(0xFF6F8F87),
+                style: TextStyle(
+                  color: context.secondaryText,
                   fontSize: 12,
                   fontFamily: 'Tajawal',
                 ),

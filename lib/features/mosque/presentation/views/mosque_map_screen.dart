@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
 import 'package:yaqeen_app/features/mosque/data/services/mosque_service.dart';
@@ -158,7 +159,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: context.cardBg,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
@@ -195,7 +196,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
                                   fontWeight: FontWeight.w700,
                                   color: sel
                                       ? Colors.white
-                                      : Colors.grey[700],
+                                      : context.greyText700,
                                 ),
                               ),
                             ),
@@ -218,7 +219,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 28, vertical: 20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Column(
@@ -311,7 +312,7 @@ class _MapButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 8),
@@ -338,7 +339,7 @@ class _MosqueInfoPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius:
             const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
@@ -367,7 +368,7 @@ class _MosqueInfoPanel extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: context.greyText300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -379,11 +380,11 @@ class _MosqueInfoPanel extends StatelessWidget {
           Text(
             mosque.name,
             textAlign: TextAlign.right,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Tajawal',
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1A2221),
+              color: context.highText,
             ),
           ),
           const SizedBox(height: 8),
@@ -417,11 +418,11 @@ class _MosqueInfoPanel extends StatelessWidget {
               if (mosque.rating != null) ...[
                 Text(
                   mosque.rating!.toStringAsFixed(1),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Tajawal',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF2D4A47),
+                    color: context.highText,
                   ),
                 ),
                 const SizedBox(width: 3),
@@ -448,10 +449,10 @@ class _MosqueInfoPanel extends StatelessWidget {
             Text(
               mosque.vicinity!,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Tajawal',
                 fontSize: 12,
-                color: Color(0xFF607D8B),
+                color: context.greyText600,
               ),
             ),
           ],

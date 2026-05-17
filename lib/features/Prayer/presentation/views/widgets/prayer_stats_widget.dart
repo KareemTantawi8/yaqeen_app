@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
@@ -17,7 +18,7 @@ class PrayerStatsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

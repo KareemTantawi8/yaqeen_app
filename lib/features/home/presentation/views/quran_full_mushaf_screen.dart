@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../data/models/quran_full_model.dart';
 import '../../data/repo/quran_full_service.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/styles/fonts/font_styles.dart';
@@ -87,7 +88,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -115,7 +116,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                   // Tab Bar
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: context.inputFillColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TabBar(
@@ -175,7 +176,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                                   border: Border.all(
                                     color: isSelected
                                         ? AppColors.primaryColor
-                                        : Colors.grey[300]!,
+                                        : context.greyText300,
                                     width: 1.5,
                                   ),
                                 ),
@@ -184,7 +185,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                                   style: TextStyle(
                                     color: isSelected
                                         ? AppColors.primaryColor
-                                        : Colors.grey[600],
+                                        : context.greyText600,
                                     fontFamily: FontFamilyHelper.fontFamily1,
                                     fontSize: 14,
                                     fontWeight: isSelected
@@ -354,47 +355,47 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                           Text(
                             surah.nameEnglish!,
                             style: TextStyles.font14PrimaryText.copyWith(
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                             ),
                           ),
                         ],
                       ],
                     ),
                   ),
-                  
+
                   // Arrow icon
                   Icon(
                     Icons.arrow_forward_ios,
                     size: 18,
-                    color: Colors.grey[400],
+                    color: context.greyText400,
                   ),
                 ],
               ),
-              
+
               if (surah.numberOfAyahs != null || surah.revelationType != null) ...[
                 verticalSpace(12),
-                Divider(color: Colors.grey[200]),
+                Divider(color: context.dividerColor),
                 verticalSpace(8),
                 Row(
                   children: [
                     if (surah.numberOfAyahs != null) ...[
-                      Icon(Icons.list_alt, size: 16, color: Colors.grey[600]),
+                      Icon(Icons.list_alt, size: 16, color: context.greyText600),
                       horizontalSpace(6),
                       Text(
                         '${surah.numberOfAyahs} آية',
                         style: TextStyles.font14PrimaryText.copyWith(
-                          color: Colors.grey[600],
+                          color: context.greyText600,
                         ),
                       ),
                       if (surah.revelationType != null) horizontalSpace(16),
                     ],
                     if (surah.revelationType != null) ...[
-                      Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                      Icon(Icons.location_on, size: 16, color: context.greyText600),
                       horizontalSpace(6),
                       Text(
                         surah.revelationType == 'Meccan' ? 'مكية' : 'مدنية',
                         style: TextStyles.font14PrimaryText.copyWith(
-                          color: Colors.grey[600],
+                          color: context.greyText600,
                         ),
                       ),
                     ],
@@ -452,7 +453,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                     return Center(
                       child: Icon(
                         Icons.error_outline,
-                        color: Colors.grey[400],
+                        color: context.greyText400,
                         size: 40,
                       ),
                     );
@@ -506,7 +507,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
           Text(
             'جاري تحميل المصحف الكريم...',
             style: TextStyles.font16PrimaryText.copyWith(
-              color: Colors.grey[600],
+              color: context.greyText600,
               fontFamily: FontFamilyHelper.fontFamily1,
             ),
           ),
@@ -525,13 +526,13 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
             Icon(
               Icons.error_outline,
               size: 64,
-              color: Colors.grey[400],
+              color: context.greyText400,
             ),
             verticalSpace(16),
             Text(
               _errorMessage ?? 'حدث خطأ',
               style: TextStyles.font16PrimaryText.copyWith(
-                color: Colors.grey[600],
+                color: context.greyText600,
                 fontFamily: FontFamilyHelper.fontFamily1,
               ),
               textAlign: TextAlign.center,
@@ -574,9 +575,9 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: context.cardBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
@@ -586,18 +587,18 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: context.greyText300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // Header
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withOpacity(0.1),
                   border: Border(
-                    bottom: BorderSide(color: Colors.grey[200]!),
+                    bottom: BorderSide(color: context.dividerColor),
                   ),
                 ),
                 child: Column(
@@ -615,14 +616,14 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                       Text(
                         surah.nameEnglish!,
                         style: TextStyles.font14PrimaryText.copyWith(
-                          color: Colors.grey[600],
+                          color: context.greyText600,
                         ),
                       ),
                     ],
                   ],
                 ),
               ),
-              
+
               // Ayahs list
               Expanded(
                 child: ListView.separated(
@@ -630,7 +631,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
                   padding: const EdgeInsets.all(16),
                   itemCount: surah.ayahs.length,
                   separatorBuilder: (context, index) => Divider(
-                    color: Colors.grey[200],
+                    color: context.dividerColor,
                     height: 24,
                   ),
                   itemBuilder: (context, index) {
@@ -677,7 +678,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
             style: TextStyles.font18PrimaryText.copyWith(
               fontFamily: 'Amiri Quran',
               height: 1.8,
-              color: Colors.black87,
+              color: context.highText,
             ),
             textAlign: TextAlign.justify,
           ),

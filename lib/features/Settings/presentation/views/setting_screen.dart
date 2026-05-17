@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:yaqeen_app/core/providers/theme_provider.dart';
 import 'package:yaqeen_app/features/Settings/presentation/views/widgets/custom_cursoal_widget.dart';
 import 'package:yaqeen_app/features/Settings/presentation/views/widgets/custom_service_widget.dart';
 import 'package:yaqeen_app/features/Settings/presentation/views/widgets/setting_app_bar_widget.dart';
@@ -13,12 +15,13 @@ import 'books_screen.dart';
 import 'radio_screen.dart';
 import '../../../events/presentation/views/events_screen.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends ConsumerWidget {
   const SettingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // bool isToggle = true;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -29,22 +32,20 @@ class SettingScreen extends StatelessWidget {
               verticalSpace(3),
               const CustomDividerWidget(),
               verticalSpace(3),
-              // Carousel slider
               const CustomCarousalWidget(),
               verticalSpace(16),
               const CustomDividerWidget(),
               verticalSpace(5),
-              const Align(
+              Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   'خدمات اخري',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color(0xFF2B7669) /* Primarycolor */,
+                    color: const Color(0xFF2B7669),
                     fontSize: 22,
                     fontFamily: 'Tajawal',
                     fontWeight: FontWeight.w800,
-                    // height: 1,
                   ),
                 ),
               ),
@@ -105,8 +106,9 @@ class SettingScreen extends StatelessWidget {
               verticalSpace(24),
               SettingToggleTile(
                 title: 'الوضع المظلم',
-                onTap: () {},
-                icon: Icons.toggle_on,
+                onTap: () => ref.read(themeProvider.notifier).toggle(),
+                icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                isActive: isDark,
               ),
               verticalSpace(12),
               SettingToggleTile(
@@ -116,7 +118,6 @@ class SettingScreen extends StatelessWidget {
                 iconSize: 25,
               ),
               verticalSpace(12),
-
               SettingToggleTile(
                 title: 'مشاركة التطبيق',
                 onTap: () {

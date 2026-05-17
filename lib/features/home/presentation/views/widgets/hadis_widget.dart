@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/images/app_image.dart';
 import '../../../../../core/utils/spacing.dart';
 
@@ -48,10 +49,10 @@ class HadisWidget extends StatelessWidget {
                   ),
                   Text(
                     num,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF1A2221),
+                      color: context.highText,
                     ),
                   ),
                 ],
@@ -65,8 +66,8 @@ class HadisWidget extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Color(0xFF1A2221),
+                      style: TextStyle(
+                        color: context.highText,
                         fontSize: 16,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w400,
@@ -78,8 +79,8 @@ class HadisWidget extends StatelessWidget {
                       child: Text(
                         subtitle,
                         textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          color: Color(0xFF6F8F87) /* Text_Color-Sutitle */,
+                        style: TextStyle(
+                          color: context.secondaryText,
                           fontSize: 14,
                           fontFamily: 'Tajawal',
                           fontWeight: FontWeight.w500,
@@ -95,7 +96,7 @@ class HadisWidget extends StatelessWidget {
                 enTitle,
                 textAlign: TextAlign.right,
                 style: const TextStyle(
-                  color: Color(0xFF6F8F87) /* Text_Color-Sutitle */,
+                  color: context.secondaryText,
                   fontSize: 14,
                   fontFamily: 'Tajawal',
                   fontWeight: FontWeight.w500,

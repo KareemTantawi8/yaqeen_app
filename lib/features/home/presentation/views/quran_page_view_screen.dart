@@ -7,6 +7,7 @@ import 'package:yaqeen_app/core/services/quran_word_pronunciation_service.dart';
 import 'package:yaqeen_app/core/services/quran_audio_service.dart';
 import 'package:yaqeen_app/core/services/quran_timing_data_service.dart';
 import 'package:yaqeen_app/core/services/quran_tafsir_service.dart';
+import 'package:yaqeen_app/core/extension/context_extension.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_family_helper.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
@@ -137,7 +138,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -173,7 +174,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                         Text(
                           'من 604',
                           style: TextStyles.font14PrimaryText.copyWith(
-                            color: Colors.grey[600],
+                            color: context.greyText600,
                           ),
                         ),
                       ],
@@ -309,13 +310,13 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                   Icon(
                     Icons.error_outline,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: context.greyText400,
                   ),
                   verticalSpace(16),
                   Text(
                     'فشل تحميل الصفحة',
                     style: TextStyles.font16PrimaryText.copyWith(
-                      color: Colors.grey[600],
+                      color: context.greyText600,
                     ),
                   ),
                   verticalSpace(16),
@@ -358,18 +359,18 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: context.greyText300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // Header
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withOpacity(0.1),
                   border: Border(
-                    bottom: BorderSide(color: Colors.grey[200]!),
+                    bottom: BorderSide(color: context.dividerColor),
                   ),
                 ),
                 child: Row(
@@ -485,7 +486,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                         fontFamily: 'Amiri Quran',
                         color: isHighlighted
                             ? AppColors.primaryColor
-                            : Colors.black87,
+                            : context.highText,
                         fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
@@ -500,7 +501,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                 fontSize: 24,
                 fontFamily: 'Amiri Quran',
                 height: 2.0,
-                color: Colors.black87,
+                color: context.highText,
               ),
               textAlign: TextAlign.right,
             ),
@@ -651,18 +652,18 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: context.greyText300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // Header
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withOpacity(0.1),
                   border: Border(
-                    bottom: BorderSide(color: Colors.grey[200]!),
+                    bottom: BorderSide(color: context.dividerColor),
                   ),
                 ),
                 child: Row(
@@ -683,7 +684,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                           Text(
                             'سورة $surahNumber - آية $verseNumber',
                             style: TextStyles.font14PrimaryText.copyWith(
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                             ),
                           ),
                         ],
@@ -802,7 +803,7 @@ class _TafsirContentState extends State<_TafsirContent> {
                       }
                     },
                     selectedColor: AppColors.primaryColor,
-                    backgroundColor: Colors.grey[200],
+                    backgroundColor: context.inputFillColor,
                   ),
                 );
               }).toList(),
@@ -819,7 +820,7 @@ class _TafsirContentState extends State<_TafsirContent> {
                       child: Text(
                         _errorMessage!,
                         style: TextStyles.font16PrimaryText.copyWith(
-                          color: Colors.grey[600],
+                          color: context.greyText600,
                         ),
                       ),
                     )

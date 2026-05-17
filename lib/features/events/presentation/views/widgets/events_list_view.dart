@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/common/widgets/launch_utils.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../data/models/islam_event_model.dart';
 import '../../../data/repo/load_data_service.dart';
@@ -180,13 +181,13 @@ class _EventCardState extends State<_EventCard> {
                                     color: const Color(0xFFFFD700),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'اليوم',
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w700,
                                       fontFamily: 'Tajawal',
-                                      color: Colors.black87,
+                                      color: context.highText,
                                     ),
                                   ),
                                 ),
@@ -196,8 +197,8 @@ class _EventCardState extends State<_EventCard> {
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     color: widget.isPast
-                                        ? Colors.grey.shade600
-                                        : const Color(0xFF1A2221),
+                                        ? context.greyText600
+                                        : context.highText,
                                     fontSize: 15,
                                     fontFamily: 'Tajawal',
                                     fontWeight: FontWeight.w700,

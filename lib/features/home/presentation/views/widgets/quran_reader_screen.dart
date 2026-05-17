@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import '../../../../../core/services/quran_audio_service.dart';
 import '../../../../../core/services/quran_reading_service.dart';
 import '../../../../../core/services/reading_progress_notifier.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../data/models/ayah_model.dart';
@@ -636,7 +637,7 @@ class _QuranReaderScreenState extends State<QuranReaderScreen> {
                   fontFamily: 'Amiri Quran',
                   fontSize: _fontSize,
                   height: 2,
-                  color: Colors.black87,
+                  color: context.highText,
                 ),
                 children: [
                   TextSpan(

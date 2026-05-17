@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/common/widgets/custom_divider_widget.dart';
 import '../../../../core/common/widgets/default_app_bar.dart';
+import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/utils/spacing.dart';
@@ -15,7 +16,7 @@ class QuranScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -23,7 +24,7 @@ class QuranScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardBg,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
