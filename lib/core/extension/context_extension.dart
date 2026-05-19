@@ -58,7 +58,7 @@ extension AppColorExtension on BuildContext {
   Color get primaryText =>
       isDark ? DarkColors.textHigh : AppColors.titleColor;
   Color get secondaryText =>
-      isDark ? DarkColors.textMedium : AppColors.thinText;
+      isDark ? DarkColors.textMedium : const Color(0xFF6F8F87);
   // Brand green text (0xFF2B7669)
   Color get brandText =>
       isDark ? DarkColors.primary : const Color(0xFF2B7669);

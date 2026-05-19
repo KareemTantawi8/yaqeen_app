@@ -145,6 +145,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
+                          color: context.cardBg,
                           border: Border.all(color: AppColors.primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -152,6 +153,12 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                           value: selectedReciter,
                           isExpanded: true,
                           underline: const SizedBox(),
+                          dropdownColor: context.cardBg,
+                          style: TextStyle(
+                            color: context.highText,
+                            fontFamily: 'Tajawal',
+                            fontSize: 14,
+                          ),
                           items: List.generate(
                             reciters.length,
                             (index) => DropdownMenuItem(
@@ -172,6 +179,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                       if (selectedSurahNumber != null)
                         Card(
                           elevation: 4,
+                          color: context.cardBg,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -197,7 +205,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                                 Text(
                                   'القارئ: ${reciterNames[reciters.indexOf(selectedReciter)]}',
                                   style: TextStyle(
-                                    color: Colors.grey[600],
+                                    color: context.greyText600,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -231,7 +239,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                       return Card(
                         color: isSelected
                             ? AppColors.primaryColor.withOpacity(0.1)
-                            : Colors.white,
+                            : context.cardBg,
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
                           leading: Container(
@@ -259,7 +267,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                           subtitle: Text(
                             '${surah.ayahCount} آية',
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                               fontSize: 12,
                             ),
                           ),

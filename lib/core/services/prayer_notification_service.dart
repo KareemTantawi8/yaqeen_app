@@ -19,12 +19,21 @@ class PrayerNotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  static const _channelId = 'adhan_prayer_channel';
-  static const _channelName = 'أوقات الصلاة';
   static const _channelDesc = 'إشعارات أوقات الصلاة والأذان';
 
   static const _keyEnabled = 'adhan_notifications_enabled';
   static const _keyPrayerPrefix = 'prayer_notif_enabled_';
+
+  // Per-voice channel IDs and names
+  static const Map<String, String> _voiceChannels = {
+    'makkah': 'أذان مكة المكرمة',
+    'madinah': 'أذان المدينة المنورة',
+    'mishary': 'مشاري راشد العفاسي',
+    'abdulbasit': 'عبد الباسط عبد الصمد',
+    'sudais': 'عبد الرحمن السديس',
+  };
+
+  static String _channelId(String voiceId) => 'adhan_voice_$voiceId';
 
   static const _prayerIds = <String, int>{
     'الفجر': 100,
@@ -73,21 +82,26 @@ class PrayerNotificationService {
       onDidReceiveBackgroundNotificationResponse: _backgroundNotificationHandler,
     );
 
-    // Create dedicated high-importance channel on Android
+    // Create one high-importance channel per voice with its custom Adhan sound
     if (Platform.isAndroid) {
       final android = _plugin.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
-      await android?.createNotificationChannel(
-        const AndroidNotificationChannel(
-          _channelId,
-          _channelName,
-          description: _channelDesc,
-          importance: Importance.max,
-          playSound: true,
-          enableVibration: true,
-          showBadge: true,
-        ),
-      );
+      for (final entry in _voiceChannels.entries) {
+        final voiceId = entry.key;
+        final voiceName = entry.value;
+        await android?.createNotificationChannel(
+          AndroidNotificationChannel(
+            _channelId(voiceId),
+            voiceName,
+            description: _channelDesc,
+            importance: Importance.max,
+            sound: RawResourceAndroidNotificationSound(voiceId),
+            playSound: true,
+            enableVibration: true,
+            showBadge: true,
+          ),
+        );
+      }
     }
 
     debugPrint('PrayerNotificationService: initialized');
@@ -156,6 +170,16 @@ class PrayerNotificationService {
   }) async {
     if (!await areNotificationsEnabled()) return;
 
+    // Determine which Adhan voice the user has selected
+    final prefs = await SharedPreferences.getInstance();
+    String voiceId = prefs.getString('selected_adhan_voice_id') ??
+        prefs.getString('selected_adhan_sound') ??
+        'makkah';
+    if (!_voiceChannels.containsKey(voiceId)) voiceId = 'makkah';
+
+    final channelId = _channelId(voiceId);
+    final channelName = _voiceChannels[voiceId]!;
+
     final prayerTimes = PrayerCalculatorService.calculate(
       latitude: latitude,
       longitude: longitude,
@@ -182,16 +206,20 @@ class PrayerNotificationService {
       }
 
       if (time.isAfter(now)) {
-        await _scheduleOne(name, time);
+        await _scheduleOne(name, time, channelId, channelName, voiceId);
       }
     }
 
-    debugPrint('PrayerNotificationService: scheduled today\'s prayers');
+    debugPrint(
+        'PrayerNotificationService: scheduled today\'s prayers (voice=$voiceId)');
   }
 
   static Future<void> _scheduleOne(
     String prayerName,
     DateTime prayerTime,
+    String channelId,
+    String channelName,
+    String voiceId,
   ) async {
     try {
       final id = _prayerIds[prayerName]!;
@@ -202,11 +230,14 @@ class PrayerNotificationService {
         'حان وقت صلاة $prayerName',
         'اضغط لسماع الأذان',
         tzTime,
-        const NotificationDetails(
+        NotificationDetails(
           android: AndroidNotificationDetails(
-            _channelId,
-            _channelName,
+            channelId,
+            channelName,
             channelDescription: _channelDesc,
+            // Sound is set on the channel; reference it here too so the OS
+            // uses the correct one when the channel already exists.
+            sound: RawResourceAndroidNotificationSound(voiceId),
             importance: Importance.max,
             priority: Priority.max,
             enableVibration: true,
@@ -220,6 +251,7 @@ class PrayerNotificationService {
             presentAlert: true,
             presentBadge: true,
             presentSound: true,
+            sound: '$voiceId.mp3',
             interruptionLevel: InterruptionLevel.timeSensitive,
           ),
         ),
@@ -229,7 +261,7 @@ class PrayerNotificationService {
         payload: prayerName,
       );
 
-      debugPrint('Scheduled: $prayerName at $prayerTime');
+      debugPrint('Scheduled: $prayerName at $prayerTime (voice=$voiceId)');
     } catch (e) {
       debugPrint('Failed to schedule $prayerName: $e');
     }

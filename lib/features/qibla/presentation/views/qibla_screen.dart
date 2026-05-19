@@ -69,9 +69,31 @@ class _QiblaScreenState extends State<QiblaScreen>
         _errorMessage = null;
       });
 
-      final position = await LocationService.getCurrentLocation();
+      // Request permission if not yet granted
+      if (!await LocationService.isLocationPermissionGranted()) {
+        await LocationService.requestPermission();
+      }
+
+      Position? position = await LocationService.getCurrentLocation();
       if (position == null) {
-        throw Exception('تعذر الحصول على الموقع');
+        // Fall back to saved location so the compass still works
+        final saved = await LocationService.getSavedLocation();
+        if (saved == null) {
+          throw Exception('تعذر الحصول على الموقع. تأكد من تفعيل خدمات الموقع');
+        }
+        // Use saved location for Qibla calculation only (no live GPS)
+        position = Position(
+          latitude: saved['latitude']!,
+          longitude: saved['longitude']!,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          altitudeAccuracy: 0,
+          heading: 0,
+          headingAccuracy: 0,
+          speed: 0,
+          speedAccuracy: 0,
+        );
       }
 
       final qiblaDirection = QiblaService.calculateQiblaDirection(
@@ -98,7 +120,7 @@ class _QiblaScreenState extends State<QiblaScreen>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = e.toString();
+          _errorMessage = e.toString().replaceAll('Exception: ', '');
         });
       }
     }

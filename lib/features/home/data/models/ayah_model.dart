@@ -1,3 +1,5 @@
+import '../../../../core/utils/quran_text_utils.dart';
+
 class Ayah {
   final int number;
   final String text;
@@ -24,7 +26,7 @@ class Ayah {
   factory Ayah.fromJson(Map<String, dynamic> json) {
     return Ayah(
       number: json['number'] as int,
-      text: json['text'] as String,
+      text: QuranTextUtils.withoutAyahMarkers(json['text'] as String),
       numberInSurah: json['numberInSurah'] as int,
       juz: json['juz'] as int,
       manzil: json['manzil'] as int,

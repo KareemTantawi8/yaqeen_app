@@ -239,8 +239,8 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
             end: Alignment.bottomCenter,
             colors: [
               AppColors.primaryColor.withOpacity(0.1),
-              Colors.white,
-              Colors.white,
+              context.scaffoldBg,
+              context.scaffoldBg,
             ],
           ),
         ),
@@ -267,7 +267,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                           style: TextStyle(
                             fontSize: 12,
                             fontFamily: 'Tajawal',
-                            color: Colors.grey[600],
+                            color: context.greyText600,
                           ),
                         ),
                         Text(
@@ -402,7 +402,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'Tajawal',
-                        color: Colors.grey[600],
+                        color: context.greyText600,
                       ),
                     ),
                   ],
@@ -426,7 +426,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                           overlayRadius: 16,
                         ),
                         activeTrackColor: AppColors.primaryColor,
-                        inactiveTrackColor: Colors.grey[300],
+                        inactiveTrackColor: context.greyText300,
                         thumbColor: AppColors.primaryColor,
                         overlayColor: AppColors.primaryColor.withOpacity(0.2),
                       ),
@@ -448,7 +448,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                           Text(
                             _formatDuration(_position),
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                               fontSize: 13,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w600,
@@ -457,7 +457,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                           Text(
                             _formatDuration(_duration),
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                               fontSize: 13,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w600,
@@ -483,7 +483,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: context.inputFillColor,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -552,7 +552,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: context.inputFillColor,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(

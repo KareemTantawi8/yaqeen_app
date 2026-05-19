@@ -146,9 +146,9 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
       isScrollControlled: true,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: context.cardBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           children: [
@@ -157,7 +157,7 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: context.dividerColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -200,12 +200,12 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                               ],
                             )
                           : null,
-                      color: isSelected ? null : Colors.grey[100],
+                      color: isSelected ? null : context.inputFillColor,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
                             ? AppColors.primaryColor
-                            : Colors.grey[300]!,
+                            : context.dividerColor,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
@@ -254,13 +254,13 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                           fontSize: 13,
                           color: isSelected
                               ? Colors.white.withOpacity(0.9)
-                              : Colors.grey[600],
+                              : context.greyText600,
                         ),
                       ),
                       trailing: isSelected
                           ? const Icon(Icons.check_circle, color: Colors.white)
                           : Icon(Icons.circle_outlined,
-                              color: Colors.grey[400]),
+                              color: context.greyText400),
                     ),
                   );
                 },

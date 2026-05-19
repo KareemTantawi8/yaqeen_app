@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/extension/context_extension.dart';
@@ -15,7 +16,8 @@ class MosqueListScreen extends StatefulWidget {
   State<MosqueListScreen> createState() => _MosqueListScreenState();
 }
 
-class _MosqueListScreenState extends State<MosqueListScreen> {
+class _MosqueListScreenState extends State<MosqueListScreen>
+    with WidgetsBindingObserver {
   List<MosqueModel> _mosques = [];
   bool _isLoading = true;
   bool _hasError = false;
@@ -27,11 +29,20 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initLocation();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _initLocation();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _debounce?.cancel();
     super.dispose();
   }
@@ -43,25 +54,51 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
   }
 
   Future<void> _initLocation() async {
-    // Wait briefly so the home screen's GPS request can finish first.
-    // Both screens start simultaneously (IndexedStack); concurrent location
-    // requests cause "already running" errors and fallback to stale coords.
-    await Future.delayed(const Duration(milliseconds: 1200));
+    // Phase 1: show mosques immediately from saved/default location (no GPS wait)
+    final saved = await LocationService.getSavedLocation();
     if (!mounted) return;
 
-    // getLocationWithFallback: tries GPS → saved → default (Riyadh)
-    // By now the home screen's GPS call has completed and saved the real coords.
-    final loc = await LocationService.getLocationWithFallback();
-    if (!mounted) return;
+    final initLat = saved?['latitude'] ?? LocationService.defaultLatitude;
+    final initLng = saved?['longitude'] ?? LocationService.defaultLongitude;
 
-    _userLat = loc['latitude'];
-    _userLng = loc['longitude'];
-    await _loadMosques();
+    // Only reload if location actually changed
+    final prevLat = _userLat;
+    final prevLng = _userLng;
+    _userLat = initLat;
+    _userLng = initLng;
+
+    if (prevLat == null ||
+        (initLat - prevLat).abs() > 0.001 ||
+        (initLng - (prevLng ?? 0)).abs() > 0.001) {
+      await _loadMosques();
+    }
+
+    // Phase 2: silently refresh if GPS gives a different location
+    if (!mounted) return;
+    try {
+      final Position? position = await LocationService.getCurrentLocation()
+          .timeout(const Duration(seconds: 20));
+      if (position == null || !mounted) return;
+
+      final latDiff = (position.latitude - (_userLat ?? 0)).abs();
+      final lngDiff = (position.longitude - (_userLng ?? 0)).abs();
+      if (latDiff > 0.001 || lngDiff > 0.001) {
+        _userLat = position.latitude;
+        _userLng = position.longitude;
+        await _loadMosques();
+      }
+    } catch (_) {
+      // Keep using initial location
+    }
   }
 
   Future<void> _loadMosques() async {
     if (_userLat == null || _userLng == null) return;
-    if (mounted) setState(() { _isLoading = true; _hasError = false; });
+    if (mounted)
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
 
     try {
       final mosques = await MosqueService.getNearbyMosques(
@@ -69,18 +106,25 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
         longitude: _userLng!,
         radiusMeters: _searchRadiusKm * 1000,
       );
-      if (mounted) setState(() { _mosques = mosques; _isLoading = false; });
+      if (mounted)
+        setState(() {
+          _mosques = mosques;
+          _isLoading = false;
+        });
     } catch (_) {
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted)
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
     }
   }
 
   Future<void> _openInMaps(MosqueModel mosque) async {
-    final query = Uri.encodeComponent(mosque.name);
     final googleUrl =
-        'https://www.google.com/maps/search/?api=1&query=${mosque.latitude},${mosque.longitude}&query_place_id=${mosque.placeId}';
+        'https://www.google.com/maps/dir/?api=1&destination=${mosque.latitude},${mosque.longitude}';
     final appleUrl =
-        'https://maps.apple.com/?q=$query&ll=${mosque.latitude},${mosque.longitude}';
+        'https://maps.apple.com/?daddr=${mosque.latitude},${mosque.longitude}&dirflg=d';
     final uri = Uri.parse(googleUrl);
     final appleUri = Uri.parse(appleUrl);
     if (await canLaunchUrl(uri)) {
@@ -143,7 +187,11 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 64, color: Color(0xFFB0BEC5)),
+            const Icon(
+              Icons.wifi_off_rounded,
+              size: 64,
+              color: Color(0xFFB0BEC5),
+            ),
             const SizedBox(height: 16),
             const Text(
               'تعذّر تحميل المساجد',
@@ -175,10 +223,13 @@ class _MosqueListScreenState extends State<MosqueListScreen> {
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -297,7 +348,9 @@ class _Header extends StatelessWidget {
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.only(left: 6),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: selected
                           ? Colors.white
@@ -310,9 +363,7 @@ class _Header extends StatelessWidget {
                         fontFamily: 'Tajawal',
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: selected
-                            ? AppColors.primaryColor
-                            : Colors.white,
+                        color: selected ? AppColors.primaryColor : Colors.white,
                       ),
                     ),
                   ),
@@ -486,10 +537,10 @@ class _MosqueCard extends StatelessWidget {
                                       elevation: 0,
                                       shadowColor: Colors.transparent,
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 14),
+                                        horizontal: 14,
+                                      ),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
                                     ),
                                     child: const Row(
@@ -497,8 +548,10 @@ class _MosqueCard extends StatelessWidget {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.directions_rounded,
-                                            size: 18),
+                                        Icon(
+                                          Icons.directions_rounded,
+                                          size: 18,
+                                        ),
                                         SizedBox(width: 6),
                                         Text(
                                           'الاتجاهات',
@@ -556,10 +609,7 @@ class _MosqueCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.primaryColor,
-            Color(0xFF1A5F54),
-          ],
+          colors: [AppColors.primaryColor, Color(0xFF1A5F54)],
         ),
         boxShadow: [
           BoxShadow(
@@ -570,11 +620,7 @@ class _MosqueCard extends StatelessWidget {
           ),
         ],
       ),
-      child: const Icon(
-        Icons.mosque_rounded,
-        color: Colors.white,
-        size: 26,
-      ),
+      child: const Icon(Icons.mosque_rounded, color: Colors.white, size: 26),
     );
   }
 
@@ -582,8 +628,7 @@ class _MosqueCard extends StatelessWidget {
     if (mosque.isOpen == null) return const SizedBox.shrink();
     final open = mosque.isOpen!;
     final color = open ? const Color(0xFF1F9D5C) : const Color(0xFFD64545);
-    final bg =
-        open ? const Color(0xFFE9F8F0) : const Color(0xFFFDECEC);
+    final bg = open ? const Color(0xFFE9F8F0) : const Color(0xFFFDECEC);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
@@ -637,9 +682,7 @@ class _MosqueCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: AppColors.primaryColor.withOpacity(0.1),
-        ),
+        border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -249,10 +249,10 @@ class _ReciterSurahsScreenState extends State<ReciterSurahsScreen> {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(screenWidth * 0.04),
         border: Border.all(
-          color: Colors.grey[200]!,
+          color: context.dividerColor,
           width: 1.5,
         ),
         boxShadow: [
@@ -335,7 +335,7 @@ class _ReciterSurahsScreenState extends State<ReciterSurahsScreen> {
                                 ? Icons.location_on_outlined 
                                 : Icons.location_city_outlined,
                             size: screenWidth * 0.035,
-                            color: Colors.grey[600],
+                            color: context.greyText600,
                           ),
                           horizontalSpace(screenWidth * 0.01),
                           Flexible(
@@ -344,7 +344,7 @@ class _ReciterSurahsScreenState extends State<ReciterSurahsScreen> {
                               style: TextStyle(
                                 fontSize: screenWidth * 0.0325,
                                 fontFamily: 'Tajawal',
-                                color: Colors.grey[600],
+                                color: context.greyText600,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

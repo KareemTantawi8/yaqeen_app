@@ -46,10 +46,20 @@ class SettingToggleTile extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Icon(
-              icon,
-              color: AppColors.primaryColor,
-              size: iconSize,
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              transitionBuilder: (child, animation) => RotationTransition(
+                turns: Tween<double>(begin: 0.75, end: 1.0).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
+                ),
+                child: FadeTransition(opacity: animation, child: child),
+              ),
+              child: Icon(
+                icon,
+                key: ValueKey(icon),
+                color: AppColors.primaryColor,
+                size: iconSize,
+              ),
             ),
           ],
         ),

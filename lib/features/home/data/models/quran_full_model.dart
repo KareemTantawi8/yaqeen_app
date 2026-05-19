@@ -1,4 +1,6 @@
 // Model for Full Quran Response (Text Format)
+import '../../../../core/utils/quran_text_utils.dart';
+
 class QuranFullTextModel {
   final String mushaf;
   final int totalSurahs;
@@ -89,7 +91,7 @@ class AyahTextModel {
   factory AyahTextModel.fromJson(Map<String, dynamic> json) {
     return AyahTextModel(
       ayahId: json['ayah_id'] ?? json['numberInSurah'] ?? json['number'] ?? 0,
-      text: json['text'] ?? '',
+      text: QuranTextUtils.withoutAyahMarkers(json['text'] ?? ''),
       page: json['page'],
       juz: json['juz'],
     );

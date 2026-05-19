@@ -90,7 +90,7 @@ class _AzkarCardState extends State<AzkarCard> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: context.lightAccent,
+        color: context.isDark ? const Color(0xFF0D2B24) : const Color(0xFFDDF6EB),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

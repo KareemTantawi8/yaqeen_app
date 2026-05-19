@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 import '../../../../core/extension/context_extension.dart';
+import '../../../../core/utils/quran_text_utils.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
 import '../../../../core/utils/spacing.dart';
@@ -147,6 +148,7 @@ class _QuranTafsirScreenState extends State<QuranTafsirScreen> {
                         final surah = surahs[index];
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6),
+                          color: context.cardBg,
                           child: ListTile(
                             leading: Container(
                               width: 45,
@@ -222,6 +224,7 @@ class _QuranTafsirScreenState extends State<QuranTafsirScreen> {
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
+          color: context.cardBg,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -245,11 +248,12 @@ class _QuranTafsirScreenState extends State<QuranTafsirScreen> {
                 ),
                 verticalSpace(8),
                 Text(
-                  verse.text,
-                  style: const TextStyle(
+                  QuranTextUtils.withoutAyahMarkers(verse.text),
+                  style: TextStyle(
                     fontSize: 18,
                     fontFamily: 'Amiri Quran',
                     height: 2.0,
+                    color: context.highText,
                   ),
                   textAlign: TextAlign.right,
                 ),

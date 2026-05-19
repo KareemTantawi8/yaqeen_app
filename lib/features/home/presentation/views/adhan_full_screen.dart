@@ -230,7 +230,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardBg,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -454,7 +454,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -494,7 +494,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                     Text(
                       _selectedVoiceName,
                       style: TextStyles.font14PrimaryText
-                          .copyWith(color: Colors.grey[600]),
+                          .copyWith(color: context.greyText600),
                     ),
                   ],
                 ),
@@ -547,7 +547,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               ElevatedButton.icon(
                 onPressed: _openAdhanSettings,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: context.cardBg,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -579,7 +579,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -616,7 +616,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                 Text(
                   _adhanData!.date,
                   style: TextStyles.font14PrimaryText
-                      .copyWith(color: Colors.grey[600]),
+                      .copyWith(color: context.greyText600),
                 ),
               ],
             ),
@@ -644,7 +644,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
       decoration: BoxDecoration(
         color: isNext
             ? AppColors.primaryColor.withOpacity(0.1)
-            : Colors.white,
+            : context.cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isNext ? AppColors.primaryColor : Colors.transparent,
@@ -767,7 +767,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
           Text(
             'جاري تحميل مواقيت الأذان...',
             style: TextStyles.font16PrimaryText.copyWith(
-              color: Colors.grey[600],
+              color: context.greyText600,
               fontFamily: FontFamilyHelper.fontFamily1,
             ),
           ),
@@ -788,7 +788,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
             Text(
               _errorMessage ?? 'حدث خطأ',
               style: TextStyles.font16PrimaryText.copyWith(
-                color: Colors.grey[600],
+                color: context.greyText600,
                 fontFamily: FontFamilyHelper.fontFamily1,
               ),
               textAlign: TextAlign.center,

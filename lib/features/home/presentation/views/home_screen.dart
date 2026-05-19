@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:yaqeen_app/core/services/adhan_audio_player_service.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
+import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/prayer_times_service.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/Prayer_name_widget.dart';
@@ -39,7 +41,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PrayerTimingsModel? prayerTimings;
   bool isLoading = true;
   bool hasError = false;
@@ -52,9 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
   String locationDescription = '';
   String? currentPrayerName;
 
+  // Track the last auto-played prayer to avoid replaying the same one
+  String? _lastAutoPlayedPrayer;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializeLocation();
 
     //! Uncomment the following lines to show the Ayah of the Day dialog after the first frame is rendered
@@ -110,12 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // getCurrentLocation() only proceeds if permission is already granted
       final position = await LocationService.getCurrentLocation()
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
       if (position == null || !mounted) return;
 
       final latDiff = (position.latitude - (currentLatitude ?? 0)).abs();
       final lngDiff = (position.longitude - (currentLongitude ?? 0)).abs();
-      if (latDiff < 0.01 && lngDiff < 0.01) return;
+      // Only skip if the difference is less than ~100m (0.001 degrees ≈ 111m)
+      if (latDiff < 0.001 && lngDiff < 0.001) return;
 
       currentLatitude = position.latitude;
       currentLongitude = position.longitude;
@@ -123,6 +130,12 @@ class _HomeScreenState extends State<HomeScreen> {
         position.latitude, position.longitude,
       );
       await _loadPrayerTimes(silent: true);
+
+      // Reschedule notifications for the new location
+      PrayerNotificationService.schedulePrayerNotifications(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
     } catch (_) {}
   }
 
@@ -165,6 +178,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Start countdown timer
       _startCountdownTimer();
+
+      // Schedule today's prayer notifications for this location (no-op if disabled)
+      if (!silent && currentLatitude != null && currentLongitude != null) {
+        PrayerNotificationService.schedulePrayerNotifications(
+          latitude: currentLatitude!,
+          longitude: currentLongitude!,
+        );
+      }
     } catch (e) {
       debugPrint('Failed to load prayer times: $e');
       setState(() {
@@ -179,11 +200,22 @@ class _HomeScreenState extends State<HomeScreen> {
     _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (prayerTimings != null && mounted) {
+        final prevName = nextPrayer?['name'] as String?;
         final next = PrayerTimesService.getNextPrayer(
           prayerTimings!.timings,
           latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
           longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
         );
+        final newName = next['name'] as String?;
+
+        // Detect when prayer time arrives (next prayer just changed)
+        if (prevName != null &&
+            newName != prevName &&
+            _lastAutoPlayedPrayer != prevName) {
+          _lastAutoPlayedPrayer = prevName;
+          _autoPlayAdhan(prevName);
+        }
+
         setState(() {
           nextPrayer = next;
           countdown = next['countdown'];
@@ -192,8 +224,32 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _autoPlayAdhan(String prayerName) async {
+    try {
+      final notifEnabled =
+          await PrayerNotificationService.areNotificationsEnabled();
+      if (!notifEnabled) return;
+      final prayerEnabled = await PrayerNotificationService
+          .getPrayerNotificationEnabled(prayerName);
+      if (!prayerEnabled) return;
+
+      await AdhanAudioPlayerService.instance.playAdhan();
+    } catch (e) {
+      debugPrint('Auto-play Adhan error: $e');
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh prayer times + mosques when user brings app to foreground
+    if (state == AppLifecycleState.resumed) {
+      _initializeLocation();
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _countdownTimer?.cancel();
     super.dispose();
   }
@@ -393,7 +449,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                               },
-                              image: AppImages.azanIcon,
+                              iconData: Icons.mosque_rounded,
                               text: 'أذان',
                             ),
                             horizontalSpace(8),
@@ -406,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                               },
-                              image: AppImages.socityIcon,
+                              iconData: Icons.format_quote_rounded,
                               text: 'الاحاديث',
                             ),
                             horizontalSpace(8),
@@ -419,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                               },
-                              image: AppImages.qeplaIcon,
+                              iconData: Icons.explore_rounded,
                               text: 'قبلة',
                             ),
                             horizontalSpace(8),
