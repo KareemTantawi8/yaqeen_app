@@ -95,7 +95,7 @@ class HadisWidget extends StatelessWidget {
               Text(
                 enTitle,
                 textAlign: TextAlign.right,
-                style: const TextStyle(
+                style: TextStyle(
                   color: context.secondaryText,
                   fontSize: 14,
                   fontFamily: 'Tajawal',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart';
+import '../../../../core/utils/quran_text_utils.dart';
 
 /// Service for loading Quran pages using the offline `quran_with_tafsir` data.
 class QuranPageService {
@@ -16,7 +17,8 @@ class QuranPageService {
       final verses = ayahs
           .map((ayah) => {
                 'verse_key': '${ayah.surahNumber}:${ayah.id}',
-                'text_uthmani_simple': ayah.text,
+                'text_uthmani_simple':
+                    QuranTextUtils.withoutAyahMarkers(ayah.text),
                 'page': ayah.page,
                 'juz': ayah.juz,
                 'words': <Map<String, dynamic>>[],

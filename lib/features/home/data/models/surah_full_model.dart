@@ -1,4 +1,6 @@
 // Model for Full Surah with Audio
+import '../../../../core/utils/quran_text_utils.dart';
+
 class SurahFullModel {
   final int surahId;
   final String name;
@@ -58,7 +60,7 @@ class AyahWithAudioModel {
   factory AyahWithAudioModel.fromJson(Map<String, dynamic> json) {
     return AyahWithAudioModel(
       ayahId: json['ayah_id'] ?? 0,
-      text: json['text'] ?? '',
+      text: QuranTextUtils.withoutAyahMarkers(json['text'] ?? ''),
       audio: json['audio'],
       page: json['page'],
     );

@@ -72,6 +72,7 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: context.cardBg,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -137,9 +138,9 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                             ? AppColors.primaryColor.withAlpha(25)
                             : Colors.transparent,
                         border: Border.all(
-                          color: isSelected 
+                          color: isSelected
                               ? AppColors.primaryColor
-                              : Colors.grey.shade200,
+                              : context.dividerColor,
                           width: isSelected ? 2 : 1,
                         ),
                       ),
@@ -162,8 +163,8 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                                       AppColors.primaryColor.withAlpha(178),
                                     ]
                                   : [
-                                      Colors.grey.shade300,
-                                      Colors.grey.shade400,
+                                      context.inputFillColor,
+                                      context.dividerColor,
                                     ],
                             ),
                             shape: BoxShape.circle,
@@ -188,7 +189,7 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                           style: TextStyle(
                             fontFamily: 'Tajawal',
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: context.greyText600,
                           ),
                         ),
                         trailing: isSelected
@@ -401,10 +402,10 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey.shade200,
+          color: context.dividerColor,
           width: 1,
         ),
         boxShadow: [
@@ -508,7 +509,7 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                                 ? Icons.mosque
                                 : Icons.location_city,
                             size: 14,
-                            color: Colors.grey[600],
+                            color: context.greyText600,
                           ),
                           horizontalSpace(4),
                           Text(
@@ -516,14 +517,14 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                             style: TextStyle(
                               fontFamily: 'Tajawal',
                               fontSize: 13,
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                             ),
                           ),
                           horizontalSpace(12),
                           Icon(
                             Icons.notes,
                             size: 14,
-                            color: Colors.grey[600],
+                            color: context.greyText600,
                           ),
                           horizontalSpace(4),
                           Text(
@@ -531,7 +532,7 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                             style: TextStyle(
                               fontFamily: 'Tajawal',
                               fontSize: 13,
-                              color: Colors.grey[600],
+                              color: context.greyText600,
                             ),
                           ),
                         ],

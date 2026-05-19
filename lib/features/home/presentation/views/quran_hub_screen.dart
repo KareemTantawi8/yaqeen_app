@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 
 import '../../../../core/extension/context_extension.dart';
+import '../../../../core/utils/quran_text_utils.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../data/models/surah_model.dart';
 import 'surah_detail_screen.dart';
@@ -451,7 +452,7 @@ class _ReadingTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (surahs.isEmpty) return _emptyState('لا توجد نتائج');
+    if (surahs.isEmpty) return _emptyState('لا توجد نتائج', context: context);
 
     return ListView.builder(
       padding: const EdgeInsets.only(top: 10, bottom: 90),
@@ -701,7 +702,7 @@ class _AudioTabState extends State<_AudioTab>
       children: [
         // Reciter selector + now-playing strip
         Container(
-          color: Colors.white,
+          color: context.cardBg,
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -776,7 +777,7 @@ class _AudioTabState extends State<_AudioTab>
 
         Expanded(
           child: widget.surahs.isEmpty
-              ? _emptyState('لا توجد نتائج')
+              ? _emptyState('لا توجد نتائج', context: context)
               : ListView.builder(
                   padding: const EdgeInsets.only(top: 10, bottom: 90),
                   itemCount: widget.surahs.length,
@@ -915,7 +916,7 @@ class _TafsirTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (surahs.isEmpty) return _emptyState('لا توجد نتائج');
+    if (surahs.isEmpty) return _emptyState('لا توجد نتائج', context: context);
 
     return ListView.builder(
       padding: const EdgeInsets.only(top: 10, bottom: 90),
@@ -1047,7 +1048,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.primaryColor))
           : _data == null
-              ? _emptyState('تعذّر تحميل التفسير')
+              ? _emptyState('تعذّر تحميل التفسير', context: context)
               : ListView.builder(
                   padding:
                       const EdgeInsets.only(top: 12, left: 16, right: 16, bottom: 90),
@@ -1058,11 +1059,16 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 14),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: context.cardBg,
                         borderRadius: BorderRadius.circular(18),
+                        border: context.isDark
+                            ? Border.all(color: context.dividerColor)
+                            : null,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withOpacity(
+                              context.isDark ? 0.2 : 0.04,
+                            ),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),
@@ -1121,7 +1127,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                             child: Text(
-                              v.text,
+                              QuranTextUtils.withoutAyahMarkers(v.text),
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                 fontSize: 22,
@@ -1173,7 +1179,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
                                     style: TextStyle(
                                       fontSize: 14.5,
                                       fontFamily: 'Tajawal',
-                                      color: Colors.grey[700],
+                                      color: context.greyText700,
                                       height: 1.9,
                                     ),
                                   ),
@@ -1188,7 +1194,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
                                 textAlign: TextAlign.right,
                                 style: TextStyle(
                                   fontFamily: 'Tajawal',
-                                  color: Colors.grey[400],
+                                  color: context.greyText400,
                                   fontSize: 13,
                                 ),
                               ),
@@ -1230,18 +1236,22 @@ class _InfoBadge extends StatelessWidget {
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
-Widget _emptyState(String msg) {
+Widget _emptyState(String msg, {BuildContext? context}) {
   return Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.search_off_rounded, size: 56, color: Colors.grey[300]),
+        Icon(
+          Icons.search_off_rounded,
+          size: 56,
+          color: context?.greyText300 ?? Colors.grey[300],
+        ),
         const SizedBox(height: 12),
         Text(
           msg,
           style: TextStyle(
             fontFamily: 'Tajawal',
-            color: Colors.grey[500],
+            color: context?.greyText500 ?? Colors.grey[500],
             fontSize: 15,
           ),
         ),

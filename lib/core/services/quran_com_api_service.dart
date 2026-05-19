@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart';
+import '../utils/quran_text_utils.dart';
 
 /// Offline Quran "API" adapter backed by `quran_with_tafsir`.
 /// 
@@ -39,7 +40,8 @@ class QuranComApiService {
       final verses = ayahs
           .map((ayah) => {
                 'verse_key': '${ayah.surahNumber}:${ayah.id}',
-                'text_uthmani_simple': ayah.text,
+                'text_uthmani_simple':
+                    QuranTextUtils.withoutAyahMarkers(ayah.text),
                 'page': ayah.page,
                 'juz': ayah.juz,
                 // Word-level data is not available from quran_with_tafsir.

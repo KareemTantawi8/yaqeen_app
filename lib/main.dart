@@ -36,6 +36,9 @@ void main() async {
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
       await PrayerNotificationService.initialize();
+      // Request permissions on first launch so the default-enabled
+      // notifications actually work without user visiting settings.
+      await PrayerNotificationService.requestPermissions();
       await PrayerNotificationService.handleAppLaunchFromNotification();
     } catch (e) {
       debugPrint('PrayerNotificationService bootstrap failed: $e');

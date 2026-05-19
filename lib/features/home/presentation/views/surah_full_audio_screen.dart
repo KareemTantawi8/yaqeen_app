@@ -319,7 +319,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -327,7 +327,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardBg,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -408,7 +408,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.inputFillColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -461,7 +461,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.inputFillColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -643,7 +643,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
       decoration: BoxDecoration(
         color: isPlaying
             ? AppColors.primaryColor.withOpacity(0.1)
-            : Colors.white,
+            : context.cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isPlaying
@@ -729,7 +729,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -747,7 +747,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
               Text(
                 _formatDuration(_currentPosition),
                 style: TextStyles.font14PrimaryText.copyWith(
-                  color: Colors.grey[600],
+                  color: context.greyText600,
                 ),
               ),
               Expanded(
@@ -757,7 +757,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
                       ? _totalDuration.inSeconds.toDouble()
                       : 1,
                   activeColor: AppColors.primaryColor,
-                  inactiveColor: Colors.grey[300],
+                  inactiveColor: context.greyText300,
                   onChanged: (value) async {
                     await _audioPlayer.seek(Duration(seconds: value.toInt()));
                   },
@@ -766,7 +766,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
               Text(
                 _formatDuration(_totalDuration),
                 style: TextStyles.font14PrimaryText.copyWith(
-                  color: Colors.grey[600],
+                  color: context.greyText600,
                 ),
               ),
             ],
@@ -827,7 +827,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
           Text(
             'جاري تحميل السورة...',
             style: TextStyles.font16PrimaryText.copyWith(
-              color: Colors.grey[600],
+              color: context.greyText600,
               fontFamily: FontFamilyHelper.fontFamily1,
             ),
           ),
@@ -843,12 +843,12 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+            Icon(Icons.error_outline, size: 64, color: context.greyText400),
             verticalSpace(16),
             Text(
               _errorMessage ?? 'حدث خطأ',
               style: TextStyles.font16PrimaryText.copyWith(
-                color: Colors.grey[600],
+                color: context.greyText600,
                 fontFamily: FontFamilyHelper.fontFamily1,
               ),
               textAlign: TextAlign.center,
@@ -891,13 +891,13 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
             Icon(
               Icons.headphones,
               size: 100,
-              color: Colors.grey[300],
+              color: context.greyText300,
             ),
             verticalSpace(24),
             Text(
               'اختر السورة والقارئ',
               style: TextStyles.font20PrimaryText.copyWith(
-                color: Colors.grey[600],
+                color: context.greyText600,
                 fontFamily: FontFamilyHelper.fontFamily1,
                 fontWeight: FontWeight.bold,
               ),
@@ -906,7 +906,7 @@ class _SurahFullAudioScreenState extends State<SurahFullAudioScreen> {
             Text(
               'اضغط على زر "تحميل السورة" للبدء',
               style: TextStyles.font16PrimaryText.copyWith(
-                color: Colors.grey[500],
+                color: context.greyText500,
                 fontFamily: FontFamilyHelper.fontFamily1,
               ),
               textAlign: TextAlign.center,

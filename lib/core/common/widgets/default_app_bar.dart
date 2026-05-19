@@ -28,8 +28,8 @@ class DefaultAppBar extends StatelessWidget {
         Container(
           height: 53,
           width: 53,
-          decoration: const BoxDecoration(
-            color: Color(0xFFEAF9F4),
+          decoration: BoxDecoration(
+            color: context.lightAccent,
             shape: BoxShape.circle,
           ),
           child: GestureDetector(

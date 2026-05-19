@@ -131,7 +131,7 @@ class _EventCardState extends State<_EventCard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isToday
@@ -241,7 +241,7 @@ class _EventCardState extends State<_EventCard> {
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F9F8),
+                  color: context.lightAccent,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(14),
                     bottomRight: Radius.circular(14),
@@ -254,10 +254,10 @@ class _EventCardState extends State<_EventCard> {
                     Text(
                       widget.event.description,
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontFamily: 'Tajawal',
-                        color: Color(0xFF2D4A47),
+                        color: context.highText,
                         height: 1.7,
                       ),
                     ),

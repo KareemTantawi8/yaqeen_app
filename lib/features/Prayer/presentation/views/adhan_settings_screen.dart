@@ -92,6 +92,16 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
     await AdhanAudioPlayerService.instance.saveSelectedVoiceId(voiceId);
     setState(() => _selectedVoiceId = voiceId);
 
+    // Reschedule notifications so they use the new voice's sound channel
+    if (_masterEnabled) {
+      final loc = await LocationService.getLocationWithFallback();
+      await PrayerNotificationService.cancelAll();
+      await PrayerNotificationService.schedulePrayerNotifications(
+        latitude: loc['latitude']!,
+        longitude: loc['longitude']!,
+      );
+    }
+
     // Stop any playing adhan and preview the new voice
     await AdhanAudioPlayerService.instance.stop();
     await _playTest(voiceId);

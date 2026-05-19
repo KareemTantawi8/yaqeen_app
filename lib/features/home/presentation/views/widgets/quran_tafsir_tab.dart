@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_family_helper.dart';
 import '../../../../../core/styles/fonts/font_styles.dart';
@@ -42,7 +43,7 @@ class QuranTafsirTab extends StatelessWidget {
               'قريباً: سيتم إضافة ميزة التفسير مع مصادر متعددة',
               style: TextStyles.font16PrimaryText.copyWith(
                 fontFamily: FontFamilyHelper.fontFamily1,
-                color: Colors.grey[600],
+                color: context.greyText600,
               ),
               textAlign: TextAlign.center,
             ),

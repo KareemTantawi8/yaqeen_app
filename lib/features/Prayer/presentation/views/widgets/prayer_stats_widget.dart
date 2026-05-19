@@ -59,6 +59,7 @@ class PrayerStatsWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
+                  context,
                   'السلسلة الحالية',
                   '${stats.currentStreak}',
                   Icons.local_fire_department,
@@ -68,6 +69,7 @@ class PrayerStatsWidget extends StatelessWidget {
               horizontalSpace(12),
               Expanded(
                 child: _buildStatCard(
+                  context,
                   'أطول سلسلة',
                   '${stats.longestStreak}',
                   Icons.emoji_events,
@@ -81,6 +83,7 @@ class PrayerStatsWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
+                  context,
                   'صلوات مكتملة',
                   '${stats.completedPrayers}',
                   Icons.check_circle,
@@ -90,6 +93,7 @@ class PrayerStatsWidget extends StatelessWidget {
               horizontalSpace(12),
               Expanded(
                 child: _buildStatCard(
+                  context,
                   'صلوات فائتة',
                   '${stats.missedPrayers}',
                   Icons.cancel,
@@ -118,6 +122,7 @@ class PrayerStatsWidget extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _buildPrayerProgressBar(
+                context,
                 entry.key,
                 entry.value,
                 maxCount,
@@ -141,7 +146,7 @@ class PrayerStatsWidget extends StatelessWidget {
             child: CircularProgressIndicator(
               value: stats.completionPercentage / 100,
               strokeWidth: 12,
-              backgroundColor: Colors.grey[200],
+              backgroundColor: context.inputFillColor,
               valueColor: AlwaysStoppedAnimation<Color>(
                 AppColors.primaryColor,
               ),
@@ -160,7 +165,7 @@ class PrayerStatsWidget extends StatelessWidget {
               Text(
                 'نسبة الإنجاز',
                 style: TextStyles.font12PrimaryText.copyWith(
-                  color: Colors.grey[600],
+                  color: context.greyText600,
                 ),
               ),
             ],
@@ -171,6 +176,7 @@ class PrayerStatsWidget extends StatelessWidget {
   }
 
   Widget _buildStatCard(
+    BuildContext context,
     String label,
     String value,
     IconData icon,
@@ -205,7 +211,7 @@ class PrayerStatsWidget extends StatelessWidget {
           Text(
             label,
             style: TextStyles.font12PrimaryText.copyWith(
-              color: Colors.grey[700],
+              color: context.greyText700,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -217,6 +223,7 @@ class PrayerStatsWidget extends StatelessWidget {
   }
 
   Widget _buildPrayerProgressBar(
+    BuildContext context,
     String prayerName,
     int completed,
     int total,
@@ -237,7 +244,7 @@ class PrayerStatsWidget extends StatelessWidget {
             Text(
               '$completed/$total',
               style: TextStyles.font14PrimaryText.copyWith(
-                color: Colors.grey[600],
+                color: context.greyText600,
               ),
             ),
           ],
@@ -248,7 +255,7 @@ class PrayerStatsWidget extends StatelessWidget {
           child: LinearProgressIndicator(
             value: percentage / 100,
             minHeight: 8,
-            backgroundColor: Colors.grey[200],
+            backgroundColor: context.inputFillColor,
             valueColor: AlwaysStoppedAnimation<Color>(
               _getPrayerColor(prayerName),
             ),
