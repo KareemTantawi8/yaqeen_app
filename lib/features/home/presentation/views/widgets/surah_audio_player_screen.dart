@@ -254,8 +254,8 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
+                      icon: const Icon(
+                        Icons.arrow_forward_ios,
                         color: AppColors.primaryColor,
                       ),
                       onPressed: () => Navigator.pop(context),

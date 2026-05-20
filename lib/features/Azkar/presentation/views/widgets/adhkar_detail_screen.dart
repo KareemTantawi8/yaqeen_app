@@ -269,7 +269,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         child: Icon(
-                          Icons.arrow_back,
+                          Icons.arrow_forward_ios,
                           color: AppColors.primaryColor,
                           size: 24,
                         ),

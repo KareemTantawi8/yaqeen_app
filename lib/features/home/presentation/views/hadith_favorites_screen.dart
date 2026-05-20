@@ -84,7 +84,7 @@ class _HadithFavoritesScreenState extends State<HadithFavoritesScreen> {
                 color: context.lightAccent,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.arrow_back, color: AppColors.primaryColor),
+              child: const Icon(Icons.arrow_forward_ios, color: AppColors.primaryColor),
             ),
           ),
         ],

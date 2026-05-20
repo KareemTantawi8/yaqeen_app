@@ -140,7 +140,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                 shape: BoxShape.circle,
               ),
               child:
-                  const Icon(Icons.arrow_back, color: AppColors.primaryColor),
+                  const Icon(Icons.arrow_forward_ios, color: AppColors.primaryColor),
             ),
           ),
         ],

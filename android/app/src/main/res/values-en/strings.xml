@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- English locale fallback so non-Arabic users see a Latinized name. -->
-    <string name="app_name">Yaqeen</string>
+    <!-- Display name is the Arabic brand "يقين" on all locales (matches iOS CFBundleDisplayName). -->
+    <string name="app_name">يقين</string>
 </resources>

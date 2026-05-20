@@ -429,7 +429,7 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
+                        Icons.arrow_forward_ios,
                         color: AppColors.primaryColor,
                         size: 18,
                       ),

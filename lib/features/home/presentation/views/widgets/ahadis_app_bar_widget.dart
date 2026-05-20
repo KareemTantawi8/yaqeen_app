@@ -47,12 +47,9 @@ class AhadisAppBarWidget extends StatelessWidget {
             color: Color(0xFFEAF9F4),
             shape: BoxShape.circle,
           ),
-          child: const Directionality(
-            textDirection: TextDirection.ltr,
-            child: Icon(
-              Icons.arrow_back,
-              color: AppColors.primaryColor,
-            ),
+          child: const Icon(
+            Icons.arrow_forward_ios,
+            color: AppColors.primaryColor,
           ),
         ),
       ],

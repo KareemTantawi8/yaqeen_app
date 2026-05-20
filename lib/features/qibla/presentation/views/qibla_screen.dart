@@ -299,7 +299,7 @@ class _QiblaScreenState extends State<QiblaScreen>
               ],
             ),
             child: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, color: AppColors.primaryColor),
+              icon: const Icon(Icons.arrow_forward_ios, color: AppColors.primaryColor),
               onPressed: () => Navigator.pop(context),
             ),
           ),

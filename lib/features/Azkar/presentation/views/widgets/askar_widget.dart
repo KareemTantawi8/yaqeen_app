@@ -65,13 +65,10 @@ class AzkarWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Directionality(
-                textDirection: TextDirection.ltr,
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded, // RTL-friendly arrow
-                  size: iconSize,
-                  color: const Color(0xFF2B7669),
-                ),
+              Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: iconSize,
+                color: const Color(0xFF2B7669),
               ),
             ],
           ),

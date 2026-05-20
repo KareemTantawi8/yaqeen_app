@@ -61,7 +61,7 @@ class _QuranReadScreenState extends State<QuranReadScreen> {
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_forward_ios),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -130,7 +130,7 @@ class _QuranReadScreenState extends State<QuranReadScreen> {
                               fontSize: 12,
                             ),
                           ),
-                          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                          trailing: const Icon(Icons.arrow_back_ios, size: 16),
                           onTap: () {
                             final appSurah = Surah(
                               number: surah.number,

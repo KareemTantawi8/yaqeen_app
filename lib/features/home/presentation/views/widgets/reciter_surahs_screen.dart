@@ -61,7 +61,7 @@ class _ReciterSurahsScreenState extends State<ReciterSurahsScreen> {
             pinned: true,
             backgroundColor: AppColors.primaryColor,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(

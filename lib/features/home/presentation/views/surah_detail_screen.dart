@@ -624,7 +624,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
             color: Colors.white.withOpacity(0.2),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+          child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 20),
         ),
         onPressed: () => Navigator.pop(context),
       ),

@@ -998,7 +998,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
+            child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
           ),
           onPressed: () => Navigator.pop(context),
         ),
