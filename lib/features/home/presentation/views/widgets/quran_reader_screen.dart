@@ -383,7 +383,7 @@ class _QuranReaderScreenState extends State<QuranReaderScreen> {
         children: [
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
           ),
           Expanded(
             child: Column(

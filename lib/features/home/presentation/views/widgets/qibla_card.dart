@@ -217,7 +217,7 @@ class QiblaCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.arrow_back_ios_new_rounded,
+                            Icons.arrow_forward_ios,
                             color: Colors.white,
                             size: 11,
                           ),

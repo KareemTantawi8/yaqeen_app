@@ -113,13 +113,10 @@ class _AzkarCardState extends State<AzkarCard> {
                               : context.secondaryText,
                           shape: BoxShape.circle,
                         ),
-                        child: const Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Icon(
-                            Icons.arrow_forward,
-                            color: Colors.white,
-                            size: 16,
-                          ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 16,
                         ),
                       ),
                     ),
@@ -135,13 +132,10 @@ class _AzkarCardState extends State<AzkarCard> {
                               : context.secondaryText,
                           shape: BoxShape.circle,
                         ),
-                        child: const Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                            size: 16,
-                          ),
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 16,
                         ),
                       ),
                     ),

@@ -158,7 +158,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_forward_ios),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
@@ -243,7 +243,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_forward),
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: _currentPage < 604
                         ? () => _loadPage(_currentPage + 1)
                         : null,
@@ -264,7 +264,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_forward),
                     onPressed: _currentPage > 1
                         ? () => _loadPage(_currentPage - 1)
                         : null,

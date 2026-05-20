@@ -127,7 +127,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
             ),
           ),
           horizontalSpace(8),
-          _circleBtn(Icons.arrow_back, () => Navigator.pop(context)),
+          _circleBtn(Icons.arrow_forward_ios, () => Navigator.pop(context)),
         ],
       ),
     );

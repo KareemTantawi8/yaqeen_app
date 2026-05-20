@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Used as Android 12+ splash "animated icon" so the OS does not show the launcher icon
+     before Flutter draws the real splash screen. Must be non-null but can be fully transparent. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size
+        android:width="48dp"
+        android:height="48dp" />
+    <solid android:color="@android:color/transparent" />
+</shape>

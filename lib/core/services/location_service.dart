@@ -25,8 +25,7 @@ class LocationService {
 
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 100,
+          accuracy: LocationAccuracy.best,
         ),
       );
 

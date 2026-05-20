@@ -54,41 +54,42 @@ class _MosqueListScreenState extends State<MosqueListScreen>
   }
 
   Future<void> _initLocation() async {
-    // Phase 1: show mosques immediately from saved/default location (no GPS wait)
+    // Phase 1: try GPS first (10s) — most accurate for mosque finding
+    try {
+      final Position? position = await LocationService.getCurrentLocation()
+          .timeout(const Duration(seconds: 10));
+      if (position != null && mounted) {
+        final latDiff = (position.latitude - (_userLat ?? 0)).abs();
+        final lngDiff = (position.longitude - (_userLng ?? 0)).abs();
+        if (_userLat == null || latDiff > 0.0005 || lngDiff > 0.0005) {
+          _userLat = position.latitude;
+          _userLng = position.longitude;
+          await _loadMosques();
+          return;
+        }
+        return;
+      }
+    } catch (_) {
+      // GPS timed out or failed — fall through to saved/default
+    }
+
+    // Phase 2: fall back to saved or default location
+    if (!mounted) return;
     final saved = await LocationService.getSavedLocation();
     if (!mounted) return;
 
-    final initLat = saved?['latitude'] ?? LocationService.defaultLatitude;
-    final initLng = saved?['longitude'] ?? LocationService.defaultLongitude;
+    final fallbackLat = saved?['latitude'] ?? LocationService.defaultLatitude;
+    final fallbackLng = saved?['longitude'] ?? LocationService.defaultLongitude;
 
-    // Only reload if location actually changed
     final prevLat = _userLat;
     final prevLng = _userLng;
-    _userLat = initLat;
-    _userLng = initLng;
+    _userLat = fallbackLat;
+    _userLng = fallbackLng;
 
     if (prevLat == null ||
-        (initLat - prevLat).abs() > 0.001 ||
-        (initLng - (prevLng ?? 0)).abs() > 0.001) {
+        (fallbackLat - prevLat).abs() > 0.0005 ||
+        (fallbackLng - (prevLng ?? 0)).abs() > 0.0005) {
       await _loadMosques();
-    }
-
-    // Phase 2: silently refresh if GPS gives a different location
-    if (!mounted) return;
-    try {
-      final Position? position = await LocationService.getCurrentLocation()
-          .timeout(const Duration(seconds: 20));
-      if (position == null || !mounted) return;
-
-      final latDiff = (position.latitude - (_userLat ?? 0)).abs();
-      final lngDiff = (position.longitude - (_userLng ?? 0)).abs();
-      if (latDiff > 0.001 || lngDiff > 0.001) {
-        _userLat = position.latitude;
-        _userLng = position.longitude;
-        await _loadMosques();
-      }
-    } catch (_) {
-      // Keep using initial location
     }
   }
 

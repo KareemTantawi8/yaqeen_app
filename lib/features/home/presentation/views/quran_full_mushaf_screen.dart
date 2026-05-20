@@ -365,7 +365,7 @@ class _QuranFullMushafScreenState extends State<QuranFullMushafScreen>
 
                   // Arrow icon
                   Icon(
-                    Icons.arrow_forward_ios,
+                    Icons.arrow_back_ios,
                     size: 18,
                     color: context.greyText400,
                   ),

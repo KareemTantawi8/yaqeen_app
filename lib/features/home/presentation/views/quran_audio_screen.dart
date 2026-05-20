@@ -120,7 +120,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_forward_ios),
           onPressed: () => Navigator.pop(context),
         ),
       ),
