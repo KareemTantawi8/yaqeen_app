@@ -13,6 +13,7 @@ import 'features/home/presentation/views/quran_full_mushaf_screen.dart';
 import 'features/home/presentation/views/surah_full_audio_screen.dart';
 import 'features/home/presentation/views/adhan_full_screen.dart';
 import 'features/home/presentation/views/bottom_nav_bar.dart';
+import 'features/home/presentation/views/widgets/adhan_alert_popup.dart';
 import 'features/home/presentation/views/quran_read_screen.dart';
 import 'features/home/presentation/views/quran_audio_screen.dart';
 import 'features/home/presentation/views/quran_tafsir_screen.dart';
@@ -59,6 +60,23 @@ class YaqeenApp extends ConsumerWidget {
       navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       initialRoute: SplashScreen.routeName,
+      // Handles routes not in the static [routes] map.
+      // /adhan-alert uses a custom fade transition so the popup feels immersive.
+      onGenerateRoute: (settings) {
+        if (settings.name == AdhanAlertPopup.routeName) {
+          final args = settings.arguments as Map?;
+          final prayerName = args?['prayerName'] as String? ?? '';
+          return PageRouteBuilder<void>(
+            settings: settings,
+            pageBuilder: (_, __, ___) =>
+                AdhanAlertPopup(prayerName: prayerName),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 500),
+          );
+        }
+        return null;
+      },
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
         BottomNavBar.routeName: (context) => const BottomNavBar(),
