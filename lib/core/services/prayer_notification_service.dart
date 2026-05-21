@@ -107,17 +107,19 @@ class PrayerNotificationService {
     debugPrint('PrayerNotificationService: initialized');
   }
 
+  /// Set by [handleAppLaunchFromNotification] when the app is cold-launched from
+  /// a notification tap. HomeScreen reads and clears this after the splash screen
+  /// finishes, then opens the adhan popup.
+  static String? pendingAdhanPrayerName;
+
   // Called when user taps a notification while app is in foreground / background
   static void _onForegroundTap(NotificationResponse response) {
     final prayerName = response.payload ?? '';
     debugPrint('Prayer notification tapped: $prayerName');
-    _navigateToAdhan(prayerName);
-  }
-
-  static void _navigateToAdhan(String prayerName) {
+    // App is already running — navigator is ready, push the alert screen directly.
     appNavigatorKey.currentState?.pushNamed(
-      '/adhan-full',
-      arguments: {'prayerName': prayerName, 'autoPlay': true},
+      '/adhan-alert',
+      arguments: {'prayerName': prayerName},
     );
   }
 
@@ -146,16 +148,16 @@ class PrayerNotificationService {
     return true;
   }
 
-  // Check whether the app was launched by tapping a notification
+  // Check whether the app was cold-launched by tapping a notification.
+  // Rather than navigating immediately (the splash screen isn't done yet),
+  // we store the prayer name. HomeScreen picks it up after the splash.
   static Future<void> handleAppLaunchFromNotification() async {
     final details = await _plugin.getNotificationAppLaunchDetails();
     if (details?.didNotificationLaunchApp == true) {
       final payload = details?.notificationResponse?.payload ?? '';
       if (payload.isNotEmpty) {
-        // Defer until the navigator is ready
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _navigateToAdhan(payload);
-        });
+        pendingAdhanPrayerName = payload;
+        debugPrint('App launched from adhan notification: $payload');
       }
     }
   }
@@ -214,6 +216,12 @@ class PrayerNotificationService {
         'PrayerNotificationService: scheduled today\'s prayers (voice=$voiceId)');
   }
 
+  /// Cancel pending notification for a specific prayer (used when in-app popup handles it).
+  static Future<void> cancelPrayerNotification(String prayerName) async {
+    final id = _prayerIds[prayerName];
+    if (id != null) await _plugin.cancel(id);
+  }
+
   static Future<void> _scheduleOne(
     String prayerName,
     DateTime prayerTime,
@@ -223,6 +231,9 @@ class PrayerNotificationService {
   ) async {
     try {
       final id = _prayerIds[prayerName]!;
+      // Explicitly cancel any previous notification with this ID before rescheduling
+      // to prevent duplicate plays on devices where zonedSchedule doesn't overwrite.
+      await _plugin.cancel(id);
       final tzTime = tz.TZDateTime.from(prayerTime, tz.local);
 
       await _plugin.zonedSchedule(

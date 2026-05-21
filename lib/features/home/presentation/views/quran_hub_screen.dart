@@ -508,9 +508,16 @@ class _AudioTabState extends State<_AudioTab>
 
   static const Map<String, String> _reciters = {
     'Alafasy_128kbps': 'مشاري العفاسي',
-    'Abdul_Basit_Mujawwad_128kbps': 'عبدالباسط مجود',
-    'Abdurrahmaan_As-Sudais_192kbps': 'عبدالرحمن السديس',
-    'Mishari_Alafasy_192kbps': 'مشاري العفاسي HD',
+    'Abdul_Basit_Mujawwad_128kbps': 'عبد الباسط (مجود)',
+    'Abdul_Basit_Murattal_64kbps': 'عبد الباسط (مرتل)',
+    'Abdurrahmaan_As-Sudais_192kbps': 'عبد الرحمن السديس',
+    'Abu_Bakr_Ash-Shaatree_128kbps': 'أبو بكر الشاطري',
+    'Hani_Rifai_192kbps': 'هاني الرفاعي',
+    'Husary_64kbps': 'محمود خليل الحصري',
+    'Minshawy_Murattal_128kbps': 'المنشاوي (مرتل)',
+    'Minshawy_Mujawwad_192kbps': 'المنشاوي (مجود)',
+    'Mohammad_al_Tablaway_128kbps': 'محمد الطبلاوي',
+    'Saood_ash-Shuraym_128kbps': 'سعود الشريم',
   };
 
   @override

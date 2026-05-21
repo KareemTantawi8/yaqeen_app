@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:yaqeen_app/core/services/adhan_audio_player_service.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
@@ -21,6 +20,7 @@ import 'package:yaqeen_app/features/home/presentation/views/widgets/time_widget.
 import 'package:yaqeen_app/features/home/presentation/views/widgets/qibla_card.dart';
 import 'package:yaqeen_app/features/events/presentation/views/events_screen.dart';
 
+import 'widgets/adhan_alert_popup.dart';
 import 'widgets/prayer_times_loading_skeleton.dart';
 import '../../../../core/extension/context_extension.dart';
 
@@ -62,6 +62,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeLocation();
+
+    // If the app was cold-launched by tapping an adhan notification, the
+    // notification service stores the prayer name. We pick it up here, after
+    // HomeScreen is fully built, so the navigator is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final pending = PrayerNotificationService.pendingAdhanPrayerName;
+      if (pending != null && pending.isNotEmpty && mounted) {
+        PrayerNotificationService.pendingAdhanPrayerName = null;
+        _showAdhanScreen(pending);
+      }
+    });
 
     //! Uncomment the following lines to show the Ayah of the Day dialog after the first frame is rendered
     // WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -224,6 +235,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
   }
 
+  void _showAdhanScreen(String prayerName) {
+    if (!mounted) return;
+    Navigator.of(context).pushNamed(
+      AdhanAlertPopup.routeName,
+      arguments: {'prayerName': prayerName},
+    );
+  }
+
   Future<void> _autoPlayAdhan(String prayerName) async {
     try {
       final notifEnabled =
@@ -233,7 +252,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           .getPrayerNotificationEnabled(prayerName);
       if (!prayerEnabled) return;
 
-      await AdhanAudioPlayerService.instance.playAdhan();
+      // Cancel the pending notification so it doesn't play on top of the popup
+      await PrayerNotificationService.cancelPrayerNotification(prayerName);
+
+      _showAdhanScreen(prayerName);
     } catch (e) {
       debugPrint('Auto-play Adhan error: $e');
     }
