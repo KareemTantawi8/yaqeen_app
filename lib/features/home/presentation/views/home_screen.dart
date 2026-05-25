@@ -12,7 +12,6 @@ import 'package:yaqeen_app/features/home/presentation/views/widgets/curved_top_c
 import 'package:yaqeen_app/features/home/presentation/views/widgets/feature_icon_button.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/hijr_date_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/middle_notched_button.dart';
-import 'package:yaqeen_app/features/home/presentation/views/widgets/next_prayer_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/prayer_time_card.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/recent_quran_read.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/rectangle_widget.dart';
@@ -33,6 +32,7 @@ import 'adhan_full_screen.dart';
 import 'mespha_screen.dart';
 import 'widgets/hadith_daily_card.dart';
 import '../../../qibla/presentation/views/qibla_screen.dart';
+import '../../../quran_mushaf/quran_mushaf_viewer_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -373,52 +373,86 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   HijriDateHeader(
                     hijrDateTitle: prayerTimings!.date.hijri.getFormattedDate(),
                   ),
-                  verticalSpace(24),
+                  verticalSpace(8),
+                  // Next prayer label
+                  Opacity(
+                    opacity: 0.75,
+                    child: Text(
+                      'الصلاة القادمة',
+                      style: TextStyles.font14WhiteText,
+                    ),
+                  ),
+                  verticalSpace(4),
                   PrayerNameWidget(
                     prayerName: nextPrayer?['name'] ?? 'الفجر',
                   ),
-                  verticalSpace(12),
+                  verticalSpace(6),
                   TimeWIdget(
                     time: nextPrayer?['time'] ?? '00:00',
                   ),
-                  NextPrayerWidget(
-                    nextPrayer: 'الصلاة التالية بعد $countdown',
-                  ),
-                  verticalSpace(16),
+                  // verticalSpace(4),
+                  // Countdown row with icon
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      PrayerTimeCard(
-                        prayer: 'العشاء',
-                        image: AppImages.moonImage,
-                        time: prayerTimings!.timings.isha,
-                        isHighlighted: currentPrayerName == 'العشاء',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'المغرب',
-                        image: AppImages.cloudSunnyImage,
-                        time: prayerTimings!.timings.maghrib,
-                        isHighlighted: currentPrayerName == 'المغرب',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'العصر',
-                        image: AppImages.sunImage,
-                        time: prayerTimings!.timings.asr,
-                        isHighlighted: currentPrayerName == 'العصر',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'الظهر',
-                        image: AppImages.sunnyImage,
-                        time: prayerTimings!.timings.dhuhr,
-                        isHighlighted: currentPrayerName == 'الظهر',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'الفجر',
-                        image: AppImages.cloudefog,
-                        time: prayerTimings!.timings.fajr,
-                        isHighlighted: currentPrayerName == 'الفجر',
+                      const Icon(Icons.timer_outlined,
+                          color: Colors.white70, size: 16),
+                      const SizedBox(width: 6),
+                      Opacity(
+                        opacity: 0.80,
+                        child: Text(
+                          countdown,
+                          style: TextStyles.font14WhiteText.copyWith(
+                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
+                  ),
+                  // verticalSpace(18),
+                  // Prayer cards — horizontally scrollable so each card has room
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      children: [
+                        PrayerTimeCard(
+                          prayer: 'الفجر',
+                          image: AppImages.cloudefog,
+                          time: prayerTimings!.timings.fajr,
+                          isHighlighted: currentPrayerName == 'الفجر',
+                        ),
+                        const SizedBox(width: 8),
+                        PrayerTimeCard(
+                          prayer: 'الظهر',
+                          image: AppImages.sunnyImage,
+                          time: prayerTimings!.timings.dhuhr,
+                          isHighlighted: currentPrayerName == 'الظهر',
+                        ),
+                        const SizedBox(width: 8),
+                        PrayerTimeCard(
+                          prayer: 'العصر',
+                          image: AppImages.sunImage,
+                          time: prayerTimings!.timings.asr,
+                          isHighlighted: currentPrayerName == 'العصر',
+                        ),
+                        const SizedBox(width: 8),
+                        PrayerTimeCard(
+                          prayer: 'المغرب',
+                          image: AppImages.cloudSunnyImage,
+                          time: prayerTimings!.timings.maghrib,
+                          isHighlighted: currentPrayerName == 'المغرب',
+                        ),
+                        const SizedBox(width: 8),
+                        PrayerTimeCard(
+                          prayer: 'العشاء',
+                          image: AppImages.moonImage,
+                          time: prayerTimings!.timings.isha,
+                          isHighlighted: currentPrayerName == 'العشاء',
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -508,18 +542,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               image: AppImages.mesphaIcon,
                               text: 'مسبحة',
                             ),
+                            // horizontalSpace(8),
+                            // FeatureIconButton(
+                            //   onTap: () {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //         builder: (context) => const EventsScreen(),
+                            //       ),
+                            //     );
+                            //   },
+                            //   image: AppImages.eventIcon,
+                            //   text: 'التقويم',
+                            // ),
                             horizontalSpace(8),
                             FeatureIconButton(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const EventsScreen(),
+                                    builder: (context) =>
+                                        const QuranMushafViewerScreen(),
                                   ),
                                 );
                               },
-                              image: AppImages.eventIcon,
-                              text: 'التقويم',
+                              iconData: Icons.menu_book_rounded,
+                              text: 'المصحف',
                             ),
                           ],
                         ),

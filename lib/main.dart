@@ -21,6 +21,18 @@ void main() async {
     debugPrint('AudioSession.configure failed: $e');
   }
 
+  // Initialize and request notification permissions BEFORE runApp so that
+  // HomeScreen.initState → schedulePrayerNotifications never races with
+  // plugin initialization (addPostFrameCallback fires after the first frame,
+  // by which time HomeScreen has already tried to schedule notifications).
+  try {
+    await PrayerNotificationService.initialize();
+    await PrayerNotificationService.requestPermissions();
+    await PrayerNotificationService.handleAppLaunchFromNotification();
+  } catch (e) {
+    debugPrint('PrayerNotificationService bootstrap failed: $e');
+  }
+
   final clarityConfig = ClarityConfig(
     projectId: 'scpt8xziyk',
     logLevel: kReleaseMode ? LogLevel.None : LogLevel.Error,
@@ -32,16 +44,4 @@ void main() async {
       clarityConfig: clarityConfig,
     ),
   );
-
-  WidgetsBinding.instance.addPostFrameCallback((_) async {
-    try {
-      await PrayerNotificationService.initialize();
-      // Request permissions on first launch so the default-enabled
-      // notifications actually work without user visiting settings.
-      await PrayerNotificationService.requestPermissions();
-      await PrayerNotificationService.handleAppLaunchFromNotification();
-    } catch (e) {
-      debugPrint('PrayerNotificationService bootstrap failed: $e');
-    }
-  });
 }

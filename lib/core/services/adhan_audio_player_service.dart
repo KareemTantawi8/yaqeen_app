@@ -94,31 +94,24 @@ class AdhanAudioPlayerService {
 
   Future<void> playAdhan({String? voiceId}) async {
     if (_isLoading) return;
-
+    _isLoading = true;
     try {
       final id = voiceId ?? await getSelectedVoiceId();
       final voice = getVoiceById(id);
       final assetPath = voice['asset']!;
-      final name = voice['name']!;
-
-      _isLoading = true;
 
       if (_isPlaying) {
         await _player.stop();
         _isPlaying = false;
       }
 
-      await _player.setAudioSource(
-        AudioSource.asset(assetPath),
-      );
-
-      _isLoading = false;
+      await _player.setAudioSource(AudioSource.asset(assetPath));
       await _player.play();
     } catch (e) {
-      _isLoading = false;
       _isPlaying = false;
       debugPrint('AdhanAudioPlayerService: error playing adhan: $e');
-      rethrow;
+    } finally {
+      _isLoading = false;
     }
   }
 

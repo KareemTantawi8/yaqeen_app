@@ -138,11 +138,10 @@ flutter:
     - assets/icons/
     - assets/audio/adhan/
     - assets/images/cloud_image.png
-    # JSON files removed - data now loaded from API endpoints
+    - assets/data/Names_Of_Allah.json
     # - assets/data/surahs.json
     # - assets/data/islamic_events_2025.json
     # - assets/data/azkar_data_full.json
-    # - assets/data/allah_names.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

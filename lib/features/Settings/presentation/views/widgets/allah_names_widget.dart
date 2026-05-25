@@ -1,104 +1,113 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
-import '../../../../../core/styles/fonts/font_family_helper.dart';
-import '../../../../../core/utils/spacing.dart';
 
 class AllahNamesWidget extends StatelessWidget {
   const AllahNamesWidget({
     super.key,
-    required this.title,
-    required this.enTitle,
-    required this.traTitle,
+    required this.id,
+    required this.name,
+    required this.text,
     required this.onTap,
-    this.icon = Icons.play_arrow_outlined,
   });
 
-  final String title;
-  final String enTitle;
-  final String traTitle;
-  final void Function()? onTap;
-  final IconData? icon;
+  final int id;
+  final String name;
+  final String text;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: ShapeDecoration(
-          gradient: LinearGradient(
-            begin: const Alignment(0.00, 0.50),
-            end: const Alignment(1.00, 0.50),
-            colors: [context.lightAccent, context.lightAccent],
-          ),
-          shadows: [
+        decoration: BoxDecoration(
+          color: context.cardBg,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
               offset: const Offset(0, 4),
-              blurRadius: 8,
-              spreadRadius: 1,
             ),
           ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
           children: [
-            Expanded(
+            // Background arc decoration
+            Positioned(
+              top: -20,
+              left: -20,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withValues(alpha: 0.07),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: context.highText,
-                        fontSize: 32,
-                        fontFamily: 'Amiri',
-                        fontWeight: FontWeight.w700,
+                  // Number badge
+                  Align(
+                    alignment: AlignmentDirectional.topEnd,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$id',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Tajawal',
+                        ),
                       ),
                     ),
                   ),
-                  verticalSpace(8),
+                  const Spacer(),
+                  // Arabic name
                   Text(
-                    enTitle,
+                    name,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: context.highText,
-                      fontSize: 16,
-                      fontFamily: FontFamilyHelper.fontFamily2,
+                      color: AppColors.primaryColor,
+                      fontSize: 26,
+                      fontFamily: 'Amiri',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  verticalSpace(8),
-                  Text(
-                    traTitle,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: context.secondaryText,
-                      fontSize: 14,
-                      fontFamily: 'Tajawal',
-                      fontWeight: FontWeight.w400,
-                      height: 1.43,
-                      letterSpacing: 0.10,
+                  const SizedBox(height: 10),
+                  // Description
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      textDirection: TextDirection.rtl,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: context.secondaryText,
+                        fontSize: 11,
+                        fontFamily: 'Tajawal',
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 8),
                 ],
               ),
-            ),
-            verticalSpace(16),
-            Icon(
-              icon,
-              size: 36,
-              color: AppColors.primaryColor,
             ),
           ],
         ),

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../core/styles/colors/app_color.dart';
-import '../../../../../core/styles/fonts/font_styles.dart';
-import '../../../../../core/utils/spacing.dart';
 
 class PrayerTimeCard extends StatelessWidget {
   const PrayerTimeCard({
@@ -20,44 +17,79 @@ class PrayerTimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: isHighlighted
-          ? BoxDecoration(
-              border: Border.all(
-                color: AppColors.primaryColor.withOpacity(0.8),
-                width: 1.5,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            )
-          : null,
-      padding: isHighlighted ? const EdgeInsets.all(8) : null,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      width: isHighlighted ? 72 : 60,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      decoration: BoxDecoration(
+        color: isHighlighted
+            ? Colors.white.withValues(alpha: 0.22)
+            : Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isHighlighted
+              ? Colors.white.withValues(alpha: 0.7)
+              : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: isHighlighted
+            ? [
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                )
+              ]
+            : null,
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              Text(
-                prayer,
-                style: TextStyles.font12WhiteText,
-              ),
-              if (isHighlighted)
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-            ],
+          // Prayer name
+          Text(
+            prayer,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isHighlighted ? Colors.white : Colors.white70,
+              fontSize: isHighlighted ? 13 : 11,
+              fontFamily: 'Tajawal',
+              fontWeight:
+                  isHighlighted ? FontWeight.w700 : FontWeight.w400,
+            ),
           ),
-          verticalSpace(8),
-          Image.asset(image),
-          verticalSpace(8),
+          const SizedBox(height: 8),
+          // Icon
+          Image.asset(
+            image,
+            width: isHighlighted ? 34 : 28,
+            height: isHighlighted ? 34 : 28,
+          ),
+          const SizedBox(height: 8),
+          // Time
           Text(
             time,
-            style: TextStyles.font12WhiteText,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isHighlighted ? Colors.white : Colors.white70,
+              fontSize: isHighlighted ? 13 : 11,
+              fontFamily: 'Tajawal',
+              fontWeight:
+                  isHighlighted ? FontWeight.w700 : FontWeight.w400,
+              letterSpacing: 0.5,
+            ),
           ),
+          if (isHighlighted) ...[
+            const SizedBox(height: 6),
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: AppColors.primaryColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
         ],
       ),
     );

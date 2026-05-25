@@ -10,6 +10,7 @@ class Assets {
   static const String assetsImagesCloudImage = 'assets/images/cloud_image.png';
   static const String dataAzkarDataFull = 'assets/data/azkar_data_full.json';
   static const String dataIslamicEvents2025 = 'assets/data/islamic_events_2025.json';
+  static const String dataNamesOfAllah = 'assets/data/Names_Of_Allah.json';
   static const String dataSurahs = 'assets/data/surahs.json';
   static const String fontsAmiriQuran = 'assets/fonts/Amiri Quran.ttf';
   static const String fontsTajawalRegular = 'assets/fonts/Tajawal-Regular.ttf';
@@ -43,5 +44,6 @@ class Assets {
   static const String imagesTriangle = 'assets/images/triangle.png';
   static const String imagesYaqeen = 'assets/images/Yaqeen.png';
   static const String imagesZikirmatikImage = 'assets/images/zikirmatik_image.png';
+  static const String riveIcons = 'assets/rive/icons.riv';
 
 }
