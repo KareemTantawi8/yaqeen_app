@@ -34,10 +34,7 @@ class DefaultAppBar extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () => context.pop(),
-            child: Transform.scale(
-              scaleX: -1,
-              child: Icon(icon),
-            ),
+            child: Icon(icon ?? Icons.arrow_back),
           ),
         ),
       ],

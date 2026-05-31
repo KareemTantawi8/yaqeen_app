@@ -154,7 +154,7 @@ class QuranScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Icon(
-                    Icons.arrow_back_ios,
+                    Icons.chevron_right,
                     color: Colors.white.withOpacity(0.8),
                     size: 20,
                   ),

@@ -30,6 +30,7 @@ class ReadingProgressNotifier extends ChangeNotifier {
 
   /// Clear progress
   Future<void> clearProgress() async {
+    await QuranReadingService.clearReadingProgress();
     _progress = null;
     notifyListeners();
   }

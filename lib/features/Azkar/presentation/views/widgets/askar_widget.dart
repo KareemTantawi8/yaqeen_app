@@ -66,7 +66,7 @@ class AzkarWidget extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.arrow_back_ios_new_rounded,
+                Icons.chevron_right,
                 size: iconSize,
                 color: const Color(0xFF2B7669),
               ),

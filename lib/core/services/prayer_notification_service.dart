@@ -112,15 +112,24 @@ class PrayerNotificationService {
   /// finishes, then opens the adhan popup.
   static String? pendingAdhanPrayerName;
 
-  // Called when user taps a notification while app is in foreground / background
+  // Called when user taps any local notification (prayer or FCM foreground).
   static void _onForegroundTap(NotificationResponse response) {
-    final prayerName = response.payload ?? '';
-    debugPrint('Prayer notification tapped: $prayerName');
-    // App is already running — navigator is ready, push the alert screen directly.
-    appNavigatorKey.currentState?.pushNamed(
-      '/adhan-alert',
-      arguments: {'prayerName': prayerName},
-    );
+    final payload = response.payload ?? '';
+    debugPrint('Notification tapped: $payload');
+
+    if (prayerNames.contains(payload)) {
+      // Prayer notification → open adhan alert popup.
+      appNavigatorKey.currentState?.pushNamed(
+        '/adhan-alert',
+        arguments: {'prayerName': payload},
+      );
+    } else if (payload == 'fcm') {
+      // FCM foreground notification → open main screen.
+      appNavigatorKey.currentState?.pushNamedAndRemoveUntil(
+        '/main',
+        (route) => false,
+      );
+    }
   }
 
   // ---------------------------------------------------------------------------

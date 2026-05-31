@@ -329,7 +329,7 @@ class _MesphaScreenState extends State<MesphaScreen>
       child: Row(
         children: [
           _buildCircleButton(
-            Icons.arrow_back_ios_new,
+            Icons.arrow_back,
             () => Navigator.pop(context),
             sw,
           ),

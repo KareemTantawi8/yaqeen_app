@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
+import '../../../../core/styles/images/app_image.dart';
 import '../../../Azkar/presentation/views/azkar_screen.dart';
 import '../../../Settings/presentation/views/setting_screen.dart';
 import '../../../mosque/presentation/views/mosque_list_screen.dart';
@@ -21,7 +22,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int currentIndex = 2;
 
   final List<IconData> icons = [
-    Icons.self_improvement_rounded,
+    Icons.auto_stories_rounded, // unused — الأذكار uses custom asset
     Icons.auto_stories_rounded,
     Icons.home_rounded,
     Icons.mosque_rounded,
@@ -48,6 +49,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
     setState(() {
       currentIndex = index;
     });
+  }
+
+  Widget _buildNavIcon(int index, bool isSelected) {
+    final color =
+        isSelected ? Colors.white : context.navIconUnselected;
+
+    if (index == 0) {
+      return Image.asset(
+        AppImages.azkarIcon,
+        width: 22,
+        height: 22,
+        color: color,
+      );
+    }
+
+    return Icon(
+      icons[index],
+      color: color,
+      size: 22,
+    );
   }
 
   @override
@@ -80,7 +101,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 textDirection: TextDirection.ltr,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(icons.length, (index) {
+                  children: List.generate(labels.length, (index) {
                     final bool isSelected = currentIndex == index;
 
                     return GestureDetector(
@@ -98,13 +119,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                               shape: BoxShape.circle,
                             ),
                             child: Center(
-                              child: Icon(
-                                icons[index],
-                                color: isSelected
-                                    ? Colors.white
-                                    : context.navIconUnselected,
-                                size: 22,
-                              ),
+                              child: _buildNavIcon(index, isSelected),
                             ),
                           ),
                           const SizedBox(height: 4),

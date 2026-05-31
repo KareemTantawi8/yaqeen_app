@@ -114,7 +114,7 @@ class _AzkarCardState extends State<AzkarCard> {
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.arrow_back,
+                          Icons.arrow_forward,
                           color: Colors.white,
                           size: 16,
                         ),
@@ -133,7 +133,7 @@ class _AzkarCardState extends State<AzkarCard> {
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.arrow_forward,
+                          Icons.arrow_back,
                           color: Colors.white,
                           size: 16,
                         ),

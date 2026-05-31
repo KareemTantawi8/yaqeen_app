@@ -2,6 +2,7 @@ import 'package:just_audio/just_audio.dart' as ja;
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 
+import '../../../../core/common/widgets/custom_loading_widget.dart';
 import '../../../../core/extension/context_extension.dart';
 import '../../../../core/utils/quran_text_utils.dart';
 import '../../../../core/styles/colors/app_color.dart';
@@ -68,8 +69,10 @@ class _QuranHubScreenState extends State<QuranHubScreen>
       body: NestedScrollView(
         headerSliverBuilder: (_, innerScrolled) => [_buildHeader()],
         body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.primaryColor))
+            ? const CustomLoadingWidget(
+                message: 'جاري تحميل السور...',
+                size: 100,
+              )
             : TabBarView(
                 controller: _tabController,
                 children: [
@@ -504,6 +507,7 @@ class _AudioTabState extends State<_AudioTab>
     with AutomaticKeepAliveClientMixin {
   final ja.AudioPlayer _player = ja.AudioPlayer();
   int? _playingSurah;
+  int? _loadingSurah;
   String _reciter = 'Alafasy_128kbps';
 
   static const Map<String, String> _reciters = {
@@ -530,8 +534,15 @@ class _AudioTabState extends State<_AudioTab>
     _player.playingStream.listen((_) { if (mounted) setState(() {}); });
     _player.currentIndexStream.listen((_) { if (mounted) setState(() {}); });
     _player.playerStateStream.listen((state) {
-      if (state.processingState == ja.ProcessingState.completed && mounted) {
-        setState(() { _playingSurah = null; });
+      if (!mounted) return;
+      if (state.playing) {
+        setState(() => _loadingSurah = null);
+      }
+      if (state.processingState == ja.ProcessingState.completed) {
+        setState(() {
+          _playingSurah = null;
+          _loadingSurah = null;
+        });
       }
     });
   }
@@ -557,7 +568,10 @@ class _AudioTabState extends State<_AudioTab>
 
   Future<void> _loadAndPlay(int surahNumber) async {
     final meta = widget.surahs.firstWhere((s) => s.number == surahNumber);
-    setState(() => _playingSurah = surahNumber);
+    setState(() {
+      _playingSurah = surahNumber;
+      _loadingSurah = surahNumber;
+    });
     try {
       final sources = List.generate(meta.ayahCount, (i) {
         final url = qwt.QuranService.instance.getAudioUrl(
@@ -577,7 +591,10 @@ class _AudioTabState extends State<_AudioTab>
     } catch (e) {
       debugPrint('Playlist error: $e');
       if (mounted) {
-        setState(() => _playingSurah = null);
+        setState(() {
+          _playingSurah = null;
+          _loadingSurah = null;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -747,7 +764,10 @@ class _AudioTabState extends State<_AudioTab>
                           final wasPlaying = _player.playing;
                           final prev = _playingSurah;
                           await _player.stop();
-                          setState(() => _reciter = e.key);
+                          setState(() {
+                            _reciter = e.key;
+                            _loadingSurah = null;
+                          });
                           if (wasPlaying && prev != null) {
                             await _loadAndPlay(prev);
                           }
@@ -774,6 +794,7 @@ class _AudioTabState extends State<_AudioTab>
                   reciterName:
                       '${_reciters[_reciter] ?? ''} • آية $currentAyah / $totalAyahs',
                   isPlaying: isPlaying,
+                  isLoading: _loadingSurah == _playingSurah,
                   onToggle: () => _toggle(_playingSurah!),
                   onPickAyah: () => _openAyahPicker(context),
                 ),
@@ -792,6 +813,7 @@ class _AudioTabState extends State<_AudioTab>
                     final s = widget.surahs[i];
                     final selected = _playingSurah == s.number;
                     final playing = selected && isPlaying;
+                    final loading = _loadingSurah == s.number;
 
                     return _surahCard(
                       context: context,
@@ -801,22 +823,32 @@ class _AudioTabState extends State<_AudioTab>
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: playing
+                          color: loading || playing
                               ? AppColors.primaryColor
                               : AppColors.primaryColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          playing
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                          color: playing
-                              ? Colors.white
-                              : AppColors.primaryColor,
-                          size: 22,
-                        ),
+                        child: loading
+                            ? const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Icon(
+                                playing
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
+                                color: playing
+                                    ? Colors.white
+                                    : AppColors.primaryColor,
+                                size: 22,
+                              ),
                       ),
-                      onTap: () => _toggle(s.number),
+                      onTap: () {
+                        if (!loading) _toggle(s.number);
+                      },
                     );
                   },
                 ),
@@ -830,6 +862,7 @@ class _NowPlayingBar extends StatelessWidget {
   final String surahName;
   final String reciterName;
   final bool isPlaying;
+  final bool isLoading;
   final VoidCallback onToggle;
   final VoidCallback? onPickAyah;
 
@@ -837,6 +870,7 @@ class _NowPlayingBar extends StatelessWidget {
     required this.surahName,
     required this.reciterName,
     required this.isPlaying,
+    this.isLoading = false,
     required this.onToggle,
     this.onPickAyah,
   });
@@ -854,7 +888,7 @@ class _NowPlayingBar extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: onToggle,
+            onTap: isLoading ? null : onToggle,
             child: Container(
               width: 36,
               height: 36,
@@ -862,11 +896,19 @@ class _NowPlayingBar extends StatelessWidget {
                 color: Colors.white.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Icon(
+                      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
             ),
           ),
           const SizedBox(width: 12),
@@ -877,7 +919,7 @@ class _NowPlayingBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    surahName,
+                    isLoading ? 'جاري التحميل...' : surahName,
                     style: const TextStyle(
                       color: Colors.white,
                       fontFamily: 'Amiri Quran',
@@ -895,6 +937,17 @@ class _NowPlayingBar extends StatelessWidget {
                     ),
                     textAlign: TextAlign.right,
                   ),
+                  if (isLoading) ...[
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        minHeight: 3,
+                        color: Colors.white,
+                        backgroundColor: Colors.white.withOpacity(0.25),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -1005,7 +1058,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
+            child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
           ),
           onPressed: () => Navigator.pop(context),
         ),

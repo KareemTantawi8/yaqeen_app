@@ -44,7 +44,7 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         child: Icon(
-                          Icons.arrow_forward_ios,
+                          Icons.arrow_back,
                           color: AppColors.primaryColor,
                           size: 24,
                         ),
@@ -210,7 +210,7 @@ class AdhkarCategoryDetailScreen extends StatelessWidget {
 
                               // Arrow
                               Icon(
-                                Icons.arrow_back_ios_new,
+                                Icons.chevron_right,
                                 color: AppColors.primaryColor,
                                 size: 18,
                               ),

@@ -283,7 +283,7 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.arrow_forward_ios,
+                            Icons.chevron_right,
                             color: Colors.white,
                             size: 11,
                           ),

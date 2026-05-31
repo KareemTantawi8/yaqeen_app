@@ -7,10 +7,10 @@ class Assets {
   static const String adhanMakkah = 'assets/audio/adhan/makkah.mp3';
   static const String adhanMishary = 'assets/audio/adhan/mishary.mp3';
   static const String adhanSudais = 'assets/audio/adhan/sudais.mp3';
+  static const String assetsDataNamesOfAllah = 'assets/data/Names_Of_Allah.json';
   static const String assetsImagesCloudImage = 'assets/images/cloud_image.png';
   static const String dataAzkarDataFull = 'assets/data/azkar_data_full.json';
-  static const String dataIslamicEvents2025 =
-      'assets/data/islamic_events_2025.json';
+  static const String dataIslamicEvents2025 = 'assets/data/islamic_events_2025.json';
   static const String dataNamesOfAllah = 'assets/data/Names_Of_Allah.json';
   static const String dataSurahs = 'assets/data/surahs.json';
   static const String fontsAmiriQuran = 'assets/fonts/Amiri Quran.ttf';
@@ -29,25 +29,24 @@ class Assets {
   static const String iconsSettingIcon = 'assets/icons/setting_icon.png';
   static const String iconsShareIcon = 'assets/icons/share_icon.png';
   static const String imagesAppLogo = 'assets/images/app_logo.png';
-  static const String imagesAskarHelperImage =
-      'assets/images/askar_helper_image.png';
+  static const String imagesAskarHelperImage = 'assets/images/askar_helper_image.png';
   static const String imagesCloudFog = 'assets/images/cloud-fog.png';
   static const String imagesCloudImage = 'assets/images/cloud_image.png';
-  static const String imagesCloudSunnyWidget =
-      'assets/images/cloud_sunny_widget.png';
+  static const String imagesCloudSunnyWidget = 'assets/images/cloud_sunny_widget.png';
   static const String imagesDialogImage = 'assets/images/dialog_image.png';
   static const String imagesFrame72 = 'assets/images/Frame 72.png';
-  static const String imagesHadisBannerImage =
-      'assets/images/hadis_banner_image.png';
+  static const String imagesHadisBannerImage = 'assets/images/hadis_banner_image.png';
   static const String imagesMoonIcon = 'assets/images/moon_icon.png';
   static const String imagesMosqueImage = 'assets/images/mosque_image.png';
+  // static const String imagesScreenshot 14471214 at 11.41.09 AM = 'assets/images/Screenshot 1447-12-14 at 11.41.09 AM.png';
+  // static const String imagesScreenshot 14471214 at 11.51.19 AM = 'assets/images/Screenshot 1447-12-14 at 11.51.19 AM.png';
   static const String imagesSettings = 'assets/images/settings.png';
   static const String imagesShape2 = 'assets/images/shape2.png';
   static const String imagesSun2Icon = 'assets/images/sun2_icon.png';
   static const String imagesSunIcon = 'assets/images/sun_icon.png';
   static const String imagesTriangle = 'assets/images/triangle.png';
   static const String imagesYaqeen = 'assets/images/Yaqeen.png';
-  static const String imagesZikirmatikImage =
-      'assets/images/zikirmatik_image.png';
+  static const String imagesZikirmatikImage = 'assets/images/zikirmatik_image.png';
   static const String riveIcons = 'assets/rive/icons.riv';
+
 }

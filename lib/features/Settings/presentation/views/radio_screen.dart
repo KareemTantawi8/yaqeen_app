@@ -23,7 +23,7 @@ class _RadioScreenState extends State<RadioScreen> {
   String? errorMessage;
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _currentlyPlayingId;
-  String? _loadingRadioId; // Track which radio is loading
+  String? _loadingRadioId;
   bool _isPlaying = false;
 
   @override
@@ -40,53 +40,19 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 
   void _setupAudioPlayer() {
-    // Listen to player state changes (loading, playing, etc.)
     _audioPlayer.playerStateStream.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state.playing;
-          
-          // Clear loading state when audio starts playing or fails
-          if (state.processingState == ProcessingState.ready && state.playing) {
-            _loadingRadioId = null;
-          } else if (state.processingState == ProcessingState.idle) {
-            _loadingRadioId = null;
-          }
-          
-          // Clear playing state when completed
-          if (!_isPlaying && state.processingState == ProcessingState.completed) {
-            _currentlyPlayingId = null;
-            _loadingRadioId = null;
-          }
-        });
-      }
-    });
-
-    // Listen to playing state changes
-    _audioPlayer.playingStream.listen((playing) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = playing;
-          if (playing) {
-            _loadingRadioId = null; // Clear loading when playing starts
-          }
-        });
-      }
-    });
-
-    // Listen to processing state for loading indication
-    _audioPlayer.processingStateStream.listen((processingState) {
-      if (mounted) {
-        setState(() {
-          if (processingState == ProcessingState.loading) {
-            // Keep loading state
-          } else if (processingState == ProcessingState.ready) {
-            _loadingRadioId = null;
-          } else if (processingState == ProcessingState.idle) {
-            _loadingRadioId = null;
-          }
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _isPlaying = state.playing;
+        if (state.playing) {
+          _loadingRadioId = null;
+        }
+        if (!state.playing &&
+            state.processingState == ProcessingState.completed) {
+          _currentlyPlayingId = null;
+          _loadingRadioId = null;
+        }
+      });
     });
   }
 
@@ -99,12 +65,14 @@ class _RadioScreenState extends State<RadioScreen> {
       });
 
       final response = await RadioLoadData.loadRadios();
+      if (!mounted) return;
       setState(() {
         radios = response.radios;
         isLoading = false;
       });
     } catch (e) {
       debugPrint('Failed to load radios: $e');
+      if (!mounted) return;
       setState(() {
         isLoading = false;
         hasError = true;
@@ -114,11 +82,9 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 
   Future<void> _toggleRadio(RadioModel radio) async {
-    // Capture previous state before any mutation
     final previousId = _currentlyPlayingId;
 
     try {
-      // Tapping the currently-playing station → pause and stop
       if (previousId == radio.id && _isPlaying) {
         await _audioPlayer.stop();
         setState(() {
@@ -128,13 +94,14 @@ class _RadioScreenState extends State<RadioScreen> {
         return;
       }
 
+      if (_loadingRadioId == radio.id) return;
+
       setState(() {
         _loadingRadioId = radio.id;
         _currentlyPlayingId = radio.id;
         _isPlaying = false;
       });
 
-      // Always stop first so iOS AVPlayer releases the previous stream
       await _audioPlayer.stop();
 
       await _audioPlayer.setAudioSource(
@@ -179,7 +146,7 @@ class _RadioScreenState extends State<RadioScreen> {
             children: [
               const DefaultAppBar(
                 title: 'الإذاعات الإسلامية',
-                icon: Icons.arrow_back,
+                icon: Icons.arrow_forward_ios_sharp,
               ),
               verticalSpace(16),
               Expanded(
@@ -244,18 +211,20 @@ class _RadioScreenState extends State<RadioScreen> {
                                 onRefresh: loadRadios,
                                 color: AppColors.primaryColor,
                                 child: ListView.builder(
-                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
                                   itemCount: radios.length,
                                   itemBuilder: (context, index) {
                                     final radio = radios[index];
                                     final isPlaying =
-                                        _currentlyPlayingId == radio.id && _isPlaying;
-                                    final isLoading =
+                                        _currentlyPlayingId == radio.id &&
+                                            _isPlaying;
+                                    final isItemLoading =
                                         _loadingRadioId == radio.id;
                                     return RadioWidget(
                                       radio: radio,
                                       isPlaying: isPlaying,
-                                      isLoading: isLoading,
+                                      isLoading: isItemLoading,
                                       onTap: () => _toggleRadio(radio),
                                     );
                                   },
@@ -268,4 +237,4 @@ class _RadioScreenState extends State<RadioScreen> {
       ),
     );
   }
-} 
+}

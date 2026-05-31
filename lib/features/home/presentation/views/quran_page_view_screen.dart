@@ -158,7 +158,7 @@ class _QuranPageViewScreenState extends State<QuranPageViewScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios),
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(

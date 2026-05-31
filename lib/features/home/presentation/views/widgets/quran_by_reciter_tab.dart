@@ -354,7 +354,7 @@ class _QuranByReciterTabState extends State<QuranByReciterTab> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                       child: const Icon(
-                        Icons.arrow_forward_ios,
+                        Icons.chevron_right,
                         color: Colors.white,
                         size: 16,
                       ),

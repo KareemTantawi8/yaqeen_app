@@ -255,7 +255,7 @@ class _SurahAudioPlayerScreenState extends State<SurahAudioPlayerScreen>
                   children: [
                     IconButton(
                       icon: const Icon(
-                        Icons.arrow_forward_ios,
+                        Icons.arrow_back,
                         color: AppColors.primaryColor,
                       ),
                       onPressed: () => Navigator.pop(context),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart';
 import '../../../core/extension/context_extension.dart';
+import '../../../core/utils/quran_text_utils.dart';
 import '../../../core/styles/colors/app_color.dart';
 
 class AyahSelectionSheet extends StatelessWidget {
@@ -106,6 +107,7 @@ class _AyahTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cleanedText = QuranTextUtils.withoutAyahMarkers(ayah.text);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -117,7 +119,7 @@ class _AyahTile extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.chevron_left, color: context.greyText400, size: 20),
+                Icon(Icons.chevron_right, color: context.greyText400, size: 20),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -139,9 +141,9 @@ class _AyahTile extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              ayah.text.length > 120
-                  ? '${ayah.text.substring(0, 120)}...'
-                  : ayah.text,
+              cleanedText.length > 120
+                  ? '${cleanedText.substring(0, 120)}...'
+                  : cleanedText,
               style: TextStyle(
                 fontFamily: 'Amiri Quran',
                 fontSize: 18,

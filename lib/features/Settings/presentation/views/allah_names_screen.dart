@@ -69,7 +69,7 @@ class _AllahNamesScreenState extends State<AllahNamesScreen> {
             children: [
               const DefaultAppBar(
                 title: 'أسماء الله الحسنى',
-                icon: Icons.arrow_back,
+                icon: Icons.arrow_forward_ios_sharp,
               ),
               verticalSpace(8),
               // Subtitle counter

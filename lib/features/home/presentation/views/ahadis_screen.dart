@@ -42,7 +42,10 @@ class _AhadisScreenState extends State<AhadisScreen> {
     }
 
     try {
-      final batch = await HadithService.fetchMultiple(book: _selectedBook, count: 8);
+      final batch = await HadithService.fetchMultiple(
+        book: _selectedBook,
+        count: 8,
+      );
       if (mounted) {
         setState(() {
           _hadiths.addAll(batch);
@@ -63,7 +66,10 @@ class _AhadisScreenState extends State<AhadisScreen> {
     if (_isLoadingMore) return;
     setState(() => _isLoadingMore = true);
     try {
-      final batch = await HadithService.fetchMultiple(book: _selectedBook, count: 5);
+      final batch = await HadithService.fetchMultiple(
+        book: _selectedBook,
+        count: 5,
+      );
       if (mounted) {
         setState(() {
           _hadiths.addAll(batch);
@@ -105,17 +111,27 @@ class _AhadisScreenState extends State<AhadisScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          Row(children: [
-            _circleBtn(Icons.favorite_border_rounded, () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const HadithFavoritesScreen()),
-            )),
-            horizontalSpace(8),
-            _circleBtn(Icons.search_rounded, () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const HadithSearchScreen()),
-            )),
-          ]),
+          Row(
+            children: [
+              _circleBtn(
+                Icons.favorite_border_rounded,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const HadithFavoritesScreen(),
+                  ),
+                ),
+              ),
+              horizontalSpace(8),
+              _circleBtn(
+                Icons.search_rounded,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HadithSearchScreen()),
+                ),
+              ),
+            ],
+          ),
           const Spacer(),
           Text(
             'الأحاديث الشريفة',
@@ -127,7 +143,10 @@ class _AhadisScreenState extends State<AhadisScreen> {
             ),
           ),
           horizontalSpace(8),
-          _circleBtn(Icons.arrow_forward_ios, () => Navigator.pop(context)),
+          _circleBtn(
+            Icons.arrow_forward_ios_sharp,
+            () => Navigator.pop(context),
+          ),
         ],
       ),
     );
@@ -138,38 +157,42 @@ class _AhadisScreenState extends State<AhadisScreen> {
   Widget _buildBanner() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Stack(children: [
-        Container(
-          height: 100,
-          width: double.infinity,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(18)),
-          child: Image.asset(AppImages.hadisBannerWidget, fit: BoxFit.cover),
-        ),
-        Container(
-          height: 100,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            gradient: LinearGradient(colors: [
-              const Color(0xFF206B5E).withOpacity(0.82),
-              const Color(0xFF1A3A35).withOpacity(0.88),
-            ]),
+      child: Stack(
+        children: [
+          Container(
+            height: 100,
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(18)),
+            child: Image.asset(AppImages.hadisBannerWidget, fit: BoxFit.cover),
           ),
-          child: const Center(
-            child: Text(
-              'وَمَا يَنْطِقُ عَنِ الْهَوَى إِنْ هُوَ إِلَّا وَحْيٌ يُوحَى',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontFamily: 'Amiri Quran',
-                height: 1.6,
+          Container(
+            height: 100,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF206B5E).withOpacity(0.82),
+                  const Color(0xFF1A3A35).withOpacity(0.88),
+                ],
+              ),
+            ),
+            child: const Center(
+              child: Text(
+                'وَمَا يَنْطِقُ عَنِ الْهَوَى إِنْ هُوَ إِلَّا وَحْيٌ يُوحَى',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontFamily: 'Amiri Quran',
+                  height: 1.6,
+                ),
               ),
             ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
@@ -184,7 +207,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
         itemCount: HadithService.books.length,
         separatorBuilder: (_, __) => horizontalSpace(8),
         itemBuilder: (_, i) {
-          final book     = HadithService.books[i];
+          final book = HadithService.books[i];
           final selected = _selectedBook == book.key;
           return GestureDetector(
             onTap: () => _selectBook(book.key),
@@ -196,11 +219,13 @@ class _AhadisScreenState extends State<AhadisScreen> {
                 color: selected ? AppColors.primaryColor : context.lightAccent,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: selected
-                    ? [BoxShadow(
-                        color: AppColors.primaryColor.withOpacity(0.35),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      )]
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primaryColor.withOpacity(0.35),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ]
                     : null,
               ),
               child: Text(
@@ -230,12 +255,19 @@ class _AhadisScreenState extends State<AhadisScreen> {
             const SizedBox(
               width: 44,
               height: 44,
-              child: CircularProgressIndicator(color: AppColors.primaryColor, strokeWidth: 3),
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+                strokeWidth: 3,
+              ),
             ),
             verticalSpace(14),
             const Text(
               'جاري تحميل الأحاديث...',
-              style: TextStyle(fontFamily: 'Tajawal', color: AppColors.primaryColor, fontSize: 14),
+              style: TextStyle(
+                fontFamily: 'Tajawal',
+                color: AppColors.primaryColor,
+                fontSize: 14,
+              ),
             ),
           ],
         ),
@@ -249,23 +281,42 @@ class _AhadisScreenState extends State<AhadisScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.wifi_off_rounded, size: 60, color: context.greyText300),
+              Icon(
+                Icons.wifi_off_rounded,
+                size: 60,
+                color: context.greyText300,
+              ),
               verticalSpace(14),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: context.greyText600, fontFamily: 'Tajawal', fontSize: 15),
+                style: TextStyle(
+                  color: context.greyText600,
+                  fontFamily: 'Tajawal',
+                  fontSize: 15,
+                ),
               ),
               verticalSpace(20),
               ElevatedButton.icon(
                 onPressed: () => _loadHadiths(refresh: true),
                 icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-                label: const Text('إعادة المحاولة',
-                    style: TextStyle(color: Colors.white, fontFamily: 'Tajawal', fontSize: 15)),
+                label: const Text(
+                  'إعادة المحاولة',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Tajawal',
+                    fontSize: 15,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 4,
                   shadowColor: AppColors.primaryColor.withOpacity(0.3),
                 ),
@@ -285,10 +336,7 @@ class _AhadisScreenState extends State<AhadisScreen> {
         separatorBuilder: (_, __) => verticalSpace(12),
         itemBuilder: (ctx, i) {
           if (i == _hadiths.length) return _buildLoadMoreButton();
-          return _HadithListCard(
-            hadith: _hadiths[i],
-            index: i + 1,
-          );
+          return _HadithListCard(hadith: _hadiths[i], index: i + 1);
         },
       ),
     );
@@ -301,7 +349,10 @@ class _AhadisScreenState extends State<AhadisScreen> {
           ? const Center(
               child: Padding(
                 padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(color: AppColors.primaryColor, strokeWidth: 2.5),
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                  strokeWidth: 2.5,
+                ),
               ),
             )
           : GestureDetector(
@@ -312,12 +363,18 @@ class _AhadisScreenState extends State<AhadisScreen> {
                 decoration: BoxDecoration(
                   color: context.lightAccent,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.primaryColor.withOpacity(0.3),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.expand_more_rounded, color: AppColors.primaryColor, size: 22),
+                    const Icon(
+                      Icons.expand_more_rounded,
+                      color: AppColors.primaryColor,
+                      size: 22,
+                    ),
                     horizontalSpace(8),
                     const Text(
                       'تحميل المزيد',
@@ -343,7 +400,10 @@ class _AhadisScreenState extends State<AhadisScreen> {
       child: Container(
         width: 46,
         height: 46,
-        decoration: BoxDecoration(color: context.lightAccent, shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: context.lightAccent,
+          shape: BoxShape.circle,
+        ),
         child: Icon(icon, color: AppColors.primaryColor, size: 22),
       ),
     );
@@ -366,7 +426,7 @@ class _HadithListCard extends StatefulWidget {
 
 class _HadithListCardState extends State<_HadithListCard> {
   bool _isFavorite = false;
-  bool _expanded   = false;
+  bool _expanded = false;
 
   @override
   void initState() {
@@ -383,40 +443,50 @@ class _HadithListCardState extends State<_HadithListCard> {
     final next = await HadithFavoriteService.toggleFavorite(widget.hadith);
     setState(() => _isFavorite = next);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          next ? '❤️ تم الحفظ في المفضلة' : 'تم الحذف من المفضلة',
-          textAlign: TextAlign.right,
-          style: const TextStyle(fontFamily: 'Tajawal'),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            next ? '❤️ تم الحفظ في المفضلة' : 'تم الحذف من المفضلة',
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontFamily: 'Tajawal'),
+          ),
+          backgroundColor: next ? AppColors.primaryColor : Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: next ? AppColors.primaryColor : Colors.red.shade400,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 2),
-      ));
+      );
     }
   }
 
   void _share() => Share.share(
-      '${widget.hadith.arabicText}\n\n— ${widget.hadith.bookName} (${widget.hadith.refNo})');
+    '${widget.hadith.arabicText}\n\n— ${widget.hadith.bookName} (${widget.hadith.refNo})',
+  );
 
   void _copy() {
     Clipboard.setData(ClipboardData(text: widget.hadith.arabicText));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('تم نسخ الحديث',
-          textAlign: TextAlign.right, style: TextStyle(fontFamily: 'Tajawal')),
-      backgroundColor: AppColors.primaryColor,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      duration: const Duration(seconds: 1),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'تم نسخ الحديث',
+          textAlign: TextAlign.right,
+          style: TextStyle(fontFamily: 'Tajawal'),
+        ),
+        backgroundColor: AppColors.primaryColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 1),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final hadith    = widget.hadith;
+    final hadith = widget.hadith;
     final textLines = hadith.arabicText.split(' ').length;
-    final isLong    = textLines > 30; // roughly 3+ lines
+    final isLong = textLines > 30; // roughly 3+ lines
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -448,7 +518,9 @@ class _HadithListCardState extends State<_HadithListCard> {
                     AppColors.primaryColor.withOpacity(0.03),
                   ],
                 ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -490,8 +562,11 @@ class _HadithListCardState extends State<_HadithListCard> {
                       color: AppColors.primaryColor.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.menu_book_rounded,
-                        color: AppColors.primaryColor, size: 16),
+                    child: const Icon(
+                      Icons.menu_book_rounded,
+                      color: AppColors.primaryColor,
+                      size: 16,
+                    ),
                   ),
                 ],
               ),
@@ -507,7 +582,9 @@ class _HadithListCardState extends State<_HadithListCard> {
                     hadith.arabicText,
                     textAlign: TextAlign.right,
                     maxLines: _expanded ? null : (isLong ? 4 : null),
-                    overflow: _expanded ? null : (isLong ? TextOverflow.ellipsis : null),
+                    overflow: _expanded
+                        ? null
+                        : (isLong ? TextOverflow.ellipsis : null),
                     style: TextStyle(
                       color: context.highText,
                       fontSize: 19,
@@ -550,7 +627,10 @@ class _HadithListCardState extends State<_HadithListCard> {
                 children: [
                   // ref number
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: context.lightAccent,
                       borderRadius: BorderRadius.circular(8),

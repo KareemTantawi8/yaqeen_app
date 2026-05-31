@@ -5,6 +5,8 @@ class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
 
+    private let notificationSoundName = UNNotificationSoundName("yaqeen_notification.caf")
+
     override func didReceive(
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
@@ -12,13 +14,20 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
 
+        guard let content = bestAttemptContent else {
+            contentHandler(request.content)
+            return
+        }
+
+        // Force the bundled Yaqeen chime for every FCM push (background/killed).
+        content.sound = UNNotificationSound(named: notificationSoundName)
+
         guard
-            let content = bestAttemptContent,
             let imageURLString = request.content.userInfo["fcm_options"] as? [String: Any],
             let urlString = imageURLString["image"] as? String,
             let imageURL = URL(string: urlString)
         else {
-            contentHandler(bestAttemptContent ?? request.content)
+            contentHandler(content)
             return
         }
 
@@ -32,6 +41,7 @@ class NotificationService: UNNotificationServiceExtension {
 
     override func serviceExtensionTimeWillExpire() {
         if let handler = contentHandler, let content = bestAttemptContent {
+            content.sound = UNNotificationSound(named: notificationSoundName)
             handler(content)
         }
     }

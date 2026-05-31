@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/services/quran_audio_service.dart';
 import '../../../../core/services/quran_reading_service.dart';
@@ -294,6 +295,10 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           ayahText: ayah.text.substring(0, ayah.text.length > 100 ? 100 : ayah.text.length),
           totalAyahs: widget.surah.numberOfAyahs,
           lastRead: DateTime.now(),
+          pageNumber: qwt.QuranService.instance.getPageNumber(
+            widget.surah.number,
+            ayah.numberInSurah,
+          ),
         );
 
         // Save and notify
@@ -624,7 +629,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
             color: Colors.white.withOpacity(0.2),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 20),
+          child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
         ),
         onPressed: () => Navigator.pop(context),
       ),

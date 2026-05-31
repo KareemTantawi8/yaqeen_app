@@ -6,16 +6,17 @@ import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/prayer_times_service.dart';
-import 'package:yaqeen_app/features/home/presentation/views/widgets/Prayer_name_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/clip_shadow_path.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/curved_top_clipper.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/feature_icon_button.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/hijr_date_widget.dart';
+import 'package:yaqeen_app/features/home/presentation/views/widgets/Prayer_name_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/middle_notched_button.dart';
+import 'package:yaqeen_app/features/home/presentation/views/widgets/next_prayer_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/prayer_time_card.dart';
+import 'package:yaqeen_app/features/home/presentation/views/widgets/time_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/recent_quran_read.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/rectangle_widget.dart';
-import 'package:yaqeen_app/features/home/presentation/views/widgets/time_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/qibla_card.dart';
 import 'package:yaqeen_app/features/events/presentation/views/events_screen.dart';
 
@@ -276,6 +277,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  String _prayerIcon(String name) {
+    switch (name) {
+      case 'الفجر':
+        return AppImages.cloudefog;
+      case 'الظهر':
+        return AppImages.sunnyImage;
+      case 'العصر':
+        return AppImages.sunImage;
+      case 'المغرب':
+        return AppImages.cloudSunnyImage;
+      case 'العشاء':
+        return AppImages.moonImage;
+      default:
+        return AppImages.cloudeImage;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const double notchRadius = 55;
@@ -373,42 +391,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   HijriDateHeader(
                     hijrDateTitle: prayerTimings!.date.hijri.getFormattedDate(),
                   ),
-                  verticalSpace(8),
-                  // Next prayer label
-                  Opacity(
-                    opacity: 0.75,
-                    child: Text(
-                      'الصلاة القادمة',
-                      style: TextStyles.font14WhiteText,
-                    ),
-                  ),
-                  verticalSpace(4),
+                  verticalSpace(6),
                   PrayerNameWidget(
                     prayerName: nextPrayer?['name'] ?? 'الفجر',
+                    image: _prayerIcon(nextPrayer?['name'] ?? 'الفجر'),
                   ),
-                  verticalSpace(6),
+                  verticalSpace(12),
                   TimeWIdget(
-                    time: nextPrayer?['time'] ?? '00:00',
+                    time: (nextPrayer?['time'] ?? '00:00').split(' ').first,
                   ),
-                  // verticalSpace(4),
-                  // Countdown row with icon
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.timer_outlined,
-                          color: Colors.white70, size: 16),
-                      const SizedBox(width: 6),
-                      Opacity(
-                        opacity: 0.80,
-                        child: Text(
-                          countdown,
-                          style: TextStyles.font14WhiteText.copyWith(
-                            letterSpacing: 1.5,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                  NextPrayerWidget(
+                    nextPrayer: 'الصلاة التالية بعد $countdown',
                   ),
                   verticalSpace(16),
                   Row(

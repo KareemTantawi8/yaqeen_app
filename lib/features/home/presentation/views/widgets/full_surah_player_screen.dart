@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import '../../../../../core/common/widgets/custom_loading_widget.dart';
 import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -66,6 +67,10 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
           _isPlaying = state.playing;
           _isLoading = state.processingState == ProcessingState.loading ||
               state.processingState == ProcessingState.buffering;
+
+          if (state.playing) {
+            _isLoading = false;
+          }
 
           if (_isPlaying) {
             _animationController.repeat();
@@ -404,7 +409,7 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                                   ),
                                 ),
                                 Icon(
-                                  Icons.arrow_forward_ios,
+                                  Icons.chevron_right,
                                   color: Colors.white.withOpacity(0.8),
                                   size: 16,
                                 ),
@@ -424,22 +429,9 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                   future: QuranDataLoader.loadSurahs(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(color: AppColors.primaryColor),
-                            verticalSpace(16),
-                            const Text(
-                              'جاري تحميل السور...',
-                              style: TextStyle(
-                                fontFamily: 'Tajawal',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                      return const CustomLoadingWidget(
+                        message: 'جاري تحميل السور...',
+                        size: 100,
                       );
                     }
 
@@ -472,10 +464,13 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                         final surah = surahs[index];
                         final isCurrentlyPlaying =
                             _currentPlayingSurah?.number == surah.number;
+                        final isCurrentlyLoading =
+                            _isLoading && isCurrentlyPlaying;
 
                         return _buildSurahCard(
                           surah,
                           isCurrentlyPlaying,
+                          isCurrentlyLoading,
                           screenWidth,
                         );
                       },
@@ -499,7 +494,12 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
     );
   }
 
-  Widget _buildSurahCard(Surah surah, bool isPlaying, double screenWidth) {
+  Widget _buildSurahCard(
+    Surah surah,
+    bool isPlaying,
+    bool isLoading,
+    double screenWidth,
+  ) {
     final colors = [
       [const Color(0xFF2B7669), const Color(0xFF1A5F54)],
       [const Color(0xFF6B5B95), const Color(0xFF4A3F6B)],
@@ -513,7 +513,7 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
     final gradient = colors[colorIndex];
 
     return InkWell(
-      onTap: () => _playSurah(surah),
+      onTap: isLoading ? null : () => _playSurah(surah),
       borderRadius: BorderRadius.circular(20),
       child: Container(
         decoration: BoxDecoration(
@@ -653,24 +653,33 @@ class _FullSurahPlayerScreenState extends State<FullSurahPlayerScreen>
                         width: 2,
                       ),
                     ),
-                    child: isPlaying && _isPlaying
-                        ? const Icon(
-                            Icons.pause,
-                            color: Colors.white,
-                            size: 24,
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
                           )
-                        : const Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 24,
-                          ),
+                        : isPlaying && _isPlaying
+                            ? const Icon(
+                                Icons.pause,
+                                color: Colors.white,
+                                size: 24,
+                              )
+                            : const Icon(
+                                Icons.play_arrow,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                   ),
                 ],
               ),
             ),
 
             // Playing indicator
-            if (isPlaying)
+            if (isPlaying && !isLoading)
               Positioned(
                 top: 8,
                 left: 8,

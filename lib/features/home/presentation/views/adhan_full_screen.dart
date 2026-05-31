@@ -70,7 +70,8 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
   void _onPlayerState(PlayerState state) {
     if (!mounted) return;
     setState(() {
-      _isLoadingAdhan = state.processingState == ProcessingState.loading ||
+      _isLoadingAdhan =
+          state.processingState == ProcessingState.loading ||
           state.processingState == ProcessingState.buffering;
       _isPlayingAdhan = state.playing && !_isLoadingAdhan;
     });
@@ -154,8 +155,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
 
   void _startCountdownTimer() {
     _countdownTimer?.cancel();
-    _countdownTimer =
-        Timer.periodic(const Duration(seconds: 1), (_) {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (_adhanData != null &&
           mounted &&
           _currentLatitude != null &&
@@ -209,9 +209,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
   }
 
   void _openAdhanSettings() {
-    Navigator.of(context)
-        .pushNamed(AdhanSettingsScreen.routeName)
-        .then((_) => _loadVoiceName());
+    Navigator.of(
+      context,
+    ).pushNamed(AdhanSettingsScreen.routeName).then((_) => _loadVoiceName());
   }
 
   // ---------------------------------------------------------------------------
@@ -227,8 +227,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
           children: [
             // Header
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: context.cardBg,
                 boxShadow: [
@@ -243,7 +242,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                 children: [
                   const DefaultAppBar(
                     title: 'مواقيت الأذان',
-                    icon: Icons.arrow_back,
+                    icon: Icons.arrow_forward_ios_sharp,
                   ),
                   verticalSpace(12),
                   _buildLocationInfo(),
@@ -255,8 +254,8 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               child: _isLoading
                   ? _buildLoadingState()
                   : _errorMessage != null
-                      ? _buildErrorState()
-                      : _buildContent(),
+                  ? _buildErrorState()
+                  : _buildContent(),
             ),
           ],
         ),
@@ -269,16 +268,18 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
       children: [
         Expanded(
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: AppColors.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                Icon(Icons.location_on,
-                    color: AppColors.primaryColor, size: 20),
+                Icon(
+                  Icons.location_on,
+                  color: AppColors.primaryColor,
+                  size: 20,
+                ),
                 horizontalSpace(8),
                 Expanded(
                   child: Text(
@@ -299,21 +300,23 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
         ),
         horizontalSpace(8),
         // Calculation method
-        _buildIconBtn(Icons.settings, _changeCalculationMethod,
-            tooltip: 'طريقة الحساب'),
+        _buildIconBtn(
+          Icons.settings,
+          _changeCalculationMethod,
+          tooltip: 'طريقة الحساب',
+        ),
         horizontalSpace(8),
         // Adhan settings (voice + notifications)
-        _buildIconBtn(Icons.notifications_active_outlined, _openAdhanSettings,
-            tooltip: 'إعدادات الأذان'),
+        _buildIconBtn(
+          Icons.notifications_active_outlined,
+          _openAdhanSettings,
+          tooltip: 'إعدادات الأذان',
+        ),
       ],
     );
   }
 
-  Widget _buildIconBtn(
-    IconData icon,
-    VoidCallback onTap, {
-    String? tooltip,
-  }) {
+  Widget _buildIconBtn(IconData icon, VoidCallback onTap, {String? tooltip}) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.primaryColor.withOpacity(0.1),
@@ -423,8 +426,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
           ),
           verticalSpace(16),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(30),
@@ -474,8 +476,11 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                   color: AppColors.primaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.volume_up,
-                    color: AppColors.primaryColor, size: 24),
+                child: Icon(
+                  Icons.volume_up,
+                  color: AppColors.primaryColor,
+                  size: 24,
+                ),
               ),
               horizontalSpace(16),
               Expanded(
@@ -493,8 +498,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                     verticalSpace(4),
                     Text(
                       _selectedVoiceName,
-                      style: TextStyles.font14PrimaryText
-                          .copyWith(color: context.greyText600),
+                      style: TextStyles.font14PrimaryText.copyWith(
+                        color: context.greyText600,
+                      ),
                     ),
                   ],
                 ),
@@ -512,8 +518,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                     backgroundColor: _isPlayingAdhan
                         ? Colors.red
                         : AppColors.primaryColor,
-                    disabledBackgroundColor:
-                        AppColors.primaryColor.withOpacity(0.7),
+                    disabledBackgroundColor: AppColors.primaryColor.withOpacity(
+                      0.7,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -524,7 +531,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : Icon(
                           _isPlayingAdhan ? Icons.stop : Icons.play_arrow,
@@ -549,11 +558,12 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.cardBg,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                        color: AppColors.primaryColor, width: 1.5),
+                    side: BorderSide(color: AppColors.primaryColor, width: 1.5),
                   ),
                 ),
                 icon: Icon(Icons.settings, color: AppColors.primaryColor),
@@ -597,8 +607,11 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               color: AppColors.primaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.calendar_today,
-                color: AppColors.primaryColor, size: 24),
+            child: Icon(
+              Icons.calendar_today,
+              color: AppColors.primaryColor,
+              size: 24,
+            ),
           ),
           horizontalSpace(16),
           Expanded(
@@ -615,8 +628,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                 verticalSpace(4),
                 Text(
                   _adhanData!.date,
-                  style: TextStyles.font14PrimaryText
-                      .copyWith(color: context.greyText600),
+                  style: TextStyles.font14PrimaryText.copyWith(
+                    color: context.greyText600,
+                  ),
                 ),
               ],
             ),
@@ -628,11 +642,31 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
 
   Widget _buildPrayerTimeCard(int index) {
     final prayers = [
-      {'name': 'الفجر', 'time': _adhanData!.timings.fajr, 'icon': AppImages.cloudefog},
-      {'name': 'الظهر', 'time': _adhanData!.timings.dhuhr, 'icon': AppImages.sunnyImage},
-      {'name': 'العصر', 'time': _adhanData!.timings.asr, 'icon': AppImages.sunImage},
-      {'name': 'المغرب', 'time': _adhanData!.timings.maghrib, 'icon': AppImages.cloudSunnyImage},
-      {'name': 'العشاء', 'time': _adhanData!.timings.isha, 'icon': AppImages.moonImage},
+      {
+        'name': 'الفجر',
+        'time': _adhanData!.timings.fajr,
+        'icon': AppImages.cloudefog,
+      },
+      {
+        'name': 'الظهر',
+        'time': _adhanData!.timings.dhuhr,
+        'icon': AppImages.sunnyImage,
+      },
+      {
+        'name': 'العصر',
+        'time': _adhanData!.timings.asr,
+        'icon': AppImages.sunImage,
+      },
+      {
+        'name': 'المغرب',
+        'time': _adhanData!.timings.maghrib,
+        'icon': AppImages.cloudSunnyImage,
+      },
+      {
+        'name': 'العشاء',
+        'time': _adhanData!.timings.isha,
+        'icon': AppImages.moonImage,
+      },
     ];
 
     final prayer = prayers[index];
@@ -677,14 +711,12 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               style: TextStyles.font20PrimaryText.copyWith(
                 fontFamily: FontFamilyHelper.fontFamily1,
                 color: isNext ? AppColors.primaryColor : context.highText,
-                fontWeight:
-                    isNext ? FontWeight.bold : FontWeight.w600,
+                fontWeight: isNext ? FontWeight.bold : FontWeight.w600,
               ),
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isNext
                   ? AppColors.primaryColor
@@ -737,8 +769,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.amber.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
@@ -799,7 +830,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 12),
+                  horizontal: 32,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -836,8 +869,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
           shrinkWrap: true,
           itemCount: AdhanService.calculationMethods.length,
           itemBuilder: (context, index) {
-            final methodId =
-                AdhanService.calculationMethods.keys.elementAt(index);
+            final methodId = AdhanService.calculationMethods.keys.elementAt(
+              index,
+            );
             final methodName = AdhanService.calculationMethods[methodId]!;
             final isSelected = _selectedMethod == methodId;
 
@@ -847,8 +881,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
                 style: TextStyles.font16PrimaryText.copyWith(
                   fontFamily: FontFamilyHelper.fontFamily1,
                   color: isSelected ? AppColors.primaryColor : context.highText,
-                  fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
               leading: Radio<int>(

@@ -12,6 +12,7 @@ import 'package:yaqeen_app/yaqeen_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _ignoreSimulatorMetaKeyAssertionInDebug();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -55,4 +56,25 @@ void main() async {
       clarityConfig: clarityConfig,
     ),
   );
+}
+
+void _ignoreSimulatorMetaKeyAssertionInDebug() {
+  final previousOnError = FlutterError.onError;
+
+  FlutterError.onError = (details) {
+    if (kDebugMode && _isSimulatorMetaKeyAssertion(details)) {
+      return;
+    }
+
+    previousOnError?.call(details);
+  };
+}
+
+bool _isSimulatorMetaKeyAssertion(FlutterErrorDetails details) {
+  final exception = details.exceptionAsString();
+  final stack = details.stack?.toString() ?? '';
+
+  return exception.contains('A KeyUpEvent is dispatched') &&
+      exception.contains('Meta Left') &&
+      stack.contains('hardware_keyboard.dart');
 }

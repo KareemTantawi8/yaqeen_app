@@ -10,6 +10,8 @@ class ReadingProgress {
   final String ayahText;
   final int totalAyahs;
   final DateTime lastRead;
+  /// Mushaf page (1–604) for resume in full mushaf viewer.
+  final int? pageNumber;
 
   ReadingProgress({
     required this.surahNumber,
@@ -19,6 +21,7 @@ class ReadingProgress {
     required this.ayahText,
     required this.totalAyahs,
     required this.lastRead,
+    this.pageNumber,
   });
 
   Map<String, dynamic> toJson() {
@@ -30,6 +33,7 @@ class ReadingProgress {
       'ayahText': ayahText,
       'totalAyahs': totalAyahs,
       'lastRead': lastRead.toIso8601String(),
+      if (pageNumber != null) 'pageNumber': pageNumber,
     };
   }
 
@@ -42,6 +46,7 @@ class ReadingProgress {
       ayahText: json['ayahText'] as String,
       totalAyahs: json['totalAyahs'] as int,
       lastRead: DateTime.parse(json['lastRead'] as String),
+      pageNumber: json['pageNumber'] as int?,
     );
   }
 
@@ -97,6 +102,16 @@ class QuranReadingService {
       debugPrint('Reading progress saved: Surah ${progress.surahNumber}, Ayah ${progress.ayahNumber}');
     } catch (e) {
       debugPrint('Error saving reading progress: $e');
+    }
+  }
+
+  static Future<void> clearReadingProgress() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_keyReadingProgress);
+      debugPrint('Reading progress cleared');
+    } catch (e) {
+      debugPrint('Error clearing reading progress: $e');
     }
   }
 

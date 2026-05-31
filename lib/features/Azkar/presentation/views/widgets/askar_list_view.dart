@@ -174,7 +174,7 @@ class _CategoryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.arrow_back_ios_new,
+                    Icons.chevron_right,
                     color: AppColors.primaryColor,
                     size: 20,
                   ),

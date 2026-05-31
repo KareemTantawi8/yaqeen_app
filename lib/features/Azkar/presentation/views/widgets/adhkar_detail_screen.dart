@@ -269,7 +269,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         child: Icon(
-                          Icons.arrow_forward_ios,
+                          Icons.arrow_back,
                           color: AppColors.primaryColor,
                           size: 24,
                         ),
@@ -585,7 +585,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                         Expanded(
                           child: _NavigationButton(
                             label: 'السابق',
-                            icon: Icons.arrow_forward,
+                            icon: Icons.arrow_back,
                             onTap: hasPrevious
                                 ? () {
                                     final prevItem = _getPreviousItem()!;
@@ -599,7 +599,7 @@ class _AdhkarDetailScreenState extends State<AdhkarDetailScreen> {
                         Expanded(
                           child: _NavigationButton(
                             label: 'التالي',
-                            icon: Icons.arrow_back,
+                            icon: Icons.arrow_forward,
                             onTap: hasNext
                                 ? () {
                                     final nextItem = _getNextItem()!;

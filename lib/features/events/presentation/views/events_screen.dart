@@ -19,7 +19,7 @@ class EventsScreen extends StatelessWidget {
             children: [
               const DefaultAppBar(
                 title: 'المناسبات الإسلامية',
-                icon: Icons.arrow_back,
+                icon: Icons.arrow_forward_ios_sharp,
               ),
               verticalSpace(8),
               // Hijri year info strip

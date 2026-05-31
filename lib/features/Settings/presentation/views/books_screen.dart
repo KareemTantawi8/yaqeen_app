@@ -127,7 +127,7 @@ class _BooksScreenState extends State<BooksScreen> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
-                  Icons.chevron_right,
+                  Icons.chevron_left,
                   color: AppColors.primaryColor,
                   size: 24,
                 ),
@@ -199,7 +199,7 @@ class _BooksScreenState extends State<BooksScreen> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
-                  Icons.chevron_left,
+                  Icons.chevron_right,
                   color: AppColors.primaryColor,
                   size: 24,
                 ),
@@ -220,7 +220,7 @@ class _BooksScreenState extends State<BooksScreen> {
             children: [
               const DefaultAppBar(
                 title: 'الكتب الإسلامية',
-                icon: Icons.arrow_back,
+                icon: Icons.arrow_forward_ios_sharp,
               ),
               verticalSpace(16),
               Expanded(

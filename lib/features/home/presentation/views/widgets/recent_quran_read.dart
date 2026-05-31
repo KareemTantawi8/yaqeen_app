@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/services/quran_mushaf_progress.dart';
 import '../../../../../core/services/reading_progress_notifier.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/images/app_image.dart';
-import '../../../data/models/surah_model.dart';
-import '../surah_detail_screen.dart';
+import '../../../../quran_mushaf/quran_mushaf_viewer_screen.dart';
 
 class RecentQuranRead extends StatefulWidget {
   const RecentQuranRead({super.key});
@@ -35,31 +35,25 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
     }
   }
 
-  void _navigateToSurah() async {
+  Future<void> _openMushaf() async {
     final readingProgress = _notifier.progress;
 
-    if (readingProgress != null) {
-      final surah = Surah(
-        number: readingProgress.surahNumber,
-        name: readingProgress.surahName,
-        englishName: readingProgress.surahEnglishName,
-        englishNameTranslation: '',
-        numberOfAyahs: readingProgress.totalAyahs,
-        revelationType: '',
-      );
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => readingProgress == null
+            ? const QuranMushafViewerScreen()
+            : QuranMushafViewerScreen(
+                initialPage: QuranMushafProgress.resolveMushafPage(
+                  readingProgress,
+                ),
+                highlightSurahNumber: readingProgress.surahNumber,
+                highlightAyahNumber: readingProgress.ayahNumber,
+              ),
+      ),
+    );
 
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SurahDetailScreen(
-            surah: surah,
-            initialAyahNumber: readingProgress.ayahNumber,
-          ),
-        ),
-      );
-
-      _notifier.loadProgress();
-    }
+    await _notifier.loadProgress();
   }
 
   @override
@@ -69,7 +63,7 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
     final percent = hasProgress ? readingProgress.progressPercentage / 100 : 0.0;
 
     return GestureDetector(
-      onTap: _navigateToSurah,
+      onTap: _openMushaf,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
@@ -429,7 +423,7 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.arrow_forward_ios,
+                        Icons.chevron_right,
                         color: AppColors.primaryColor,
                         size: 18,
                       ),

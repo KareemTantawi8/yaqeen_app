@@ -2,12 +2,27 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart';
 import '../../core/extension/context_extension.dart';
+import '../../core/services/reading_progress_notifier.dart';
 import '../../core/styles/colors/app_color.dart';
+import '../../core/utils/quran_text_utils.dart';
 import 'widgets/ayah_options_sheet.dart';
 import 'widgets/ayah_selection_sheet.dart';
 
 class QuranMushafViewerScreen extends StatefulWidget {
-  const QuranMushafViewerScreen({super.key});
+  const QuranMushafViewerScreen({
+    super.key,
+    this.initialPage,
+    this.highlightSurahNumber,
+    this.highlightAyahNumber,
+  });
+
+  /// Opens at this mushaf page (1–604).
+  final int? initialPage;
+
+  /// Highlights this ayah on the initial page (resume marker).
+  final int? highlightSurahNumber;
+  final int? highlightAyahNumber;
+
   static const String routeName = '/quran-mushaf-viewer';
 
   @override
@@ -18,18 +33,47 @@ class QuranMushafViewerScreen extends StatefulWidget {
 class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
   static const int _totalPages = 604;
 
-  final PageController _pageController = PageController();
-  int _currentPage = 1;
+  late final PageController _pageController;
+  late int _currentPage;
   List<Ayah> _currentPageAyahs = [];
   String _currentSurahName = '';
   int _currentJuz = 1;
-  bool _isNightMode = false;
   double _fontSize = 20;
+  int? _markerSurah;
+  int? _markerAyah;
 
   @override
   void initState() {
     super.initState();
-    _updatePageInfo(1);
+    _markerSurah = widget.highlightSurahNumber;
+    _markerAyah = widget.highlightAyahNumber;
+    _currentPage = (widget.initialPage ?? 1).clamp(1, _totalPages);
+    _pageController = PageController(initialPage: _currentPage - 1);
+    _updatePageInfo(_currentPage);
+    _loadSavedMarker();
+  }
+
+  Future<void> _loadSavedMarker() async {
+    await ReadingProgressNotifier().loadProgress();
+    if (!mounted || widget.highlightSurahNumber != null) return;
+    final progress = ReadingProgressNotifier().progress;
+    if (progress == null) return;
+    setState(() {
+      _markerSurah = progress.surahNumber;
+      _markerAyah = progress.ayahNumber;
+    });
+  }
+
+  void _onReadingPositionChanged(Ayah? ayah) {
+    setState(() {
+      if (ayah == null) {
+        _markerSurah = null;
+        _markerAyah = null;
+      } else {
+        _markerSurah = ayah.surahNumber;
+        _markerAyah = ayah.id;
+      }
+    });
   }
 
   @override
@@ -77,7 +121,11 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => AyahOptionsSheet(ayah: ayah, surahName: surahName),
+      builder: (_) => AyahOptionsSheet(
+        ayah: ayah,
+        surahName: surahName,
+        onReadingPositionChanged: _onReadingPositionChanged,
+      ),
     );
   }
 
@@ -94,7 +142,11 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
-          builder: (_) => AyahOptionsSheet(ayah: ayah, surahName: surahName),
+          builder: (_) => AyahOptionsSheet(
+            ayah: ayah,
+            surahName: surahName,
+            onReadingPositionChanged: _onReadingPositionChanged,
+          ),
         ),
       ),
     );
@@ -181,24 +233,10 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
     );
   }
 
-  // ── Computed colors based on night mode ──────────────────────────────────
-  Color get _bgColor =>
-      _isNightMode ? const Color(0xFF121212) : const Color(0xFFF5F7F6);
-  Color get _cardColor =>
-      _isNightMode ? const Color(0xFF1E1E1E) : Colors.white;
-  Color get _pageColor =>
-      _isNightMode ? const Color(0xFF1A1A0A) : const Color(0xFFFFF8E7);
-  Color get _pageBorderColor =>
-      _isNightMode ? const Color(0xFF5A4A20) : const Color(0xFFBF8840);
-  Color get _textColor =>
-      _isNightMode ? const Color(0xFFE8D5A3) : const Color(0xFF1A0A00);
-  Color get _labelColor =>
-      _isNightMode ? Colors.white70 : AppColors.primaryColor;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: context.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -221,14 +259,13 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
                       final pageNum = index + 1;
                       final ayahs = QuranService.instance.getPage(pageNum);
                       return _MushafPage(
-                        key: ValueKey(pageNum),
+                        key: ValueKey('$pageNum-$_fontSize'),
                         ayahs: ayahs,
                         pageNumber: pageNum,
                         fontSize: _fontSize,
-                        pageColor: _pageColor,
-                        borderColor: _pageBorderColor,
-                        textColor: _textColor,
                         onAyahTap: _onAyahTap,
+                        markerSurahNumber: _markerSurah,
+                        markerAyahNumber: _markerAyah,
                       );
                     },
                   ),
@@ -240,7 +277,7 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
                     bottom: 0,
                     child: Center(
                       child: _OverlayArrow(
-                        icon: Icons.chevron_left_rounded,
+                        icon: Icons.chevron_right_rounded,
                         enabled: _currentPage < _totalPages,
                         onTap: () => _goToPage(_currentPage + 1),
                       ),
@@ -254,7 +291,7 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
                     bottom: 0,
                     child: Center(
                       child: _OverlayArrow(
-                        icon: Icons.chevron_right_rounded,
+                        icon: Icons.chevron_left_rounded,
                         enabled: _currentPage > 1,
                         onTap: () => _goToPage(_currentPage - 1),
                       ),
@@ -273,14 +310,13 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
   }
 
   Widget _buildTopBar() {
-    return Container(
-      color: _cardColor,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
           _CircleBtn(
-            icon: Icons.arrow_forward_ios,
-            onTap: () => Navigator.pop(context),
+            icon: Icons.format_list_bulleted_rounded,
+            onTap: _showSurahList,
             bgColor: context.lightAccent,
             iconColor: AppColors.primaryColor,
           ),
@@ -289,25 +325,16 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
               'المصحف الشريف',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: _labelColor,
+                color: context.brandText,
                 fontFamily: 'Tajawal',
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
           _CircleBtn(
-            icon: _isNightMode
-                ? Icons.light_mode_rounded
-                : Icons.dark_mode_rounded,
-            onTap: () => setState(() => _isNightMode = !_isNightMode),
-            bgColor: context.lightAccent,
-            iconColor: AppColors.primaryColor,
-          ),
-          const SizedBox(width: 6),
-          _CircleBtn(
-            icon: Icons.format_list_bulleted_rounded,
-            onTap: _showSurahList,
+            icon: Icons.arrow_forward_ios_sharp,
+            onTap: () => Navigator.pop(context),
             bgColor: context.lightAccent,
             iconColor: AppColors.primaryColor,
           ),
@@ -318,7 +345,7 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
 
   Widget _buildInfoStrip() {
     return Container(
-      color: _cardColor,
+      color: context.cardBg,
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -346,7 +373,7 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
               Text(
                 _currentSurahName.isNotEmpty ? 'سورة $_currentSurahName' : '—',
                 style: TextStyle(
-                  color: _labelColor,
+                  color: context.brandText,
                   fontFamily: 'Tajawal',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -393,7 +420,7 @@ class _QuranMushafViewerScreenState extends State<QuranMushafViewerScreen> {
 
   Widget _buildBottomBar() {
     return Container(
-      color: _cardColor,
+      color: context.cardBg,
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -512,31 +539,36 @@ class _MushafPage extends StatefulWidget {
     required this.ayahs,
     required this.pageNumber,
     required this.fontSize,
-    required this.pageColor,
-    required this.borderColor,
-    required this.textColor,
     required this.onAyahTap,
+    this.markerSurahNumber,
+    this.markerAyahNumber,
   });
 
   final List<Ayah> ayahs;
   final int pageNumber;
   final double fontSize;
-  final Color pageColor;
-  final Color borderColor;
-  final Color textColor;
   final void Function(Ayah) onAyahTap;
+  final int? markerSurahNumber;
+  final int? markerAyahNumber;
 
   @override
   State<_MushafPage> createState() => _MushafPageState();
 }
 
 class _MushafPageState extends State<_MushafPage> {
+  static const Color _markedHighlight = Color(0xFFD0DEC9);
+
   final Map<String, TapGestureRecognizer> _recognizers = {};
+  final ScrollController _scrollController = ScrollController();
+  bool _showScrollHint = true;
+  bool _isScrollable = false;
 
   @override
   void initState() {
     super.initState();
     _rebuildRecognizers();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkScrollable());
   }
 
   @override
@@ -544,6 +576,24 @@ class _MushafPageState extends State<_MushafPage> {
     super.didUpdateWidget(old);
     if (old.ayahs != widget.ayahs || old.onAyahTap != widget.onAyahTap) {
       _rebuildRecognizers();
+    }
+    if (old.fontSize != widget.fontSize || old.ayahs != widget.ayahs) {
+      _showScrollHint = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkScrollable());
+    }
+  }
+
+  void _onScroll() {
+    if (_showScrollHint && _scrollController.offset > 10) {
+      setState(() => _showScrollHint = false);
+    }
+  }
+
+  void _checkScrollable() {
+    if (!_scrollController.hasClients) return;
+    final scrollable = _scrollController.position.maxScrollExtent > 20;
+    if (scrollable != _isScrollable) {
+      setState(() => _isScrollable = scrollable);
     }
   }
 
@@ -561,6 +611,7 @@ class _MushafPageState extends State<_MushafPage> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     for (final r in _recognizers.values) {
       r.dispose();
     }
@@ -574,6 +625,13 @@ class _MushafPageState extends State<_MushafPage> {
 
   @override
   Widget build(BuildContext context) {
+    final pageColor = context.hadithCardBg;
+    final borderColor =
+        context.isDark ? context.brandText.withAlpha(140) : const Color(0xFFBF8840);
+    final textColor = context.hadithInk;
+    final markedHighlight =
+        context.isDark ? const Color(0xFF4A6350) : _markedHighlight;
+
     // Group ayahs by surah for headers
     final groups = <_SurahGroup>[];
     for (final ayah in widget.ayahs) {
@@ -587,12 +645,12 @@ class _MushafPageState extends State<_MushafPage> {
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: widget.pageColor,
-          border: Border.all(color: widget.borderColor, width: 1.5),
+          color: pageColor,
+          border: Border.all(color: borderColor, width: 1.5),
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(60),
+              color: Colors.black.withAlpha(context.isDark ? 80 : 60),
               blurRadius: 14,
               offset: const Offset(0, 4),
             ),
@@ -603,60 +661,141 @@ class _MushafPageState extends State<_MushafPage> {
             // Top page number
             _PageEdge(
               number: _toArabic(widget.pageNumber),
-              borderColor: widget.borderColor,
+              borderColor: borderColor,
             ),
 
             // Content: surah headers + tappable ayah text
             Expanded(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final group in groups) ...[
-                        if (group.ayahs.first.id == 1)
-                          _SurahHeader(
-                            meta: QuranService.instance
-                                .getSurahMetadata(group.surahNumber),
-                            borderColor: widget.borderColor,
-                            textColor: widget.borderColor,
-                          ),
-                        // Build RichText with one TapGestureRecognizer per ayah
-                        RichText(
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.justify,
-                          text: TextSpan(
-                            children: [
-                              for (final ayah in group.ayahs)
-                                TextSpan(
-                                  text:
-                                      '${ayah.text} ﴿${_toArabic(ayah.id)}﴾ ',
-                                  style: TextStyle(
-                                    fontFamily: 'Amiri Quran',
-                                    fontSize: widget.fontSize,
-                                    color: widget.textColor,
-                                    height: 2.3,
-                                  ),
-                                  recognizer: _recognizers[
-                                      '${ayah.surahNumber}:${ayah.id}'],
+              child: Stack(
+                children: [
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Scrollbar(
+                      controller: _scrollController,
+                      thumbVisibility: _isScrollable,
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (final group in groups) ...[
+                              if (group.ayahs.first.id == 1)
+                                _SurahHeader(
+                                  meta: QuranService.instance
+                                      .getSurahMetadata(group.surahNumber),
+                                  borderColor: borderColor,
+                                  textColor: borderColor,
                                 ),
+                              RichText(
+                                textDirection: TextDirection.rtl,
+                                textAlign: TextAlign.justify,
+                                text: TextSpan(
+                                  children: [
+                                    for (final ayah in group.ayahs)
+                                      TextSpan(
+                                        text:
+                                            '${QuranTextUtils.withoutAyahMarkers(ayah.text)} ﴿${_toArabic(ayah.id)}﴾ ',
+                                        style: TextStyle(
+                                          fontFamily: 'Amiri Quran',
+                                          fontSize: widget.fontSize,
+                                          color: textColor,
+                                          height: 2.3,
+                                          backgroundColor:
+                                              widget.markerSurahNumber ==
+                                                      ayah.surahNumber &&
+                                                  widget.markerAyahNumber ==
+                                                      ayah.id
+                                              ? markedHighlight
+                                              : null,
+                                        ),
+                                        recognizer: _recognizers[
+                                            '${ayah.surahNumber}:${ayah.id}'],
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
                             ],
-                          ),
+                          ],
                         ),
-                        const SizedBox(height: 6),
-                      ],
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                  if (_isScrollable && _showScrollHint)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: IgnorePointer(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              height: 36,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    pageColor.withAlpha(0),
+                                    pageColor.withAlpha(240),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              color: pageColor.withAlpha(240),
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor.withAlpha(30),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color:
+                                          AppColors.primaryColor.withAlpha(80),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.keyboard_arrow_down_rounded,
+                                        color: AppColors.primaryColor,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'مرّر لقراءة باقي الآيات',
+                                        style: TextStyle(
+                                          color: context.brandText,
+                                          fontFamily: 'Tajawal',
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
 
             // Bottom page number
             _PageEdge(
               number: _toArabic(widget.pageNumber),
-              borderColor: widget.borderColor,
+              borderColor: borderColor,
               isBottom: true,
             ),
           ],
@@ -972,7 +1111,7 @@ class _SurahListTile extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Icon(
-              Icons.chevron_left,
+              Icons.chevron_right,
               color:
                   isActive ? AppColors.primaryColor : context.greyText400,
               size: 20,

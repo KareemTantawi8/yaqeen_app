@@ -72,10 +72,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDVjB-dVk0Fy325gPWUaJGAbatgTSLD-PU"/>
-        <!-- FCM: route background notifications to our high-importance channel -->
+        <!-- FCM: route background/terminated notifications to our sound channel -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="fcm_default_channel"/>
+            android:value="fcm_notification_channel_v4"/>
         <!-- FCM: default notification icon -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

@@ -1,23 +1,18 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:yaqeen_app/core/services/adhan_audio_player_service.dart';
-
-class _Star {
-  final double x;
-  final double y;
-  final double size;
-  final double phase;
-  _Star(this.x, this.y, this.size, this.phase);
-}
+import 'package:yaqeen_app/core/styles/colors/app_color.dart';
+import 'package:yaqeen_app/core/styles/fonts/font_family_helper.dart';
+import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
+import 'package:yaqeen_app/core/utils/spacing.dart';
 
 class AdhanAlertPopup extends StatefulWidget {
   static const String routeName = '/adhan-alert';
-
   final String prayerName;
-
   const AdhanAlertPopup({super.key, required this.prayerName});
 
   @override
@@ -25,10 +20,13 @@ class AdhanAlertPopup extends StatefulWidget {
 }
 
 class _AdhanAlertPopupState extends State<AdhanAlertPopup>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late final AnimationController _pulseCtrl;
-  late final AnimationController _starCtrl;
-  late final AnimationController _ringCtrl;
+
+  static const Color _deepGreen = Color(0xFF0C2F2A);
+  static const Color _mint = Color(0xFFEAF9F4);
+  static const Color _gold = Color(0xFFF4D27A);
+  static const Color _surface = Color(0xFFF8FFFC);
 
   bool _isPlaying = false;
   bool _isLoading = false;
@@ -38,54 +36,31 @@ class _AdhanAlertPopupState extends State<AdhanAlertPopup>
   StreamSubscription? _clockSub;
   String _timeStr = '';
 
-  late final List<_Star> _stars;
-
   @override
   void initState() {
     super.initState();
 
-    final rng = Random(7);
-    _stars = List.generate(25, (_) {
-      return _Star(
-        rng.nextDouble(),
-        rng.nextDouble() * 0.5,
-        1.5 + rng.nextDouble() * 2.5,
-        rng.nextDouble() * 2 * pi,
-      );
-    });
-
     _pulseCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    )..repeat();
-
-    _starCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
-
-    _ringCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2400),
+      duration: const Duration(milliseconds: 2200),
     )..repeat();
 
     _playerSub = _service.player.playerStateStream.listen((state) {
       if (!mounted) return;
       setState(() {
-        _isLoading = state.processingState == ProcessingState.loading ||
+        _isLoading =
+            state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering;
         _isPlaying = state.playing && !_isLoading;
       });
     });
 
-    // Clock updater
     _timeStr = _formatNow();
     _clockSub = Stream.periodic(const Duration(seconds: 1)).listen((_) {
       if (mounted) setState(() => _timeStr = _formatNow());
     });
 
-    // Auto-play after entry animation settles
-    Future.delayed(const Duration(milliseconds: 700), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) _toggleAdhan();
     });
   }
@@ -94,14 +69,12 @@ class _AdhanAlertPopupState extends State<AdhanAlertPopup>
     final now = DateTime.now();
     final h = now.hour.toString().padLeft(2, '0');
     final m = now.minute.toString().padLeft(2, '0');
-    return '$h:$m';
+    return '$h : $m';
   }
 
   @override
   void dispose() {
     _pulseCtrl.dispose();
-    _starCtrl.dispose();
-    _ringCtrl.dispose();
     _playerSub?.cancel();
     _clockSub?.cancel();
     super.dispose();
@@ -128,172 +101,55 @@ class _AdhanAlertPopupState extends State<AdhanAlertPopup>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final prayerName = widget.prayerName.trim().isEmpty
+        ? 'الأذان'
+        : widget.prayerName.trim();
 
     return PopScope(
-      // Stop adhan when user presses the Android back button
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) _service.stop();
       },
       child: Container(
         width: size.width,
         height: size.height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0A1E1B), Color(0xFF112E29), Color(0xFF1A5C50)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
+        color: _deepGreen,
         child: Stack(
           children: [
-            // ── Twinkling stars ──────────────────────────────────────────
-            AnimatedBuilder(
-              animation: _starCtrl,
-              builder: (context0, child0) {
-                return CustomPaint(
-                  size: size,
-                  painter: _StarPainter(_stars, _starCtrl.value),
-                );
-              },
+            const Positioned.fill(child: _PremiumBackground()),
+            Positioned(
+              top: -120,
+              right: -105,
+              child: _GlowOrb(size: 280, color: _gold.withValues(alpha: 0.12)),
             ),
-
-            // ── Expanding rings behind mosque ────────────────────────────
-            Align(
-              alignment: const Alignment(0, -0.15),
-              child: AnimatedBuilder(
-                animation: _ringCtrl,
-                builder: (ctx, child) => CustomPaint(
-                  size: const Size(260, 260),
-                  painter: _RingPainter(_ringCtrl.value),
-                ),
-              ),
+            Positioned(
+              bottom: 210,
+              left: -130,
+              child: _GlowOrb(size: 310, color: _mint.withValues(alpha: 0.12)),
             ),
-
-            // ── Main content ─────────────────────────────────────────────
             SafeArea(
-              child: Column(
-                children: [
-                  // Close button
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8, right: 8),
-                      child: IconButton(
-                        onPressed: _close,
-                        icon: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.close,
-                              color: Colors.white70, size: 22),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
+                child: Column(
+                  children: [
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: _buildTopBar(),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: FadeInUp(
+                          duration: const Duration(milliseconds: 650),
+                          child: _buildHeroContent(prayerName),
                         ),
                       ),
                     ),
-                  ),
-
-                  const Spacer(flex: 2),
-
-                  // Mosque icon with pulsing glow
-                  FadeInDown(
-                    duration: const Duration(milliseconds: 600),
-                    child: _buildMosqueIcon(),
-                  ),
-
-                  const SizedBox(height: 36),
-
-                  // "حان وقت صلاة"
-                  FadeIn(
-                    duration: const Duration(milliseconds: 700),
-                    delay: const Duration(milliseconds: 200),
-                    child: Text(
-                      'حان وقت صلاة',
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.75),
-                        fontSize: 20,
-                        fontFamily: 'Tajawal',
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1,
-                      ),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 650),
+                      child: _buildActionPanel(prayerName),
                     ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Prayer name – large, glowing
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 700),
-                    delay: const Duration(milliseconds: 300),
-                    child: AnimatedBuilder(
-                      animation: _pulseCtrl,
-                      builder: (ctx2, child) {
-                        final glow = 15 + 10 * sin(_pulseCtrl.value * 2 * pi);
-                        return Text(
-                          widget.prayerName,
-                          textDirection: TextDirection.rtl,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 72,
-                            fontFamily: 'Tajawal',
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(
-                                blurRadius: glow,
-                                color: const Color(0xFF4ECDC4),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // "الله أكبر"
-                  FadeIn(
-                    duration: const Duration(milliseconds: 800),
-                    delay: const Duration(milliseconds: 500),
-                    child: const Text(
-                      'الله أكبر',
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        color: Color(0xFF4ECDC4),
-                        fontSize: 26,
-                        fontFamily: 'Tajawal',
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(flex: 2),
-
-                  // Play / Stop button
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 700),
-                    delay: const Duration(milliseconds: 600),
-                    child: _buildPlayButton(),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Current time
-                  Text(
-                    _timeStr,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 3,
-                    ),
-                  ),
-
-                  const Spacer(flex: 1),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -302,93 +158,315 @@ class _AdhanAlertPopupState extends State<AdhanAlertPopup>
     );
   }
 
-  Widget _buildMosqueIcon() {
-    return AnimatedBuilder(
-      animation: _pulseCtrl,
-      builder: (ctx, child) {
-        final scale = 1.0 + 0.06 * sin(_pulseCtrl.value * 2 * pi);
-        return Transform.scale(
-          scale: scale,
+  Widget _buildTopBar() {
+    return Row(
+      textDirection: TextDirection.ltr,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _ClockPill(time: _timeStr),
+        GestureDetector(
+          onTap: _close,
           child: Container(
-            width: 90,
-            height: 90,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.08),
-              border: Border.all(
-                color: const Color(0xFF4ECDC4).withOpacity(0.5),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF4ECDC4)
-                      .withOpacity(0.15 + 0.1 * sin(_pulseCtrl.value * 2 * pi)),
-                  blurRadius: 30,
-                  spreadRadius: 5,
-                ),
-              ],
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
             ),
             child: const Icon(
-              Icons.mosque_rounded,
-              color: Color(0xFF4ECDC4),
-              size: 44,
+              Icons.close_rounded,
+              color: Colors.white,
+              size: 20,
             ),
           ),
-        );
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeroContent(String prayerName) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildMosqueEmblem(),
+        verticalSpace(34),
+        Text(
+          'حان وقت صلاة',
+          textDirection: TextDirection.rtl,
+          style: TextStyles.font18WhiteText.copyWith(
+            color: Colors.white.withValues(alpha: 0.76),
+            fontWeight: FontWeight.w500,
+            decoration: TextDecoration.none,
+          ),
+        ),
+        verticalSpace(8),
+        Text(
+          prayerName,
+          textDirection: TextDirection.rtl,
+          style: TextStyles.font48WhiteText.copyWith(
+            fontSize: 72,
+            height: 1,
+            fontWeight: FontWeight.w800,
+            decoration: TextDecoration.none,
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.24),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+        ),
+        verticalSpace(18),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+          ),
+          child: Text(
+            'الله أكبر',
+            textDirection: TextDirection.rtl,
+            style: TextStyle(
+              color: _gold,
+              fontSize: 28,
+              height: 1.15,
+              fontFamily: FontFamilyHelper.fontFamily2,
+              fontWeight: FontWeight.w400,
+              decoration: TextDecoration.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMosqueEmblem() {
+    return AnimatedBuilder(
+      animation: _pulseCtrl,
+      builder: (_, child) {
+        final scale = 1.0 + 0.02 * sin(_pulseCtrl.value * 2 * pi);
+        return Transform.scale(scale: scale, child: child);
       },
+      child: SizedBox(
+        width: 178,
+        height: 178,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 178,
+              height: 178,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.06),
+              ),
+            ),
+            Container(
+              width: 142,
+              height: 142,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.10),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.20),
+                  width: 1.2,
+                ),
+              ),
+            ),
+            Container(
+              width: 108,
+              height: 108,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.20),
+                    blurRadius: 24,
+                    offset: const Offset(0, 14),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.mosque_rounded,
+                color: AppColors.primaryColor,
+                size: 58,
+              ),
+            ),
+            Positioned(
+              top: 34,
+              right: 42,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: const BoxDecoration(
+                  color: _gold,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.nightlight_round,
+                  color: _deepGreen,
+                  size: 17,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionPanel(String prayerName) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.20),
+            blurRadius: 28,
+            offset: const Offset(0, 16),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  _isPlaying
+                      ? Icons.volume_up_rounded
+                      : Icons.notifications_active_rounded,
+                  color: AppColors.primaryColor,
+                  size: 24,
+                ),
+              ),
+              horizontalSpace(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _isPlaying ? 'الأذان يعمل الآن' : 'تنبيه وقت الصلاة',
+                      textDirection: TextDirection.rtl,
+                      style: TextStyles.font16PrimaryText.copyWith(
+                        color: _deepGreen,
+                        fontFamily: FontFamilyHelper.fontFamily1,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    verticalSpace(3),
+                    Text(
+                      prayerName,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyles.font14WhiteText.copyWith(
+                        color: AppColors.thinText.withValues(alpha: 0.78),
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          verticalSpace(18),
+          _buildPlayButton(),
+          verticalSpace(10),
+          GestureDetector(
+            onTap: _close,
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text(
+                'إغلاق',
+                style: TextStyle(
+                  color: AppColors.thinText.withValues(alpha: 0.72),
+                  fontSize: 15,
+                  fontFamily: FontFamilyHelper.fontFamily1,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildPlayButton() {
-    final isActive = _isPlaying;
+    final isStop = _isPlaying;
+    final gradient = isStop
+        ? [const Color(0xFFE85A5A), const Color(0xFFC62828)]
+        : [AppColors.primaryColor, const Color(0xFF329A88)];
+    const contentColor = Colors.white;
+
     return GestureDetector(
       onTap: _isLoading ? null : _toggleAdhan,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 44, vertical: 16),
+        width: double.infinity,
+        height: 56,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: isActive
-                ? [const Color(0xFFE53935), const Color(0xFFB71C1C)]
-                : [const Color(0xFF26A69A), const Color(0xFF1A8F85)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradient,
           ),
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: (isActive ? Colors.red : const Color(0xFF26A69A))
-                  .withOpacity(0.4),
-              blurRadius: 24,
-              spreadRadius: 2,
+              color: (isStop ? Colors.red : AppColors.primaryColor).withValues(
+                alpha: 0.28,
+              ),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (_isLoading)
-              const SizedBox(
+              SizedBox(
                 width: 22,
                 height: 22,
                 child: CircularProgressIndicator(
-                    color: Colors.white, strokeWidth: 2),
+                  color: contentColor,
+                  strokeWidth: 2.5,
+                ),
               )
             else
               Icon(
-                isActive ? Icons.stop_rounded : Icons.play_arrow_rounded,
-                color: Colors.white,
+                isStop ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                color: contentColor,
                 size: 28,
               ),
-            const SizedBox(width: 12),
+            horizontalSpace(10),
             Text(
               _isLoading
                   ? 'جاري التحميل...'
-                  : (isActive ? 'إيقاف الأذان' : 'استمع للأذان'),
+                  : (isStop ? 'إيقاف الأذان' : 'استمع للأذان'),
               textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontFamily: 'Tajawal',
+              style: TextStyles.font16PrimaryText.copyWith(
+                color: contentColor,
+                fontFamily: FontFamilyHelper.fontFamily1,
                 fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
               ),
             ),
           ],
@@ -398,58 +476,115 @@ class _AdhanAlertPopupState extends State<AdhanAlertPopup>
   }
 }
 
-// ── Custom painters ──────────────────────────────────────────────────────────
+class _ClockPill extends StatelessWidget {
+  final String time;
+  const _ClockPill({required this.time});
 
-class _StarPainter extends CustomPainter {
-  final List<_Star> stars;
-  final double t;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+      ),
+      child: Text(
+        time,
+        style: TextStyles.font14WhiteText.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: 2,
+          decoration: TextDecoration.none,
+        ),
+      ),
+    );
+  }
+}
 
-  _StarPainter(this.stars, this.t);
+class _PremiumBackground extends StatelessWidget {
+  const _PremiumBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: const [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [Color(0xFF061A17), Color(0xFF145246), Color(0xFF2F9A87)],
+              stops: [0.0, 0.58, 1.0],
+            ),
+          ),
+          child: SizedBox.expand(),
+        ),
+        Positioned.fill(
+          child: CustomPaint(painter: _BackgroundPatternPainter()),
+        ),
+      ],
+    );
+  }
+}
+
+class _BackgroundPatternPainter extends CustomPainter {
+  const _BackgroundPatternPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final s in stars) {
-      final opacity = (0.35 + 0.65 * ((sin(t * 2 * pi + s.phase) + 1) / 2))
-          .clamp(0.1, 1.0);
-      final paint = Paint()
-        ..color = Colors.white.withOpacity(opacity)
-        ..style = PaintingStyle.fill;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..color = Colors.white.withValues(alpha: 0.055);
+
+    for (var i = 0; i < 7; i++) {
       canvas.drawCircle(
-        Offset(s.x * size.width, s.y * size.height),
-        s.size / 2,
+        Offset(size.width * 0.50, size.height * 0.39),
+        120.0 + i * 34,
         paint,
       );
     }
+
+    final cornerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.white.withValues(alpha: 0.035);
+
+    canvas.drawCircle(
+      Offset(size.width * 0.15, size.height * 0.12),
+      5,
+      cornerPaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.83, size.height * 0.24),
+      3.5,
+      cornerPaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.76, size.height * 0.63),
+      4,
+      cornerPaint,
+    );
   }
 
   @override
-  bool shouldRepaint(_StarPainter old) => old.t != t;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class _RingPainter extends CustomPainter {
-  final double t;
+class _GlowOrb extends StatelessWidget {
+  const _GlowOrb({required this.size, required this.color});
 
-  _RingPainter(this.t);
+  final double size;
+  final Color color;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    const maxRadius = 130.0;
-
-    for (int i = 0; i < 3; i++) {
-      final progress = ((t + i / 3) % 1.0);
-      final radius = progress * maxRadius;
-      final opacity = (1.0 - progress) * 0.18;
-
-      final paint = Paint()
-        ..color = const Color(0xFF4ECDC4).withOpacity(opacity)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5;
-
-      canvas.drawCircle(center, radius, paint);
-    }
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(colors: [color, Colors.transparent]),
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(_RingPainter old) => old.t != t;
 }

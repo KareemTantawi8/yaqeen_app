@@ -21,6 +21,10 @@
 		AD000002000000000000BB03 /* mishary.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AD000001000000000000AA03 /* mishary.mp3 */; };
 		AD000002000000000000BB04 /* abdulbasit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AD000001000000000000AA04 /* abdulbasit.mp3 */; };
 		AD000002000000000000BB05 /* sudais.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AD000001000000000000AA05 /* sudais.mp3 */; };
+		AD000002000000000000BB06 /* yaqeen_notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD000001000000000000AA06 /* yaqeen_notification.wav */; };
+		AD000002000000000000BB07 /* yaqeen_notification.caf in Resources */ = {isa = PBXBuildFile; fileRef = AD000001000000000000AA07 /* yaqeen_notification.caf */; };
+		B1B1B1B100000000000002 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B1B1B100000000000001 /* NotificationService.swift */; };
+		B1B1B1B100000000000006 /* NotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B1B1B1B100000000000004 /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E106A6303A6E4390942194C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0F7CD1B4620E8E5B16121107 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +35,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
+		};
+		B1B1B1B100000000000007 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B1B1B1B100000000000005;
+			remoteInfo = NotificationService;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -43,6 +54,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B1B1B1B100000000000009 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B1B1B1B100000000000006 /* NotificationService.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -77,6 +99,13 @@
 		AD000001000000000000AA03 /* mishary.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = mishary.mp3; sourceTree = "<group>"; };
 		AD000001000000000000AA04 /* abdulbasit.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = abdulbasit.mp3; sourceTree = "<group>"; };
 		AD000001000000000000AA05 /* sudais.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sudais.mp3; sourceTree = "<group>"; };
+		AD000001000000000000AA06 /* yaqeen_notification.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = yaqeen_notification.wav; sourceTree = "<group>"; };
+		AD000001000000000000AA07 /* yaqeen_notification.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = yaqeen_notification.caf; sourceTree = "<group>"; };
+		B1B1B1B100000000000001 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		B1B1B1B100000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1B1B1B100000000000004 /* NotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1B1B1B100000000000011 /* NotificationService-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "NotificationService-Debug.xcconfig"; path = "Flutter/NotificationService-Debug.xcconfig"; sourceTree = "<group>"; };
+		B1B1B1B100000000000012 /* NotificationService-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "NotificationService-Release.xcconfig"; path = "Flutter/NotificationService-Release.xcconfig"; sourceTree = "<group>"; };
 		D0B20CBE7759F38A281EBBDF /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,6 +123,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				68EB268B476E280F1DBF44BC /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B1B1B1B10000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +172,8 @@
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
+				B1B1B1B100000000000011 /* NotificationService-Debug.xcconfig */,
+				B1B1B1B100000000000012 /* NotificationService-Release.xcconfig */,
 				9740EEB31CF90195004384FC /* Generated.xcconfig */,
 			);
 			name = Flutter;
@@ -148,6 +186,7 @@
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
+				B1B1B1B10000000000000A /* NotificationService */,
 				0FC5E1C564072478E24F34B0 /* Pods */,
 				4078AF650B154DF7249C1DA8 /* Frameworks */,
 				0F7CD1B4620E8E5B16121107 /* GoogleService-Info.plist */,
@@ -159,6 +198,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
+				B1B1B1B100000000000004 /* NotificationService.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,8 +220,19 @@
 				AD000001000000000000AA03 /* mishary.mp3 */,
 				AD000001000000000000AA04 /* abdulbasit.mp3 */,
 				AD000001000000000000AA05 /* sudais.mp3 */,
+				AD000001000000000000AA06 /* yaqeen_notification.wav */,
+				AD000001000000000000AA07 /* yaqeen_notification.caf */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		B1B1B1B10000000000000A /* NotificationService */ = {
+			isa = PBXGroup;
+			children = (
+				B1B1B1B100000000000001 /* NotificationService.swift */,
+				B1B1B1B100000000000003 /* Info.plist */,
+			);
+			path = NotificationService;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -216,6 +267,7 @@
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
+				B1B1B1B100000000000009 /* Embed Foundation Extensions */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				584F829FD5CDD7DCE8473A84 /* [CP] Embed Pods Frameworks */,
 				76E237BFB899215C07EC4CB1 /* [CP] Copy Pods Resources */,
@@ -223,11 +275,28 @@
 			buildRules = (
 			);
 			dependencies = (
+				B1B1B1B100000000000008 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		B1B1B1B100000000000005 /* NotificationService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1B1B1B10000000000000B /* Build configuration list for PBXNativeTarget "NotificationService" */;
+			buildPhases = (
+				B1B1B1B10000000000000C /* Sources */,
+				B1B1B1B10000000000000D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NotificationService;
+			productName = NotificationService;
+			productReference = B1B1B1B100000000000004 /* NotificationService.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -272,6 +341,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
+				B1B1B1B100000000000005 /* NotificationService */,
 			);
 		};
 /* End PBXProject section */
@@ -297,6 +367,8 @@
 				AD000002000000000000BB03 /* mishary.mp3 in Resources */,
 				AD000002000000000000BB04 /* abdulbasit.mp3 in Resources */,
 				AD000002000000000000BB05 /* sudais.mp3 in Resources */,
+				AD000002000000000000BB06 /* yaqeen_notification.wav in Resources */,
+				AD000002000000000000BB07 /* yaqeen_notification.caf in Resources */,
 				E106A6303A6E4390942194C9 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -433,6 +505,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B1B1B1B10000000000000C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1B1B1B100000000000002 /* NotificationService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -440,6 +520,11 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = 331C8085294A63A400263BE5 /* PBXContainerItemProxy */;
+		};
+		B1B1B1B100000000000008 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B1B1B1B100000000000005 /* NotificationService */;
+			targetProxy = B1B1B1B100000000000007 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -749,6 +834,108 @@
 			};
 			name = Release;
 		};
+		B1B1B1B10000000000000E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1B1B1B100000000000011 /* NotificationService-Debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 9FZ6P5ZV56;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yaqeen.app.NotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B1B1B1B10000000000000F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1B1B1B100000000000012 /* NotificationService-Release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 9FZ6P5ZV56;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yaqeen.app.NotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B1B1B1B100000000000010 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1B1B1B100000000000012 /* NotificationService-Release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 9FZ6P5ZV56;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yaqeen.app.NotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -778,6 +965,16 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B1B1B1B10000000000000B /* Build configuration list for PBXNativeTarget "NotificationService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B1B1B1B10000000000000E /* Debug */,
+				B1B1B1B10000000000000F /* Release */,
+				B1B1B1B100000000000010 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

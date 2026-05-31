@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quran_with_tafsir/quran_with_tafsir.dart' as qwt;
 import 'package:just_audio/just_audio.dart';
+import '../../../../core/common/widgets/custom_loading_widget.dart';
 import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/styles/fonts/font_styles.dart';
@@ -20,6 +21,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
   bool isLoading = true;
   String selectedReciter = 'Alafasy_128kbps';
   int? selectedSurahNumber;
+  int? _loadingSurahNumber;
   int currentAyah = 1;
   bool isPlaying = false;
 
@@ -43,6 +45,19 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
   void initState() {
     super.initState();
     _loadSurahs();
+    _setupAudioPlayer();
+  }
+
+  void _setupAudioPlayer() {
+    audioPlayer.playerStateStream.listen((state) {
+      if (!mounted) return;
+      setState(() {
+        isPlaying = state.playing;
+        if (state.playing) {
+          _loadingSurahNumber = null;
+        }
+      });
+    });
   }
 
   void _loadSurahs() async {
@@ -62,6 +77,13 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
 
   Future<void> _playAyah(int surahNumber, int ayahNumber) async {
     try {
+      setState(() {
+        _loadingSurahNumber = surahNumber;
+        selectedSurahNumber = surahNumber;
+        currentAyah = ayahNumber;
+        isPlaying = false;
+      });
+
       final quranService = qwt.QuranService.instance;
       final audioUrl = quranService.getAudioUrl(
         surahNumber,
@@ -72,13 +94,24 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
         AudioSource.uri(Uri.parse(audioUrl)),
       );
       await audioPlayer.play();
-      setState(() {
-        selectedSurahNumber = surahNumber;
-        currentAyah = ayahNumber;
-        isPlaying = true;
-      });
     } catch (e) {
       debugPrint('Error playing audio: $e');
+      if (mounted) {
+        setState(() {
+          _loadingSurahNumber = null;
+          if (selectedSurahNumber == surahNumber) {
+            selectedSurahNumber = null;
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'فشل تشغيل الصوت — تأكد من الاتصال بالإنترنت',
+              style: TextStyle(fontFamily: 'Tajawal'),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -120,12 +153,15 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_forward_ios),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const CustomLoadingWidget(
+              message: 'جاري تحميل السور...',
+              size: 100,
+            )
           : Column(
               children: [
                 // Header with reciter selector and now-playing card
@@ -166,10 +202,19 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                               child: Text(reciterNames[index]),
                             ),
                           ),
-                          onChanged: (value) {
+                          onChanged: (value) async {
+                            if (value == null) return;
+                            final wasPlaying = isPlaying;
+                            final prevSurah = selectedSurahNumber;
+                            await audioPlayer.stop();
                             setState(() {
-                              selectedReciter = value!;
+                              selectedReciter = value;
+                              _loadingSurahNumber = null;
+                              isPlaying = false;
                             });
+                            if (wasPlaying && prevSurah != null) {
+                              await _playAyah(prevSurah, currentAyah);
+                            }
                           },
                         ),
                       ),
@@ -189,7 +234,9 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'الآن يتم التشغيل',
+                                  _loadingSurahNumber == selectedSurahNumber
+                                      ? 'جاري التحميل...'
+                                      : 'الآن يتم التشغيل',
                                   style: TextStyles.font12PrimaryText.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -209,6 +256,13 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                                     fontSize: 12,
                                   ),
                                 ),
+                                if (_loadingSurahNumber == selectedSurahNumber) ...[
+                                  verticalSpace(12),
+                                  const LinearProgressIndicator(
+                                    color: AppColors.primaryColor,
+                                    backgroundColor: Color(0xFFEAF9F4),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -235,6 +289,7 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                     itemBuilder: (context, index) {
                       final surah = surahs[index];
                       final isSelected = selectedSurahNumber == surah.number;
+                      final isItemLoading = _loadingSurahNumber == surah.number;
 
                       return Card(
                         color: isSelected
@@ -271,14 +326,25 @@ class _QuranAudioScreenState extends State<QuranAudioScreen> {
                               fontSize: 12,
                             ),
                           ),
-                          trailing: Icon(
-                            isSelected && isPlaying
-                                ? Icons.pause_circle
-                                : Icons.play_circle,
-                            color: AppColors.primaryColor,
-                            size: 28,
-                          ),
-                          onTap: () {
+                          trailing: isItemLoading
+                              ? const SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                )
+                              : Icon(
+                                  isSelected && isPlaying
+                                      ? Icons.pause_circle
+                                      : Icons.play_circle,
+                                  color: AppColors.primaryColor,
+                                  size: 28,
+                                ),
+                          onTap: isItemLoading
+                              ? null
+                              : () {
                             if (isSelected && isPlaying) {
                               _pauseAudio();
                             } else if (isSelected && !isPlaying) {

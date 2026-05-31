@@ -122,7 +122,8 @@ class _RadioWidgetState extends State<RadioWidget>
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     else
@@ -156,33 +157,7 @@ class _RadioWidgetState extends State<RadioWidget>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (widget.isLoading) ...[
-                      verticalSpace(8),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white.withOpacity(0.9),
-                              ),
-                            ),
-                          ),
-                          horizontalSpace(8),
-                          Text(
-                            'جاري التحميل...',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 12,
-                              fontFamily: 'Tajawal',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ] else if (widget.isPlaying) ...[
+                    if (widget.isPlaying) ...[
                       verticalSpace(8),
                       Row(
                         children: [

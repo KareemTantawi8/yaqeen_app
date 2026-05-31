@@ -6,13 +6,37 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:yaqeen_app/core/utils/navigator_key.dart';
 import 'package:yaqeen_app/firebase_options.dart';
+
+/// Custom Yaqeen notification chime bundled as `yaqeen_notification.wav` (~1.25 s).
+/// Android: `android/app/src/main/res/raw/yaqeen_notification.wav`
+/// iOS: `ios/Runner/yaqeen_notification.caf` (Apple CAF format, in Copy Bundle Resources)
+const _notificationSoundAndroid = 'yaqeen_notification';
+const _notificationSoundIos = 'yaqeen_notification.caf';
 
 // Must be top-level — executed in a background isolate when app is killed.
 @pragma('vm:entry-point')
 Future<void> _onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   debugPrint('[FCM] Background message received: ${message.messageId}');
+
+  // Notification-payload messages are already shown by Android / APNs.
+  if (FCMService._isAutoDisplayedByPlatform(message)) return;
+  if (!FCMService._consumeMessageOnce(message)) return;
+
+  // Data-only push: show a local notification with the custom chime ourselves.
+  final title = message.data['title'] as String?;
+  final body = message.data['body'] as String?;
+  if (title == null && body == null) return;
+
+  await FCMService._ensureBackgroundPluginReady();
+  await FCMService._showLocalNotification(
+    id: FCMService._stableNotificationId(message),
+    title: title ?? 'يقين',
+    body: body ?? '',
+    imageUrl: message.data['image'] as String?,
+  );
 }
 
 class FCMService {
@@ -25,15 +49,102 @@ class FCMService {
   // the onDidReceiveNotificationResponse callback set by PrayerNotificationService.
   static final _plugin = FlutterLocalNotificationsPlugin();
 
-  static const _channelId = 'fcm_default_channel';
+  // Bump the channel ID when the bundled sound file changes so Android
+  // recreates the channel (channel sound is immutable once created).
+  static const _channelId = 'fcm_notification_channel_v4';
   static const _channelName = 'إشعارات يقين';
+  static const _legacyChannelIds = [
+    'fcm_notification_channel',
+    'fcm_default_channel',
+    'fcm_notification_channel_v2',
+    'fcm_notification_channel_v3',
+  ];
   static const _pushChannel = MethodChannel('com.yaqeen.app/push');
+
+  static const _androidSound = RawResourceAndroidNotificationSound(
+    _notificationSoundAndroid,
+  );
+
+  static bool _backgroundPluginReady = false;
+  static bool _foregroundPluginReady = false;
+
+  // Prevents duplicate banners when FCM delivers the same message twice
+  // (common on iOS 18 foreground) or when both the OS and our handler fire.
+  static final Set<String> _recentMessageIds = {};
+
+  /// True when the OS already displayed this push (Firebase Console sends a
+  /// `notification` block). On Android the block may be stripped in the
+  /// background isolate after auto-display, so we also check FCM data keys.
+  static bool _isAutoDisplayedByPlatform(RemoteMessage message) {
+    if (message.notification != null) return true;
+    return message.data.containsKey('gcm.n.e') ||
+        message.data['gcm.notification.e'] == '1';
+  }
+
+  static String? _messageKey(RemoteMessage message) {
+    return message.messageId ??
+        message.data['google.message_id'] as String? ??
+        message.data['gcm.message_id'] as String?;
+  }
+
+  static bool _consumeMessageOnce(RemoteMessage message) {
+    final key = _messageKey(message);
+    if (key == null) return true;
+    if (_recentMessageIds.contains(key)) return false;
+    _recentMessageIds.add(key);
+    Future<void>.delayed(const Duration(seconds: 30), () {
+      _recentMessageIds.remove(key);
+    });
+    return true;
+  }
+
+  static int _stableNotificationId(RemoteMessage message) {
+    final key = _messageKey(message);
+    if (key != null) return key.hashCode;
+    return message.hashCode;
+  }
+
+  static Future<void> _ensureForegroundPluginReady() async {
+    if (_foregroundPluginReady) return;
+
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    const iosSettings = DarwinInitializationSettings();
+    // No tap callback here — PrayerNotificationService owns notification taps.
+    await _plugin.initialize(
+      const InitializationSettings(android: androidSettings, iOS: iosSettings),
+    );
+    _foregroundPluginReady = true;
+  }
+
+  static Future<void> _ensureBackgroundPluginReady() async {
+    if (_backgroundPluginReady) return;
+
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    const iosSettings = DarwinInitializationSettings();
+    await _plugin.initialize(
+      const InitializationSettings(android: androidSettings, iOS: iosSettings),
+    );
+    await _createAndroidChannel();
+    if (Platform.isIOS) {
+      final ios = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      await ios?.requestPermissions(alert: true, badge: true, sound: true);
+    }
+    _backgroundPluginReady = true;
+  }
 
   static Future<void> initialize() async {
     // Register the background handler before any other FCM call.
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
 
     await _requestPermissions();
+    await _ensureForegroundPluginReady();
     await _createAndroidChannel();
 
     // iOS: FCM needs an APNS token before getToken/subscribeToTopic.
@@ -66,12 +177,13 @@ class FCMService {
     );
     debugPrint('[FCM] permission status: ${settings.authorizationStatus}');
 
-    // On iOS show heads-up banner even when app is in foreground.
+    // On iOS suppress the system foreground banner — AppDelegate.willPresent
+    // returns [] and we show a local notification with the custom chime instead.
     if (Platform.isIOS) {
       await _messaging.setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
+        alert: false,
+        badge: false,
+        sound: false,
       );
     }
   }
@@ -92,18 +204,27 @@ class FCMService {
 
   static Future<void> _createAndroidChannel() async {
     if (!Platform.isAndroid) return;
-    await _plugin
+    final android = _plugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(
-          const AndroidNotificationChannel(
-            _channelId,
-            _channelName,
-            importance: Importance.high,
-            showBadge: true,
-            enableVibration: true,
-          ),
-        );
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    for (final legacyId in _legacyChannelIds) {
+      await android?.deleteNotificationChannel(legacyId);
+    }
+
+    await android?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        _channelId,
+        _channelName,
+        description: 'إشعارات Firebase — نغمة يقين',
+        sound: _androidSound,
+        importance: Importance.high,
+        showBadge: true,
+        enableVibration: true,
+        playSound: true,
+      ),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -198,17 +319,15 @@ class FCMService {
   }
 
   // ---------------------------------------------------------------------------
-  // Foreground message — show a local notification manually so the user sees
-  // it immediately. Includes BigPicture style when notification carries an image.
+  // Local notification helper (foreground + background data-only messages)
   // ---------------------------------------------------------------------------
 
-  static Future<void> _onForegroundMessage(RemoteMessage message) async {
-    final notification = message.notification;
-    if (notification == null) return;
-
-    final imageUrl =
-        notification.android?.imageUrl ?? notification.apple?.imageUrl;
-
+  static Future<void> _showLocalNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? imageUrl,
+  }) async {
     AndroidNotificationDetails androidDetails;
 
     if (imageUrl != null && Platform.isAndroid) {
@@ -216,13 +335,16 @@ class FCMService {
       androidDetails = AndroidNotificationDetails(
         _channelId,
         _channelName,
+        channelDescription: 'إشعارات Firebase — نغمة يقين',
         importance: Importance.high,
         priority: Priority.high,
+        sound: _androidSound,
+        playSound: true,
         styleInformation: bitmap != null
             ? BigPictureStyleInformation(
                 bitmap,
-                contentTitle: notification.title,
-                summaryText: notification.body,
+                contentTitle: title,
+                summaryText: body,
                 hideExpandedLargeIcon: true,
               )
             : const DefaultStyleInformation(true, true),
@@ -231,23 +353,65 @@ class FCMService {
       androidDetails = const AndroidNotificationDetails(
         _channelId,
         _channelName,
+        channelDescription: 'إشعارات Firebase — نغمة يقين',
         importance: Importance.high,
         priority: Priority.high,
+        sound: _androidSound,
+        playSound: true,
       );
     }
 
+    await _plugin.cancel(id);
     await _plugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
+      id,
+      title,
+      body,
       NotificationDetails(
         android: androidDetails,
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
+          sound: _notificationSoundIos,
+          interruptionLevel: InterruptionLevel.active,
         ),
       ),
+      payload: 'fcm',
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Foreground message — show a local notification manually so the user sees
+  // it immediately. Includes BigPicture style when notification carries an image.
+  // ---------------------------------------------------------------------------
+
+  static Future<void> _onForegroundMessage(RemoteMessage message) async {
+    if (!_consumeMessageOnce(message)) return;
+
+    final notification = message.notification;
+    if (notification != null) {
+      // iOS: AppDelegate suppresses the remote banner; show one local notification.
+      // Android: FCM does not auto-display in foreground — show one local notification.
+      await _showLocalNotification(
+        id: _stableNotificationId(message),
+        title: notification.title ?? 'يقين',
+        body: notification.body ?? '',
+        imageUrl:
+            notification.android?.imageUrl ?? notification.apple?.imageUrl,
+      );
+      return;
+    }
+
+    // Data-only foreground message.
+    final title = message.data['title'] as String?;
+    final body = message.data['body'] as String?;
+    if (title == null && body == null) return;
+
+    await _showLocalNotification(
+      id: _stableNotificationId(message),
+      title: title ?? 'يقين',
+      body: body ?? '',
+      imageUrl: message.data['image'] as String?,
     );
   }
 
@@ -273,6 +437,11 @@ class FCMService {
 
   static void _onNotificationTap(RemoteMessage message) {
     debugPrint('[FCM] Notification tapped — data: ${message.data}');
-    // TODO: Navigate based on message.data fields when needed.
+    // Bring the app to the foreground on the main screen.
+    // Use pushNamedAndRemoveUntil so any intermediate routes are cleared.
+    appNavigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/main',
+      (route) => false,
+    );
   }
 }

@@ -1,6 +1,7 @@
 import Flutter
 import GoogleMaps
 import UIKit
+import UserNotifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -9,7 +10,16 @@ import UIKit
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GMSServices.provideAPIKey("AIzaSyDVjB-dVk0Fy325gPWUaJGAbatgTSLD-PU")
-    // Firebase must initialize first so it can receive the APNS token callback.
+
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self
+    }
+
+    // Register for APNS immediately so FCM can obtain a token on cold start.
+    DispatchQueue.main.async {
+      UIApplication.shared.registerForRemoteNotifications()
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
@@ -30,6 +40,16 @@ import UIKit
       }
       result(nil)
     }
+  }
+
+  // Suppress the system foreground banner/sound — Dart shows a local notification
+  // with the bundled Yaqeen notification chime (yaqeen_notification.caf) instead.
+  override func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+  ) {
+    completionHandler([])
   }
 
   override func application(
