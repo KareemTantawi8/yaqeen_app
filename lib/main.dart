@@ -1,14 +1,19 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:clarity_flutter/clarity_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yaqeen_app/core/services/fcm_service.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/core/services/service_locator.dart';
+import 'package:yaqeen_app/firebase_options.dart';
 import 'package:yaqeen_app/yaqeen_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   setupServiceLocator();
 
@@ -31,6 +36,12 @@ void main() async {
     await PrayerNotificationService.handleAppLaunchFromNotification();
   } catch (e) {
     debugPrint('PrayerNotificationService bootstrap failed: $e');
+  }
+
+  try {
+    await FCMService.initialize();
+  } catch (e) {
+    debugPrint('FCMService bootstrap failed: $e');
   }
 
   final clarityConfig = ClarityConfig(

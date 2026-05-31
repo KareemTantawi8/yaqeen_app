@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794043066527",
+    "project_id": "yaqeen-e4900",
+    "storage_bucket": "yaqeen-e4900.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794043066527:android:95ea7f21ebd858a2f5daaa",
+        "android_client_info": {
+          "package_name": "com.yourcompany.yaqeen_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOgj51dHvWqKk2rQ6bGTHnbG4W2d0F-Ns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

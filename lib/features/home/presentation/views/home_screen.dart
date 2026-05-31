@@ -410,49 +410,41 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                     ],
                   ),
-                  // verticalSpace(18),
-                  // Prayer cards — horizontally scrollable so each card has room
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Row(
-                      children: [
-                        PrayerTimeCard(
-                          prayer: 'الفجر',
-                          image: AppImages.cloudefog,
-                          time: prayerTimings!.timings.fajr,
-                          isHighlighted: currentPrayerName == 'الفجر',
-                        ),
-                        const SizedBox(width: 8),
-                        PrayerTimeCard(
-                          prayer: 'الظهر',
-                          image: AppImages.sunnyImage,
-                          time: prayerTimings!.timings.dhuhr,
-                          isHighlighted: currentPrayerName == 'الظهر',
-                        ),
-                        const SizedBox(width: 8),
-                        PrayerTimeCard(
-                          prayer: 'العصر',
-                          image: AppImages.sunImage,
-                          time: prayerTimings!.timings.asr,
-                          isHighlighted: currentPrayerName == 'العصر',
-                        ),
-                        const SizedBox(width: 8),
-                        PrayerTimeCard(
-                          prayer: 'المغرب',
-                          image: AppImages.cloudSunnyImage,
-                          time: prayerTimings!.timings.maghrib,
-                          isHighlighted: currentPrayerName == 'المغرب',
-                        ),
-                        const SizedBox(width: 8),
-                        PrayerTimeCard(
-                          prayer: 'العشاء',
-                          image: AppImages.moonImage,
-                          time: prayerTimings!.timings.isha,
-                          isHighlighted: currentPrayerName == 'العشاء',
-                        ),
-                      ],
-                    ),
+                  verticalSpace(16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      PrayerTimeCard(
+                        prayer: 'العشاء',
+                        image: AppImages.moonImage,
+                        time: prayerTimings!.timings.isha,
+                        isHighlighted: currentPrayerName == 'العشاء',
+                      ),
+                      PrayerTimeCard(
+                        prayer: 'المغرب',
+                        image: AppImages.cloudSunnyImage,
+                        time: prayerTimings!.timings.maghrib,
+                        isHighlighted: currentPrayerName == 'المغرب',
+                      ),
+                      PrayerTimeCard(
+                        prayer: 'العصر',
+                        image: AppImages.sunImage,
+                        time: prayerTimings!.timings.asr,
+                        isHighlighted: currentPrayerName == 'العصر',
+                      ),
+                      PrayerTimeCard(
+                        prayer: 'الظهر',
+                        image: AppImages.sunnyImage,
+                        time: prayerTimings!.timings.dhuhr,
+                        isHighlighted: currentPrayerName == 'الظهر',
+                      ),
+                      PrayerTimeCard(
+                        prayer: 'الفجر',
+                        image: AppImages.cloudefog,
+                        time: prayerTimings!.timings.fajr,
+                        isHighlighted: currentPrayerName == 'الفجر',
+                      ),
+                    ],
                   ),
                 ],
               ),
