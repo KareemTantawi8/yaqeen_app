@@ -19,6 +19,10 @@ class PrayerNotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
+  /// Shared plugin instance — FCM foreground notifications must use this so
+  /// taps are handled by [_onForegroundTap] (only one plugin per app).
+  static FlutterLocalNotificationsPlugin get notificationsPlugin => _plugin;
+
   static const _channelDesc = 'إشعارات أوقات الصلاة والأذان';
 
   static const _keyEnabled = 'adhan_notifications_enabled';
@@ -108,9 +112,13 @@ class PrayerNotificationService {
   }
 
   /// Set by [handleAppLaunchFromNotification] when the app is cold-launched from
-  /// a notification tap. HomeScreen reads and clears this after the splash screen
-  /// finishes, then opens the adhan popup.
+  /// a prayer notification tap. HomeScreen reads and clears this after the splash
+  /// screen finishes, then opens the adhan popup.
   static String? pendingAdhanPrayerName;
+
+  /// True when the app was cold-launched from an FCM local notification tap.
+  /// HomeScreen clears this without opening the adhan popup.
+  static bool pendingOpenFromFcmNotification = false;
 
   // Called when user taps any local notification (prayer or FCM foreground).
   static void _onForegroundTap(NotificationResponse response) {
@@ -162,12 +170,15 @@ class PrayerNotificationService {
   // we store the prayer name. HomeScreen picks it up after the splash.
   static Future<void> handleAppLaunchFromNotification() async {
     final details = await _plugin.getNotificationAppLaunchDetails();
-    if (details?.didNotificationLaunchApp == true) {
-      final payload = details?.notificationResponse?.payload ?? '';
-      if (payload.isNotEmpty) {
-        pendingAdhanPrayerName = payload;
-        debugPrint('App launched from adhan notification: $payload');
-      }
+    if (details?.didNotificationLaunchApp != true) return;
+
+    final payload = details?.notificationResponse?.payload ?? '';
+    if (prayerNames.contains(payload)) {
+      pendingAdhanPrayerName = payload;
+      debugPrint('App launched from adhan notification: $payload');
+    } else if (payload == 'fcm') {
+      pendingOpenFromFcmNotification = true;
+      debugPrint('App launched from FCM notification');
     }
   }
 

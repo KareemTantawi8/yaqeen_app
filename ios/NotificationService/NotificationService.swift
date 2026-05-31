@@ -22,11 +22,7 @@ class NotificationService: UNNotificationServiceExtension {
         // Force the bundled Yaqeen chime for every FCM push (background/killed).
         content.sound = UNNotificationSound(named: notificationSoundName)
 
-        guard
-            let imageURLString = request.content.userInfo["fcm_options"] as? [String: Any],
-            let urlString = imageURLString["image"] as? String,
-            let imageURL = URL(string: urlString)
-        else {
+        guard let imageURL = extractImageURL(from: request.content.userInfo) else {
             contentHandler(content)
             return
         }
@@ -46,6 +42,21 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
+    // FCM puts the image URL at fcm_options.image (standard) or at the top-level
+    // "image" key depending on the sender SDK version.
+    private func extractImageURL(from userInfo: [AnyHashable: Any]) -> URL? {
+        if let fcmOptions = userInfo["fcm_options"] as? [String: Any],
+           let urlString = fcmOptions["image"] as? String,
+           let url = URL(string: urlString) {
+            return url
+        }
+        if let urlString = userInfo["image"] as? String,
+           let url = URL(string: urlString) {
+            return url
+        }
+        return nil
+    }
+
     private func downloadImage(
         from url: URL,
         completion: @escaping (UNNotificationAttachment?) -> Void
@@ -56,10 +67,12 @@ class NotificationService: UNNotificationServiceExtension {
                 return
             }
             let tmpDir = FileManager.default.temporaryDirectory
-            let tmpFile = tmpDir.appendingPathComponent(url.lastPathComponent)
+            // Use a unique name to avoid collisions from rapid back-to-back pushes.
+            let filename = "\(UUID().uuidString)-\(url.lastPathComponent)"
+            let tmpFile = tmpDir.appendingPathComponent(filename)
             try? FileManager.default.moveItem(at: location, to: tmpFile)
             let attachment = try? UNNotificationAttachment(
-                identifier: url.lastPathComponent,
+                identifier: filename,
                 url: tmpFile,
                 options: nil
             )

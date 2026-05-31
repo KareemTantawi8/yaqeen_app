@@ -68,8 +68,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // notification service stores the prayer name. We pick it up here, after
     // HomeScreen is fully built, so the navigator is ready.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (PrayerNotificationService.pendingOpenFromFcmNotification) {
+        PrayerNotificationService.pendingOpenFromFcmNotification = false;
+      }
+
       final pending = PrayerNotificationService.pendingAdhanPrayerName;
-      if (pending != null && pending.isNotEmpty && mounted) {
+      if (pending != null &&
+          PrayerNotificationService.prayerNames.contains(pending) &&
+          mounted) {
         PrayerNotificationService.pendingAdhanPrayerName = null;
         _showAdhanScreen(pending);
       }

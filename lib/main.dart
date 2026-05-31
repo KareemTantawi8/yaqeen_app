@@ -45,17 +45,22 @@ void main() async {
     debugPrint('FCMService bootstrap failed: $e');
   }
 
-  final clarityConfig = ClarityConfig(
-    projectId: 'scpt8xziyk',
-    logLevel: kReleaseMode ? LogLevel.None : LogLevel.Error,
-  );
+  final app = const ProviderScope(child: YaqeenApp());
 
-  runApp(
-    ClarityWidget(
-      app: const ProviderScope(child: YaqeenApp()),
-      clarityConfig: clarityConfig,
-    ),
-  );
+  if (kReleaseMode) {
+    runApp(app);
+  } else {
+    final clarityConfig = ClarityConfig(
+      projectId: 'scpt8xziyk',
+      logLevel: LogLevel.Error,
+    );
+    runApp(
+      ClarityWidget(
+        app: app,
+        clarityConfig: clarityConfig,
+      ),
+    );
+  }
 }
 
 void _ignoreSimulatorMetaKeyAssertionInDebug() {

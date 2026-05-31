@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/core/utils/navigator_key.dart';
 import 'package:yaqeen_app/firebase_options.dart';
 
@@ -36,6 +37,7 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
     title: title ?? 'يقين',
     body: body ?? '',
     imageUrl: message.data['image'] as String?,
+    plugin: FCMService._backgroundPlugin,
   );
 }
 
@@ -44,10 +46,8 @@ class FCMService {
 
   static final _messaging = FirebaseMessaging.instance;
 
-  // A dedicated plugin instance for FCM foreground notifications.
-  // We intentionally do NOT call initialize() on it so we don't override
-  // the onDidReceiveNotificationResponse callback set by PrayerNotificationService.
-  static final _plugin = FlutterLocalNotificationsPlugin();
+  // Background isolate only — foreground uses [PrayerNotificationService.notificationsPlugin].
+  static final _backgroundPlugin = FlutterLocalNotificationsPlugin();
 
   // Bump the channel ID when the bundled sound file changes so Android
   // recreates the channel (channel sound is immutable once created).
@@ -66,7 +66,6 @@ class FCMService {
   );
 
   static bool _backgroundPluginReady = false;
-  static bool _foregroundPluginReady = false;
 
   // Prevents duplicate banners when FCM delivers the same message twice
   // (common on iOS 18 foreground) or when both the OS and our handler fire.
@@ -104,20 +103,6 @@ class FCMService {
     return message.hashCode;
   }
 
-  static Future<void> _ensureForegroundPluginReady() async {
-    if (_foregroundPluginReady) return;
-
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-    const iosSettings = DarwinInitializationSettings();
-    // No tap callback here — PrayerNotificationService owns notification taps.
-    await _plugin.initialize(
-      const InitializationSettings(android: androidSettings, iOS: iosSettings),
-    );
-    _foregroundPluginReady = true;
-  }
-
   static Future<void> _ensureBackgroundPluginReady() async {
     if (_backgroundPluginReady) return;
 
@@ -125,12 +110,12 @@ class FCMService {
       '@mipmap/ic_launcher',
     );
     const iosSettings = DarwinInitializationSettings();
-    await _plugin.initialize(
+    await _backgroundPlugin.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
     );
-    await _createAndroidChannel();
+    await _createAndroidChannel(_backgroundPlugin);
     if (Platform.isIOS) {
-      final ios = _plugin
+      final ios = _backgroundPlugin
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
           >();
@@ -144,8 +129,7 @@ class FCMService {
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
 
     await _requestPermissions();
-    await _ensureForegroundPluginReady();
-    await _createAndroidChannel();
+    await _createAndroidChannel(PrayerNotificationService.notificationsPlugin);
 
     // iOS: FCM needs an APNS token before getToken/subscribeToTopic.
     await _registerForRemoteNotificationsIfNeeded();
@@ -202,9 +186,11 @@ class FCMService {
   // Android notification channel
   // ---------------------------------------------------------------------------
 
-  static Future<void> _createAndroidChannel() async {
+  static Future<void> _createAndroidChannel(
+    FlutterLocalNotificationsPlugin plugin,
+  ) async {
     if (!Platform.isAndroid) return;
-    final android = _plugin
+    final android = plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
@@ -327,9 +313,10 @@ class FCMService {
     required String title,
     required String body,
     String? imageUrl,
+    FlutterLocalNotificationsPlugin? plugin,
   }) async {
+    // Android details
     AndroidNotificationDetails androidDetails;
-
     if (imageUrl != null && Platform.isAndroid) {
       final bitmap = await _downloadBitmap(imageUrl);
       androidDetails = AndroidNotificationDetails(
@@ -361,23 +348,64 @@ class FCMService {
       );
     }
 
-    await _plugin.cancel(id);
-    await _plugin.show(
+    // iOS details — download image to a temp file so it shows as an attachment
+    DarwinNotificationDetails iosDetails;
+    if (imageUrl != null && Platform.isIOS) {
+      final imagePath = await _downloadImageToTemp(imageUrl);
+      iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        sound: _notificationSoundIos,
+        attachments: imagePath != null
+            ? [DarwinNotificationAttachment(imagePath)]
+            : null,
+        interruptionLevel: InterruptionLevel.active,
+      );
+    } else {
+      iosDetails = const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        sound: _notificationSoundIos,
+        interruptionLevel: InterruptionLevel.active,
+      );
+    }
+
+    final notificationsPlugin =
+        plugin ?? PrayerNotificationService.notificationsPlugin;
+    await notificationsPlugin.cancel(id);
+    debugPrint('[FCM] Calling plugin.show id=$id title="$title"');
+    await notificationsPlugin.show(
       id,
       title,
       body,
-      NotificationDetails(
-        android: androidDetails,
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-          sound: _notificationSoundIos,
-          interruptionLevel: InterruptionLevel.active,
-        ),
-      ),
+      NotificationDetails(android: androidDetails, iOS: iosDetails),
       payload: 'fcm',
     );
+    debugPrint('[FCM] plugin.show completed');
+  }
+
+  /// Downloads [url] to the system temp directory and returns the file path,
+  /// or null on any error. Used for iOS notification image attachments.
+  static Future<String?> _downloadImageToTemp(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) return null;
+      final uri = Uri.parse(url);
+      final rawExt = uri.pathSegments.last.split('.').lastOrNull ?? 'jpg';
+      final ext = rawExt.split('?').first.toLowerCase();
+      final safeExt =
+          ['jpg', 'jpeg', 'png', 'gif'].contains(ext) ? ext : 'jpg';
+      final file = File(
+        '${Directory.systemTemp.path}/fcm_img_${DateTime.now().millisecondsSinceEpoch}.$safeExt',
+      );
+      await file.writeAsBytes(response.bodyBytes);
+      return file.path;
+    } catch (e) {
+      debugPrint('[FCM] iOS image download failed: $e');
+      return null;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -386,18 +414,27 @@ class FCMService {
   // ---------------------------------------------------------------------------
 
   static Future<void> _onForegroundMessage(RemoteMessage message) async {
-    if (!_consumeMessageOnce(message)) return;
+    debugPrint('[FCM] Foreground message received: ${message.messageId}');
+    debugPrint('[FCM] has notification: ${message.notification != null}');
+    debugPrint('[FCM] data: ${message.data}');
+
+    if (!_consumeMessageOnce(message)) {
+      debugPrint('[FCM] Duplicate message — skipping');
+      return;
+    }
 
     final notification = message.notification;
     if (notification != null) {
       // iOS: AppDelegate suppresses the remote banner; show one local notification.
       // Android: FCM does not auto-display in foreground — show one local notification.
+      final imageUrl =
+          notification.apple?.imageUrl ?? notification.android?.imageUrl;
+      debugPrint('[FCM] Showing local notification (imageUrl=$imageUrl)');
       await _showLocalNotification(
         id: _stableNotificationId(message),
         title: notification.title ?? 'يقين',
         body: notification.body ?? '',
-        imageUrl:
-            notification.android?.imageUrl ?? notification.apple?.imageUrl,
+        imageUrl: imageUrl,
       );
       return;
     }
@@ -437,11 +474,16 @@ class FCMService {
 
   static void _onNotificationTap(RemoteMessage message) {
     debugPrint('[FCM] Notification tapped — data: ${message.data}');
-    // Bring the app to the foreground on the main screen.
-    // Use pushNamedAndRemoveUntil so any intermediate routes are cleared.
-    appNavigatorKey.currentState?.pushNamedAndRemoveUntil(
-      '/main',
-      (route) => false,
-    );
+    _openMainScreen();
+  }
+
+  /// Opens the main app shell. Deferred until [appNavigatorKey] is ready on cold start.
+  static void _openMainScreen() {
+    final navigator = appNavigatorKey.currentState;
+    if (navigator == null) {
+      PrayerNotificationService.pendingOpenFromFcmNotification = true;
+      return;
+    }
+    navigator.pushNamedAndRemoveUntil('/main', (route) => false);
   }
 }

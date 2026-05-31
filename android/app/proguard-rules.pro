@@ -7,3 +7,12 @@
 
 # flutter_local_notifications — keep notification receiver classes
 -keep class com.dexterous.** { *; }
+
+# Google Maps
+-keep class com.google.android.gms.maps.** { *; }
+-keep interface com.google.android.gms.maps.** { *; }
+
+# Firebase
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**

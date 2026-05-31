@@ -1,4 +1,4 @@
-package com.yourcompany.yaqeen_app
+package com.yaqeen.app
 
 import io.flutter.embedding.android.FlutterActivity
 
