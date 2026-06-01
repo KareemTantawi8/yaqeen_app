@@ -39,6 +39,8 @@
 	<string>نحتاج إلى موقعك لعرض أوقات الصلاة الدقيقة لمنطقتك واتجاه القبلة</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>نحتاج إلى إرسال تنبيهات لأوقات الصلاة والأذان</string>
+	<key>NSUserNotificationAlertStyle</key>
+	<string>alert</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
