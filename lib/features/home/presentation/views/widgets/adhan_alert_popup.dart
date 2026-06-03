@@ -5,6 +5,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:yaqeen_app/core/services/adhan_audio_player_service.dart';
+import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_family_helper.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
@@ -66,10 +67,8 @@ class _AdhanAlertPopupState extends State<AdhanAlertPopup>
   }
 
   String _formatNow() {
-    final now = DateTime.now();
-    final h = now.hour.toString().padLeft(2, '0');
-    final m = now.minute.toString().padLeft(2, '0');
-    return '$h : $m';
+    final formatted = PrayerCalculatorService.formatTime(DateTime.now());
+    return formatted.replaceFirst(':', ' : ');
   }
 
   @override

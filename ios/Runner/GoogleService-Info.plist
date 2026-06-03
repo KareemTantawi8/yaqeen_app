@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.yaqeen.app</string>
+	<string>com.yaqeen.mobile</string>
 	<key>PROJECT_ID</key>
 	<string>yaqeen-e4900</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:794043066527:ios:96cd8e695e9ef277f5daaa</string>
+	<string>1:794043066527:ios:f346cb6c19363785f5daaa</string>
 </dict>
 </plist>

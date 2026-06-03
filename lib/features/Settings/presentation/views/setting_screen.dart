@@ -110,13 +110,13 @@ class SettingScreen extends ConsumerWidget {
                 icon: isDark ? Icons.dark_mode : Icons.light_mode,
                 isActive: isDark,
               ),
-              verticalSpace(12),
-              SettingToggleTile(
-                title: 'تقييم التطبيق',
-                onTap: () {},
-                icon: Icons.star,
-                iconSize: 25,
-              ),
+              // verticalSpace(12),
+              // SettingToggleTile(
+              //   title: 'تقييم التطبيق',
+              //   onTap: () {},
+              //   icon: Icons.star,
+              //   iconSize: 25,
+              // ),
               verticalSpace(12),
               SettingToggleTile(
                 title: 'مشاركة التطبيق',

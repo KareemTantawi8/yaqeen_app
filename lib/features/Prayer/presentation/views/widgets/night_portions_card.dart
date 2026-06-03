@@ -1,5 +1,6 @@
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:flutter/material.dart';
+import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
@@ -12,11 +13,8 @@ class NightPortionsCard extends StatelessWidget {
     required this.sunnahTimes,
   });
 
-  String _formatTime(DateTime dateTime) {
-    final hour = dateTime.hour.toString().padLeft(2, '0');
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
+  String _formatTime(DateTime dateTime) =>
+      PrayerCalculatorService.formatTime(dateTime);
 
   @override
   Widget build(BuildContext context) {

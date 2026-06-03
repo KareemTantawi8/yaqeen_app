@@ -10,6 +10,7 @@ import 'package:yaqeen_app/core/utils/spacing.dart';
 import 'package:yaqeen_app/features/Prayer/presentation/views/adhan_settings_screen.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/home/data/repo/prayer_times_service.dart';
+import 'package:yaqeen_app/features/home/data/repo/adhan_service.dart';
 import 'package:yaqeen_app/features/Prayer/data/models/prayer_stats_model.dart';
 import 'package:yaqeen_app/features/Prayer/data/repo/prayer_tracker_service.dart';
 import 'package:yaqeen_app/features/Prayer/presentation/views/widgets/night_portions_card.dart';
@@ -36,6 +37,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
   Map<String, dynamic>? nextPrayer;
   double? currentLatitude;
   double? currentLongitude;
+  int _calculationMethodId = 4;
 
   @override
   void initState() {
@@ -50,6 +52,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
         hasError = false;
         errorMessage = null;
       });
+
+      _calculationMethodId = await AdhanService.getSavedCalculationMethod();
 
       // Get location
       final location = await LocationService.getLocationWithFallback();
@@ -90,13 +94,14 @@ class _PrayerScreenState extends State<PrayerScreen> {
       final response = await PrayerTimesService.getPrayerTimes(
         latitude: currentLatitude,
         longitude: currentLongitude,
+        calculationMethodId: _calculationMethodId,
       );
 
       // Calculate Sunnah times using adhan_dart
       final prayerTimes = PrayerCalculatorService.calculate(
         latitude: currentLatitude,
         longitude: currentLongitude,
-        calculationMethodId: 4,
+        calculationMethodId: _calculationMethodId,
       );
       final sunnah = PrayerCalculatorService.getSunnahTimes(prayerTimes);
 
@@ -106,6 +111,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
           response.timings,
           latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
           longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+          calculationMethodId: _calculationMethodId,
         );
         sunnahTimes = sunnah;
       });
@@ -137,6 +143,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
           prayerTimings!.timings,
           latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
           longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+          calculationMethodId: _calculationMethodId,
         );
         setState(() {
           nextPrayer = next;

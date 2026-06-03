@@ -198,7 +198,7 @@ class _HeaderBackground extends StatelessWidget {
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  // const SizedBox(height: 6),
                   Text(
                     'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ',
                     style: TextStyle(

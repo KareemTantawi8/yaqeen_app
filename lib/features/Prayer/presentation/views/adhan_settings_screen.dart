@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:yaqeen_app/core/services/adhan_audio_player_service.dart';
+import 'package:yaqeen_app/core/services/fcm_service.dart';
 import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/core/extension/context_extension.dart';
@@ -164,6 +165,10 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
                 _buildVoiceListCard(),
                 verticalSpace(16),
                 _buildTestButton(),
+                verticalSpace(12),
+                _buildTestNotificationButton(),
+                verticalSpace(12),
+                _buildTestFcmNotificationButton(),
                 verticalSpace(100),
               ],
             ),
@@ -403,6 +408,82 @@ class _AdhanSettingsScreenState extends State<AdhanSettingsScreen> {
             ],
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Future<void> _scheduleTestNotification() async {
+    final granted = await PrayerNotificationService.requestPermissions();
+    if (!mounted) return;
+    if (!granted) {
+      _showSnack('فعّل الإشعارات من إعدادات الجهاز أولاً');
+      return;
+    }
+    final ok = await PrayerNotificationService.scheduleTestNotification();
+    _showSnack(
+      ok
+          ? 'سيصل إشعار تجريبي خلال 15 ثانية'
+          : 'تعذّر جدولة الإشعار — تحقق من صلاحيات الإشعارات',
+    );
+  }
+
+  Future<void> _showTestFcmNotification() async {
+    final granted = await PrayerNotificationService.requestPermissions();
+    if (!mounted) return;
+    if (!granted) {
+      _showSnack('فعّل الإشعارات من إعدادات الجهاز أولاً');
+      return;
+    }
+    await FCMService.showTestNotification();
+    _showSnack('تم إرسال إشعار FCM تجريبي');
+  }
+
+  Widget _buildTestFcmNotificationButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton.icon(
+        onPressed: _showTestFcmNotification,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryColor,
+          side: BorderSide(color: AppColors.primaryColor.withOpacity(0.5)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        icon: const Icon(Icons.cloud_outlined, size: 22),
+        label: const Text(
+          'تجربة إشعار FCM (فوري)',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Tajawal',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTestNotificationButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton.icon(
+        onPressed: _scheduleTestNotification,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryColor,
+          side: BorderSide(color: AppColors.primaryColor.withOpacity(0.5)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        icon: const Icon(Icons.notifications_outlined, size: 22),
+        label: const Text(
+          'تجربة إشعار الصلاة (خلال 15 ثانية)',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Tajawal',
+          ),
+        ),
       ),
     );
   }

@@ -173,6 +173,19 @@ class AdhanService {
     }
   }
 
+  static const String _calculationMethodKey = 'prayer_calculation_method';
+
+  static Future<int> getSavedCalculationMethod() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getInt(_calculationMethodKey) ?? 4;
+    return calculationMethods.containsKey(id) ? id : 4;
+  }
+
+  static Future<void> saveCalculationMethod(int methodId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_calculationMethodKey, methodId);
+  }
+
   /// Clear all cached Adhan data (kept for API compatibility, no-op for local calculation)
   static Future<void> clearAllCache() async {
     debugPrint('Local calculation mode - no cache to clear');

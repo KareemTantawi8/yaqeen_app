@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/services/prayer_calculator_service.dart';
 import '../../../../../core/styles/colors/app_color.dart';
 import '../../../../../core/styles/fonts/font_styles.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -20,6 +21,8 @@ class PrayerTimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayTime = PrayerCalculatorService.formatDisplayTime(time);
+
     return Container(
       decoration: isHighlighted
           ? BoxDecoration(
@@ -55,8 +58,11 @@ class PrayerTimeCard extends StatelessWidget {
           Image.asset(image),
           verticalSpace(8),
           Text(
-            time.split(' ').first,
+            displayTime,
             style: TextStyles.font12WhiteText,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
         ],
       ),

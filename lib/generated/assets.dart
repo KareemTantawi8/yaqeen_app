@@ -7,6 +7,17 @@ class Assets {
   static const String adhanMakkah = 'assets/audio/adhan/makkah.mp3';
   static const String adhanMishary = 'assets/audio/adhan/mishary.mp3';
   static const String adhanSudais = 'assets/audio/adhan/sudais.mp3';
+  static const String appStoreAzkar = 'assets/app_store/azkar.jpeg';
+  static const String appStoreHadis = 'assets/app_store/hadis.jpeg';
+  static const String appStoreHome = 'assets/app_store/home.jpeg';
+  static const String appStoreMoshaf = 'assets/app_store/moshaf.jpeg';
+  static const String appStoreMosques = 'assets/app_store/mosques.jpeg';
+  static const String appStoreQebla = 'assets/app_store/qebla.jpeg';
+  static const String appStoreQuran = 'assets/app_store/quran.jpeg';
+  static const String appStoreREADME = 'assets/app_store/README.md';
+  static const String appStoreSetting = 'assets/app_store/setting.jpeg';
+  static const String appStoreSurah = 'assets/app_store/surah.jpeg';
+  // static const String appStoreWhatsApp Image 14471215 at 09.05.12 = 'assets/app_store/WhatsApp Image 1447-12-15 at 09.05.12.jpeg';
   static const String assetsDataNamesOfAllah = 'assets/data/Names_Of_Allah.json';
   static const String assetsIconsAzanIcon = 'assets/icons/azan_icon.png';
   static const String assetsIconsAzkarIcon = 'assets/icons/azkar_icon.png';
@@ -43,6 +54,11 @@ class Assets {
   static const String dataSurahs = 'assets/data/surahs.json';
   static const String fontsAmiriQuran = 'assets/fonts/Amiri Quran.ttf';
   static const String fontsTajawalRegular = 'assets/fonts/Tajawal-Regular.ttf';
+  static const String googlePlayAppIcon1024 = 'assets/google_play/app_icon_1024.png';
+  static const String googlePlayAppIcon512 = 'assets/google_play/app_icon_512.png';
+  static const String googlePlayFeatureGraphic1024x500 = 'assets/google_play/feature_graphic_1024x500.png';
+  static const String googlePlayPromoSquare1200 = 'assets/google_play/promo_square_1200.png';
+  static const String googlePlayREADME = 'assets/google_play/README.md';
   static const String iconsAppLogo = 'assets/icons/app_logo.png';
   static const String iconsAzanIcon = 'assets/icons/azan_icon.png';
   static const String iconsAzkarIcon = 'assets/icons/azkar_icon.png';
@@ -73,6 +89,26 @@ class Assets {
   static const String imagesTriangle = 'assets/images/triangle.png';
   static const String imagesYaqeen = 'assets/images/Yaqeen.png';
   static const String imagesZikirmatikImage = 'assets/images/zikirmatik_image.png';
+  static const String ipadAzkar = 'assets/app_store/ipad/azkar.jpeg';
+  static const String ipadHadis = 'assets/app_store/ipad/hadis.jpeg';
+  static const String ipadHome = 'assets/app_store/ipad/home.jpeg';
+  static const String ipadMoshaf = 'assets/app_store/ipad/moshaf.jpeg';
+  static const String ipadMosques = 'assets/app_store/ipad/mosques.jpeg';
+  static const String ipadQebla = 'assets/app_store/ipad/qebla.jpeg';
+  static const String ipadQuran = 'assets/app_store/ipad/quran.jpeg';
+  static const String ipadSetting = 'assets/app_store/ipad/setting.jpeg';
+  static const String ipadSurah = 'assets/app_store/ipad/surah.jpeg';
+  // static const String ipadWhatsApp Image 14471215 at 09.05.12 = 'assets/app_store/ipad/WhatsApp Image 1447-12-15 at 09.05.12.jpeg';
+  static const String iphoneAzkar = 'assets/app_store/iphone/azkar.jpeg';
+  static const String iphoneHadis = 'assets/app_store/iphone/hadis.jpeg';
+  static const String iphoneHome = 'assets/app_store/iphone/home.jpeg';
+  static const String iphoneMoshaf = 'assets/app_store/iphone/moshaf.jpeg';
+  static const String iphoneMosques = 'assets/app_store/iphone/mosques.jpeg';
+  static const String iphoneQebla = 'assets/app_store/iphone/qebla.jpeg';
+  static const String iphoneQuran = 'assets/app_store/iphone/quran.jpeg';
+  static const String iphoneSetting = 'assets/app_store/iphone/setting.jpeg';
+  static const String iphoneSurah = 'assets/app_store/iphone/surah.jpeg';
+  // static const String iphoneWhatsApp Image 14471215 at 09.05.12 = 'assets/app_store/iphone/WhatsApp Image 1447-12-15 at 09.05.12.jpeg';
   static const String riveIcons = 'assets/rive/icons.riv';
 
 }

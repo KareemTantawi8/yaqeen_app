@@ -18,7 +18,6 @@ import 'package:yaqeen_app/features/home/presentation/views/widgets/time_widget.
 import 'package:yaqeen_app/features/home/presentation/views/widgets/recent_quran_read.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/rectangle_widget.dart';
 import 'package:yaqeen_app/features/home/presentation/views/widgets/qibla_card.dart';
-import 'package:yaqeen_app/features/events/presentation/views/events_screen.dart';
 
 import 'widgets/adhan_alert_popup.dart';
 import 'widgets/prayer_times_loading_skeleton.dart';
@@ -30,6 +29,7 @@ import '../../../../core/styles/images/app_image.dart';
 import '../../../../core/utils/spacing.dart';
 import 'ahadis_screen.dart';
 import 'adhan_full_screen.dart';
+import '../../data/repo/adhan_service.dart';
 import 'mespha_screen.dart';
 import 'widgets/hadith_daily_card.dart';
 import '../../../qibla/presentation/views/qibla_screen.dart';
@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // Track the last auto-played prayer to avoid replaying the same one
   String? _lastAutoPlayedPrayer;
+  int _calculationMethodId = 4;
 
   @override
   void initState() {
@@ -98,17 +99,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   ///          if not granted → ask once AFTER times are visible, then refresh.
   Future<void> _initializeLocation() async {
     try {
-      setState(() { isLoading = true; hasError = false; errorMessage = null; });
+      setState(() {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+      });
+
+      _calculationMethodId = await AdhanService.getSavedCalculationMethod();
 
       final saved = await LocationService.getSavedLocation();
-      final immediate = saved ?? {
-        'latitude': LocationService.defaultLatitude,
-        'longitude': LocationService.defaultLongitude,
-      };
+      final immediate =
+          saved ??
+          {
+            'latitude': LocationService.defaultLatitude,
+            'longitude': LocationService.defaultLongitude,
+          };
       currentLatitude = immediate['latitude'];
       currentLongitude = immediate['longitude'];
       locationDescription = LocationService.getLocationDescription(
-        currentLatitude!, currentLongitude!,
+        currentLatitude!,
+        currentLongitude!,
       );
 
       // Show prayer times immediately with the cached/default location
@@ -126,15 +136,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
     } catch (e) {
       debugPrint('Failed to initialize location: $e');
-      setState(() { isLoading = false; hasError = true; errorMessage = 'فشل تحميل البيانات'; });
+      setState(() {
+        isLoading = false;
+        hasError = true;
+        errorMessage = 'فشل تحميل البيانات';
+      });
     }
   }
 
   Future<void> _refreshFromGps() async {
     try {
       // getCurrentLocation() only proceeds if permission is already granted
-      final position = await LocationService.getCurrentLocation()
-          .timeout(const Duration(seconds: 20));
+      final position = await LocationService.getCurrentLocation().timeout(
+        const Duration(seconds: 20),
+      );
       if (position == null || !mounted) return;
 
       final latDiff = (position.latitude - (currentLatitude ?? 0)).abs();
@@ -145,7 +160,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       currentLatitude = position.latitude;
       currentLongitude = position.longitude;
       locationDescription = LocationService.getLocationDescription(
-        position.latitude, position.longitude,
+        position.latitude,
+        position.longitude,
       );
       await _loadPrayerTimes(silent: true);
 
@@ -170,20 +186,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final response = await PrayerTimesService.getPrayerTimes(
         latitude: currentLatitude,
         longitude: currentLongitude,
+        calculationMethodId: _calculationMethodId,
       );
 
       // Calculate current prayer for highlighting
       final prayerTimes = PrayerCalculatorService.calculate(
         latitude: currentLatitude,
         longitude: currentLongitude,
-        calculationMethodId: 4,
+        calculationMethodId: _calculationMethodId,
       );
-      final currentPrayer = PrayerCalculatorService.getCurrentPrayerName(prayerTimes);
+      final currentPrayer = PrayerCalculatorService.getCurrentPrayerName(
+        prayerTimes,
+      );
 
       final next = PrayerTimesService.getNextPrayer(
         response.timings,
         latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
         longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+        calculationMethodId: _calculationMethodId,
       );
 
       setState(() {
@@ -223,6 +243,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           prayerTimings!.timings,
           latitude: currentLatitude ?? PrayerTimesService.defaultLatitude,
           longitude: currentLongitude ?? PrayerTimesService.defaultLongitude,
+          calculationMethodId: _calculationMethodId,
         );
         final newName = next['name'] as String?;
 
@@ -255,8 +276,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final notifEnabled =
           await PrayerNotificationService.areNotificationsEnabled();
       if (!notifEnabled) return;
-      final prayerEnabled = await PrayerNotificationService
-          .getPrayerNotificationEnabled(prayerName);
+      final prayerEnabled =
+          await PrayerNotificationService.getPrayerNotificationEnabled(
+            prayerName,
+          );
       if (!prayerEnabled) return;
 
       // Cancel the pending notification so it doesn't play on top of the popup
@@ -281,6 +304,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _countdownTimer?.cancel();
     super.dispose();
+  }
+
+  Widget _buildPrayerTimesRow() {
+    final pt = PrayerCalculatorService.calculate(
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+      calculationMethodId: _calculationMethodId,
+    );
+    final cards = [
+      ('العشاء', AppImages.moonImage, pt.isha),
+      ('المغرب', AppImages.cloudSunnyImage, pt.maghrib),
+      ('العصر', AppImages.sunImage, pt.asr),
+      ('الظهر', AppImages.sunnyImage, pt.dhuhr),
+      ('الفجر', AppImages.cloudefog, pt.fajr),
+    ];
+
+    return Row(
+      children: [
+        for (final entry in cards)
+          Expanded(
+            child: PrayerTimeCard(
+              prayer: entry.$1,
+              image: entry.$2,
+              time: PrayerCalculatorService.formatTime(entry.$3),
+              isHighlighted: currentPrayerName == entry.$1,
+            ),
+          ),
+      ],
+    );
   }
 
   String _prayerIcon(String name) {
@@ -402,49 +454,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     prayerName: nextPrayer?['name'] ?? 'الفجر',
                     image: _prayerIcon(nextPrayer?['name'] ?? 'الفجر'),
                   ),
-                  verticalSpace(12),
-                  TimeWIdget(
-                    time: (nextPrayer?['time'] ?? '00:00').split(' ').first,
-                  ),
-                  NextPrayerWidget(
-                    nextPrayer: 'الصلاة التالية بعد $countdown',
-                  ),
+                  verticalSpace(8),
+                  TimeWIdget(time: nextPrayer?['time'] as String? ?? '12:00 ص'),
+                  verticalSpace(8),
+                  NextPrayerWidget(nextPrayer: 'الصلاة التالية بعد $countdown'),
                   verticalSpace(16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      PrayerTimeCard(
-                        prayer: 'العشاء',
-                        image: AppImages.moonImage,
-                        time: prayerTimings!.timings.isha,
-                        isHighlighted: currentPrayerName == 'العشاء',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'المغرب',
-                        image: AppImages.cloudSunnyImage,
-                        time: prayerTimings!.timings.maghrib,
-                        isHighlighted: currentPrayerName == 'المغرب',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'العصر',
-                        image: AppImages.sunImage,
-                        time: prayerTimings!.timings.asr,
-                        isHighlighted: currentPrayerName == 'العصر',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'الظهر',
-                        image: AppImages.sunnyImage,
-                        time: prayerTimings!.timings.dhuhr,
-                        isHighlighted: currentPrayerName == 'الظهر',
-                      ),
-                      PrayerTimeCard(
-                        prayer: 'الفجر',
-                        image: AppImages.cloudefog,
-                        time: prayerTimings!.timings.fajr,
-                        isHighlighted: currentPrayerName == 'الفجر',
-                      ),
-                    ],
-                  ),
+                  _buildPrayerTimesRow(),
                 ],
               ),
             ),
@@ -463,9 +478,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 offset: Offset(0, 10),
               ),
               child: Container(
-                decoration: BoxDecoration(
-                  color: context.cardBg,
-                ),
+                decoration: BoxDecoration(color: context.cardBg),
                 child: Padding(
                   padding: const EdgeInsets.all(18),
                   child: SingleChildScrollView(
@@ -482,24 +495,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         verticalSpace(10),
                         // 5 Feature circles in one row
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
                             FeatureIconButton(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const AdhanFullScreen(),
+                                    builder: (context) =>
+                                        const AdhanFullScreen(),
                                   ),
                                 );
                               },
                               iconData: Icons.mosque_rounded,
                               text: 'أذان',
                             ),
-                            horizontalSpace(8),
+                            // horizontalSpace(8),
                             FeatureIconButton(
                               onTap: () {
                                 Navigator.push(
@@ -512,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               iconData: Icons.format_quote_rounded,
                               text: 'الاحاديث',
                             ),
-                            horizontalSpace(8),
+                            // horizontalSpace(8),
                             FeatureIconButton(
                               onTap: () {
                                 Navigator.push(
@@ -525,10 +538,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               iconData: Icons.explore_rounded,
                               text: 'قبلة',
                             ),
-                            horizontalSpace(8),
+                            // horizontalSpace(8),
                             FeatureIconButton(
                               onTap: () {
-                                Navigator.pushNamed(context, MesphaScreen.routeName);
+                                Navigator.pushNamed(
+                                  context,
+                                  MesphaScreen.routeName,
+                                );
                               },
                               image: AppImages.mesphaIcon,
                               text: 'مسبحة',
@@ -546,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             //   image: AppImages.eventIcon,
                             //   text: 'التقويم',
                             // ),
-                            horizontalSpace(8),
+                            // horizontalSpace(8),
                             FeatureIconButton(
                               onTap: () {
                                 Navigator.push(
@@ -562,23 +578,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             ),
                           ],
                         ),
-                      ),
-                      verticalSpace(20),
-                      const RecentQuranRead(
-                        key: ValueKey('recent_quran_read'),
-                      ),
-                      verticalSpace(14),
-                      IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: const [
-                            Expanded(child: QiblaCard()),
-                            SizedBox(width: 12),
-                            Expanded(child: HadithDailyCard()),
-                          ],
+                        verticalSpace(20),
+                        const RecentQuranRead(
+                          key: ValueKey('recent_quran_read'),
                         ),
-                      ),
-                      verticalSpace(90),
+                        verticalSpace(14),
+                        IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: const [
+                              Expanded(child: QiblaCard()),
+                              SizedBox(width: 12),
+                              Expanded(child: HadithDailyCard()),
+                            ],
+                          ),
+                        ),
+                        verticalSpace(90),
                       ],
                     ),
                   ),

@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import '../../data/models/adhan_model.dart';
 import '../../data/repo/adhan_service.dart';
 import '../../../../../core/services/adhan_audio_player_service.dart';
+import '../../../../../core/services/prayer_calculator_service.dart';
 import '../../../../../core/services/location_service.dart';
 import '../../../../../core/extension/context_extension.dart';
 import '../../../../../core/styles/colors/app_color.dart';
@@ -15,6 +16,7 @@ import '../../../../../core/common/widgets/default_app_bar.dart';
 import '../../../../../core/utils/spacing.dart';
 import 'package:intl/intl.dart';
 import '../../../Prayer/presentation/views/adhan_settings_screen.dart';
+import '../../../../core/services/prayer_notification_service.dart';
 
 class AdhanFullScreen extends StatefulWidget {
   const AdhanFullScreen({super.key});
@@ -49,7 +51,7 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeLocation();
+    _initializeLocation(); // loads saved method first, then fetches location
     _loadVoiceName();
 
     // Mirror audio player state
@@ -98,16 +100,24 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
     });
 
     try {
-      final location = await LocationService.getLocationWithFallback();
-      setState(() {
-        _currentLatitude = location['latitude'];
-        _currentLongitude = location['longitude'];
-        _locationDescription = LocationService.getLocationDescription(
-          location['latitude']!,
-          location['longitude']!,
-        );
-      });
+      // Load persisted calculation method
+      _selectedMethod = await AdhanService.getSavedCalculationMethod();
+
+      // Phase 1: show prayer times immediately from saved/default location (no GPS wait)
+      final saved = await LocationService.getSavedLocation();
+      final immediate = saved ?? {
+        'latitude': LocationService.defaultLatitude,
+        'longitude': LocationService.defaultLongitude,
+      };
+      _currentLatitude = immediate['latitude'];
+      _currentLongitude = immediate['longitude'];
+      _locationDescription = LocationService.getLocationDescription(
+        _currentLatitude!, _currentLongitude!,
+      );
       await _loadAdhanTimes();
+
+      // Phase 2: silent GPS refresh in background
+      _refreshFromGps();
     } catch (e) {
       debugPrint('Failed to initialize location: $e');
       setState(() {
@@ -115,6 +125,25 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
         _errorMessage = 'فشل تحميل الموقع';
       });
     }
+  }
+
+  Future<void> _refreshFromGps() async {
+    try {
+      final position = await LocationService.getCurrentLocation()
+          .timeout(const Duration(seconds: 20));
+      if (position == null || !mounted) return;
+
+      final latDiff = (position.latitude - (_currentLatitude ?? 0)).abs();
+      final lngDiff = (position.longitude - (_currentLongitude ?? 0)).abs();
+      if (latDiff < 0.001 && lngDiff < 0.001) return;
+
+      _currentLatitude = position.latitude;
+      _currentLongitude = position.longitude;
+      _locationDescription = LocationService.getLocationDescription(
+        position.latitude, position.longitude,
+      );
+      await _loadAdhanTimes();
+    } catch (_) {}
   }
 
   Future<void> _loadAdhanTimes({bool useCache = true}) async {
@@ -181,7 +210,17 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
     );
     if (method != null && method != _selectedMethod) {
       setState(() => _selectedMethod = method);
+      // Persist so notifications + all other screens use the same method
+      await AdhanService.saveCalculationMethod(method);
       await _loadAdhanTimes(useCache: false);
+      // Reschedule notifications using already-loaded coordinates (no GPS wait)
+      final lat = _currentLatitude ?? LocationService.defaultLatitude;
+      final lon = _currentLongitude ?? LocationService.defaultLongitude;
+      await PrayerNotificationService.cancelAll();
+      await PrayerNotificationService.schedulePrayerNotifications(
+        latitude: lat,
+        longitude: lon,
+      );
     }
   }
 
@@ -418,7 +457,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
           ),
           verticalSpace(8),
           Text(
-            _nextPrayer!['time'],
+            PrayerCalculatorService.formatDisplayTime(
+              _nextPrayer!['time'] as String,
+            ),
             style: TextStyles.font24WhiteText.copyWith(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -724,7 +765,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              prayer['time'] as String,
+              PrayerCalculatorService.formatDisplayTime(
+                prayer['time'] as String,
+              ),
               style: TextStyle(
                 color: isNext ? Colors.white : AppColors.primaryColor,
                 fontSize: 18,
@@ -775,7 +818,9 @@ class _AdhanFullScreenState extends State<AdhanFullScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              _adhanData!.timings.sunrise,
+              PrayerCalculatorService.formatDisplayTime(
+                _adhanData!.timings.sunrise,
+              ),
               style: TextStyle(
                 color: Colors.amber[800],
                 fontSize: 18,

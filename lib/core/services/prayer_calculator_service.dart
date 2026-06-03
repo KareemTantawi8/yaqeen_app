@@ -1,6 +1,5 @@
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class PrayerCalculatorService {
   static const double defaultLatitude = 24.7406086;
@@ -63,14 +62,34 @@ class PrayerCalculatorService {
     );
   }
 
-  /// Format DateTime to HH:mm string
+  /// 12-hour clock for UI (e.g. `11:51 ص`, `3:13 م`).
   static String formatTime(DateTime? dt) {
-    if (dt == null) return '00:00';
+    if (dt == null) return '12:00 ص';
     try {
-      return DateFormat('HH:mm').format(dt.toLocal());
+      final local = dt.toLocal();
+      final hour24 = local.hour;
+      final minute = local.minute.toString().padLeft(2, '0');
+      final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+      final period = hour24 >= 12 ? 'م' : 'ص';
+      return '$hour12:$minute $period';
     } catch (e) {
-      return '00:00';
+      return '12:00 ص';
     }
+  }
+
+  /// Converts stored `HH:mm` strings (or already formatted 12h) for display.
+  static String formatDisplayTime(String time) {
+    final trimmed = time.trim();
+    if (trimmed.contains('ص') || trimmed.contains('م')) return trimmed;
+
+    final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(trimmed);
+    if (match == null) return trimmed;
+
+    final hour = int.tryParse(match.group(1)!);
+    final minute = int.tryParse(match.group(2)!);
+    if (hour == null || minute == null) return trimmed;
+
+    return formatTime(DateTime(2000, 1, 1, hour, minute));
   }
 
   /// Get all prayer times as formatted strings

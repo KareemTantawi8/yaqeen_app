@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDOgj51dHvWqKk2rQ6bGTHnbG4W2d0F-Ns',
-    appId: '1:794043066527:android:95ea7f21ebd858a2f5daaa',
+    appId: '1:794043066527:android:cd4e93ee37a45a21f5daaa',
     messagingSenderId: '794043066527',
     projectId: 'yaqeen-e4900',
     storageBucket: 'yaqeen-e4900.firebasestorage.app',
@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAH1r3apLiNtVQfxS7Q4EfkVSvtvpahw6w',
-    appId: '1:794043066527:ios:96cd8e695e9ef277f5daaa',
+    appId: '1:794043066527:ios:f346cb6c19363785f5daaa',
     messagingSenderId: '794043066527',
     projectId: 'yaqeen-e4900',
     storageBucket: 'yaqeen-e4900.firebasestorage.app',
-    iosBundleId: 'com.yaqeen.app',
+    iosBundleId: 'com.yaqeen.mobile',
   );
+
 }

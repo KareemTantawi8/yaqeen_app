@@ -77,10 +77,14 @@ class _PrayerTimesLoadingSkeletonState extends State<PrayerTimesLoadingSkeleton>
 
             // Prayer Time Cards Row
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(
                 5,
-                (index) => _buildPrayerCardSkeleton(_animation.value),
+                (index) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: _buildPrayerCardSkeleton(_animation.value),
+                  ),
+                ),
               ),
             ),
           ],

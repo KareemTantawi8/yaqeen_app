@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    R8 resource shrinker cannot see string references from Dart code.
+    These audio files are referenced at runtime via RawResourceAndroidNotificationSound(voiceId)
+    and must be kept even with isShrinkResources = true.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/makkah,@raw/madinah,@raw/mishary,@raw/abdulbasit,@raw/sudais,@raw/yaqeen_notification"/>

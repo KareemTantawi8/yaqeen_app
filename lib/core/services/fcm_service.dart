@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/core/utils/navigator_key.dart';
 import 'package:yaqeen_app/firebase_options.dart';
@@ -59,7 +60,7 @@ class FCMService {
     'fcm_notification_channel_v2',
     'fcm_notification_channel_v3',
   ];
-  static const _pushChannel = MethodChannel('com.yaqeen.app/push');
+  static const _pushChannel = MethodChannel('com.yaqeen.mobile/push');
 
   static const _androidSound = RawResourceAndroidNotificationSound(
     _notificationSoundAndroid,
@@ -127,6 +128,7 @@ class FCMService {
   static Future<void> initialize() async {
     // Register the background handler before any other FCM call.
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+    await _messaging.setAutoInitEnabled(true);
 
     await _requestPermissions();
     await _createAndroidChannel(PrayerNotificationService.notificationsPlugin);
@@ -237,7 +239,7 @@ class FCMService {
   static void _scheduleTokenRetries() {
     if (!Platform.isIOS) return;
 
-    for (final delay in [3, 10, 30]) {
+    for (final delay in [3, 10, 30, 60, 120, 300]) {
       Future<void>.delayed(Duration(seconds: delay), () async {
         final apnsToken = await _messaging.getAPNSToken();
         if (apnsToken == null) {
@@ -308,6 +310,12 @@ class FCMService {
   // Local notification helper (foreground + background data-only messages)
   // ---------------------------------------------------------------------------
 
+  static Future<bool> _canShowNotifications() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return true;
+    final status = await Permission.notification.status;
+    return status.isGranted || status.isLimited;
+  }
+
   static Future<void> _showLocalNotification({
     required int id,
     required String title,
@@ -315,6 +323,11 @@ class FCMService {
     String? imageUrl,
     FlutterLocalNotificationsPlugin? plugin,
   }) async {
+    if (!await _canShowNotifications()) {
+      debugPrint('[FCM] Cannot show notification — OS permission denied');
+      return;
+    }
+
     // Android details
     AndroidNotificationDetails androidDetails;
     if (imageUrl != null && Platform.isAndroid) {
@@ -375,15 +388,19 @@ class FCMService {
     final notificationsPlugin =
         plugin ?? PrayerNotificationService.notificationsPlugin;
     await notificationsPlugin.cancel(id);
-    debugPrint('[FCM] Calling plugin.show id=$id title="$title"');
-    await notificationsPlugin.show(
-      id,
-      title,
-      body,
-      NotificationDetails(android: androidDetails, iOS: iosDetails),
-      payload: 'fcm',
-    );
-    debugPrint('[FCM] plugin.show completed');
+    try {
+      debugPrint('[FCM] Calling plugin.show id=$id title="$title"');
+      await notificationsPlugin.show(
+        id,
+        title,
+        body,
+        NotificationDetails(android: androidDetails, iOS: iosDetails),
+        payload: 'fcm',
+      );
+      debugPrint('[FCM] plugin.show completed');
+    } catch (e, st) {
+      debugPrint('[FCM] plugin.show failed: $e\n$st');
+    }
   }
 
   /// Downloads [url] to the system temp directory and returns the file path,
@@ -478,6 +495,15 @@ class FCMService {
   }
 
   /// Opens the main app shell. Deferred until [appNavigatorKey] is ready on cold start.
+  /// Shows an immediate local notification using the FCM channel (for testing).
+  static Future<void> showTestNotification() async {
+    await _showLocalNotification(
+      id: 9998,
+      title: 'تجربة إشعار يقين',
+      body: 'إذا ظهر هذا الإشعار، إشعارات FCM تعمل بشكل صحيح',
+    );
+  }
+
   static void _openMainScreen() {
     final navigator = appNavigatorKey.currentState;
     if (navigator == null) {

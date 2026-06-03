@@ -37,7 +37,7 @@ import UserNotifications
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
 
     let channel = FlutterMethodChannel(
-      name: "com.yaqeen.app/push",
+      name: "com.yaqeen.mobile/push",
       binaryMessenger: engineBridge.applicationRegistrar.messenger()
     )
     channel.setMethodCallHandler { call, result in
@@ -96,13 +96,17 @@ import UserNotifications
   }
 
   /// Determines whether this build's APNs token targets the sandbox or
-  /// production gateway by reading `aps-environment` from the embedded
-  /// provisioning profile.
-  /// - Development build (Xcode run / ad-hoc dev) → `development` → `.sandbox`
-  /// - TestFlight build → `production` → `.prod`
-  /// - App Store build → no embedded profile (Apple re-signs) → `.prod`
+  /// production gateway.
+  ///
+  /// - Simulator → always `.sandbox`
+  /// - Debug build (Xcode / ad-hoc dev) → `.sandbox` via `#if DEBUG`
+  ///   (`SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG` is set in Flutter/Debug.xcconfig)
+  /// - Release / Profile build → reads `aps-environment` from the embedded
+  ///   provisioning profile (TestFlight → `production`; App Store → no profile → `.prod`)
   private func detectAPNSTokenType() -> MessagingAPNSTokenType {
     #if targetEnvironment(simulator)
+      return .sandbox
+    #elseif DEBUG
       return .sandbox
     #else
       guard
@@ -112,10 +116,13 @@ import UserNotifications
         let start = raw.range(of: "<?xml"),
         let end = raw.range(of: "</plist>")
       else {
+        // No embedded profile → App Store distribution (Apple re-signs)
         return .prod
       }
 
-      let plistString = String(raw[start.lowerBound...end.upperBound])
+      // Use ..<end.upperBound (half-open range) to exclude the binary byte
+      // that follows </plist> in the CMS-signed provisioning profile blob.
+      let plistString = String(raw[start.lowerBound..<end.upperBound])
       guard
         let plistData = plistString.data(using: .isoLatin1),
         let plist = try? PropertyListSerialization.propertyList(

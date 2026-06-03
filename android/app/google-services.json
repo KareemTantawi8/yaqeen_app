@@ -7,9 +7,28 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:794043066527:android:cd4e93ee37a45a21f5daaa",
+        "android_client_info": {
+          "package_name": "com.yaqeen.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOgj51dHvWqKk2rQ6bGTHnbG4W2d0F-Ns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:794043066527:android:95ea7f21ebd858a2f5daaa",
         "android_client_info": {
-          "package_name": "com.yaqeen.app"
+          "package_name": "com.yourcompany.yaqeen_app"
         }
       },
       "oauth_client": [],

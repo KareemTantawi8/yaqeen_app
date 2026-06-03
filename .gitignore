@@ -46,3 +46,4 @@ app.*.map.json
 
 # Python virtualenv used by tool/build_app_icon.py (not part of the app)
 /.venv_icons/
+/.venv_assets/

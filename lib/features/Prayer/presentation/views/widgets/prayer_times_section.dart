@@ -3,6 +3,7 @@ import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/core/styles/fonts/font_styles.dart';
 import 'package:yaqeen_app/core/styles/images/app_image.dart';
 import 'package:yaqeen_app/core/utils/spacing.dart';
+import 'package:yaqeen_app/core/services/prayer_calculator_service.dart';
 import 'package:yaqeen_app/features/home/data/models/prayer_timings_model.dart';
 import 'package:yaqeen_app/features/Prayer/data/repo/prayer_tracker_service.dart';
 
@@ -117,7 +118,9 @@ class _PrayerTimesSectionState extends State<PrayerTimesSection> {
                 ),
                 verticalSpace(4),
                 Text(
-                  widget.nextPrayer['time'] ?? '00:00',
+                  PrayerCalculatorService.formatDisplayTime(
+                    widget.nextPrayer['time'] as String? ?? '12:00 ص',
+                  ),
                   style: TextStyles.font24WhiteText.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -267,7 +270,7 @@ class _PrayerTimesSectionState extends State<PrayerTimesSection> {
 
           // Prayer Time
           Text(
-            time,
+            PrayerCalculatorService.formatDisplayTime(time),
             style: TextStyles.font18WhiteText.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w600,
