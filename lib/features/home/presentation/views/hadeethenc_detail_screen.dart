@@ -541,24 +541,12 @@ class _HadeethEncDetailScreenState extends State<HadeethEncDetailScreen> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      textDirection: TextDirection.rtl,
                       children: [
-                        Expanded(
-                          child: Text(
-                            e.value,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: context.highText,
-                              fontSize: 14,
-                              fontFamily: 'Tajawal',
-                              height: 1.8,
-                            ),
-                          ),
-                        ),
-                        horizontalSpace(10),
                         Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          width: 24,
-                          height: 24,
+                          margin: const EdgeInsets.only(top: 2),
+                          width: 26,
+                          height: 26,
                           decoration: BoxDecoration(
                             color: AppColors.primaryColor.withOpacity(0.1),
                             shape: BoxShape.circle,
@@ -571,6 +559,19 @@ class _HadeethEncDetailScreenState extends State<HadeethEncDetailScreen> {
                               fontSize: 11,
                               fontFamily: 'Tajawal',
                               fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        horizontalSpace(10),
+                        Expanded(
+                          child: Text(
+                            e.value,
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: context.highText,
+                              fontSize: 14,
+                              fontFamily: 'Tajawal',
+                              height: 1.8,
                             ),
                           ),
                         ),

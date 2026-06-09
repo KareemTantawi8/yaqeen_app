@@ -247,7 +247,7 @@ class _HadithTopicScreenState extends State<HadithTopicScreen> {
       itemBuilder: (ctx, i) {
         if (i < _items.length) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 12),
             child: _HadithListTile(
               item: _items[i],
               index: i + 1,
@@ -330,67 +330,108 @@ class _HadithListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HadeethEncDetailScreen(
-            hadithId: item.id,
-            hadithTitle: item.title,
-            accentColor: color,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HadeethEncDetailScreen(
+              hadithId: item.id,
+              hadithTitle: item.title,
+              accentColor: color,
+            ),
           ),
         ),
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: context.cardBg,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: context.cardBg,
+            borderRadius: BorderRadius.circular(18),
+            border: Border(
+              right: BorderSide(color: color, width: 4),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.chevron_left_rounded,
-                color: AppColors.primaryColor, size: 20),
-            Expanded(
-              child: Text(
-                item.title,
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: context.highText,
-                  fontSize: 15,
-                  fontFamily: 'Tajawal',
-                  fontWeight: FontWeight.w600,
-                  height: 1.5,
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.08),
+                blurRadius: 14,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 16, 18, 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              textDirection: TextDirection.rtl,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [color, color.withOpacity(0.7)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$index',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontFamily: 'Tajawal',
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            horizontalSpace(12),
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '$index',
-                style: TextStyle(
-                  color: color,
-                  fontSize: 12,
-                  fontFamily: 'Tajawal',
-                  fontWeight: FontWeight.w700,
+                horizontalSpace(14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        item.title,
+                        textAlign: TextAlign.right,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: context.highText,
+                          fontSize: 15,
+                          fontFamily: 'Tajawal',
+                          fontWeight: FontWeight.w700,
+                          height: 1.55,
+                        ),
+                      ),
+                      verticalSpace(10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 12,
+                            color: color.withOpacity(0.8),
+                          ),
+                          horizontalSpace(4),
+                          Text(
+                            'قراءة الحديث',
+                            style: TextStyle(
+                              color: color,
+                              fontSize: 12,
+                              fontFamily: 'Tajawal',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
