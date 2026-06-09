@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:yaqeen_app/core/services/prayer_notification_service.dart';
 import 'package:yaqeen_app/core/utils/navigator_key.dart';
 import 'package:yaqeen_app/firebase_options.dart';
@@ -310,11 +309,8 @@ class FCMService {
   // Local notification helper (foreground + background data-only messages)
   // ---------------------------------------------------------------------------
 
-  static Future<bool> _canShowNotifications() async {
-    if (!Platform.isAndroid && !Platform.isIOS) return true;
-    final status = await Permission.notification.status;
-    return status.isGranted || status.isLimited;
-  }
+  static Future<bool> _canShowNotifications() =>
+      PrayerNotificationService.hasSystemNotificationPermission();
 
   static Future<void> _showLocalNotification({
     required int id,

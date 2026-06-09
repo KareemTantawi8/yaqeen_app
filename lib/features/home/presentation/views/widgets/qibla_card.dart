@@ -42,14 +42,10 @@ class QiblaCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
           child: Stack(
             children: [
-              Positioned.fill(
-                child: Opacity(
+              const Positioned.fill(
+                child: TriangleTexture(
                   opacity: 0.08,
-                  child: Image.asset(
-                    AppImages.triangleImage,
-                    fit: BoxFit.cover,
-                    color: Colors.white,
-                  ),
+                  color: Colors.white,
                 ),
               ),
               Positioned(

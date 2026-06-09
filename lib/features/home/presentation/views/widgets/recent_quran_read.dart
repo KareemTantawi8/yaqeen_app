@@ -89,14 +89,10 @@ class _RecentQuranReadState extends State<RecentQuranRead> {
           borderRadius: BorderRadius.circular(22),
           child: Stack(
             children: [
-              Positioned.fill(
-                child: Opacity(
+              const Positioned.fill(
+                child: TriangleTexture(
                   opacity: 0.07,
-                  child: Image.asset(
-                    AppImages.triangleImage,
-                    fit: BoxFit.cover,
-                    color: Colors.white,
-                  ),
+                  color: Colors.white,
                 ),
               ),
               Positioned(

@@ -19,6 +19,12 @@ Replace `support@yaqeen.app` with your real email before publishing.
    - `https://kareemtantawi8.github.io/yaqeen_app/support.html`
    - `https://kareemtantawi8.github.io/yaqeen_app/privacy.html`
 
+## Release 1.1.0 (second store upload)
+
+1. Follow **[RELEASE-v1.1.0.md](./RELEASE-v1.1.0.md)** (build, upload, smoke test).
+2. Paste What’s New from **[release-notes-1.1.0.md](./release-notes-1.1.0.md)**.
+3. Google Play fields: **[google-play-console.md](./google-play-console.md)**.
+
 ## App Store field cheat sheet
 
 See [`app-store-connect.md`](./app-store-connect.md) for Keywords, Copyright, Version, and Privacy questionnaire answers.

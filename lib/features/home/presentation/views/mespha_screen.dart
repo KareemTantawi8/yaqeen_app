@@ -31,39 +31,137 @@ class _MesphaScreenState extends State<MesphaScreen>
 
   final List<Map<String, dynamic>> _dhikrOptions = [
     {
+      'name': 'سبحان الله والحمد لله والله أكبر ولا إله إلا الله',
+      'count': 33,
+      'color': const Color(0xFF1B5E4B),
+      'meaning': 'ذكر الجمع بعد الصلاة',
+      'reward': 'ثواب عظيم',
+    },
+    {
       'name': 'سبحان الله',
       'count': 33,
       'color': const Color(0xFF2B7669),
       'meaning': 'Glory be to Allah',
-      'reward': 'ثواب عظيم'
+      'reward': 'ثواب عظيم',
     },
     {
       'name': 'الحمد لله',
       'count': 33,
       'color': const Color(0xFF6B5B95),
       'meaning': 'Praise be to Allah',
-      'reward': 'ثواب عظيم'
+      'reward': 'ثواب عظيم',
     },
     {
       'name': 'الله أكبر',
       'count': 33,
       'color': const Color(0xFF00796B),
       'meaning': 'Allah is the Greatest',
-      'reward': 'ثواب عظيم'
+      'reward': 'ثواب عظيم',
     },
     {
       'name': 'لا إله إلا الله',
       'count': 100,
       'color': const Color(0xFF1976D2),
       'meaning': 'There is no god but Allah',
-      'reward': 'أجر كبير'
+      'reward': 'أجر كبير',
+    },
+    {
+      'name': 'لا إله إلا الله وحده لا شريك له',
+      'count': 100,
+      'color': const Color(0xFF1565C0),
+      'meaning': 'Tawheed with His oneness',
+      'reward': 'أجر عظيم',
     },
     {
       'name': 'استغفر الله',
       'count': 100,
       'color': const Color(0xFF7B1FA2),
       'meaning': 'I seek forgiveness from Allah',
-      'reward': 'مغفرة الذنوب'
+      'reward': 'مغفرة الذنوب',
+    },
+    {
+      'name': 'أستغفر الله العظيم',
+      'count': 100,
+      'color': const Color(0xFF6A1B9A),
+      'meaning': 'I seek forgiveness from Allah the Almighty',
+      'reward': 'مغفرة الذنوب',
+    },
+    {
+      'name': 'سبحان الله وبحمده',
+      'count': 100,
+      'color': const Color(0xFF00838F),
+      'meaning': 'Glory and praise be to Allah',
+      'reward': 'تملآن الميزان',
+    },
+    {
+      'name': 'سبحان الله العظيم',
+      'count': 100,
+      'color': const Color(0xFF00695C),
+      'meaning': 'Glory be to Allah the Almighty',
+      'reward': 'ثواب عظيم',
+    },
+    {
+      'name': 'سبحان الله وبحمده سبحان الله العظيم',
+      'count': 100,
+      'color': const Color(0xFF004D40),
+      'meaning': 'Combined glorification',
+      'reward': 'ثواب عظيم',
+    },
+    {
+      'name': 'لا حول ولا قوة إلا بالله',
+      'count': 100,
+      'color': const Color(0xFF5D4037),
+      'meaning': 'No power except with Allah',
+      'reward': 'كنز من كنوز الجنة',
+    },
+    {
+      'name': 'حسبي الله ونعم الوكيل',
+      'count': 7,
+      'color': const Color(0xFF455A64),
+      'meaning': 'Allah is sufficient for me',
+      'reward': 'كفاية ونصرة',
+    },
+    {
+      'name': 'اللهم صل على محمد',
+      'count': 10,
+      'color': const Color(0xFFC62828),
+      'meaning': 'Send blessings upon the Prophet',
+      'reward': 'عشر حسنات',
+    },
+    {
+      'name': 'اللهم صل على محمد وآل محمد',
+      'count': 10,
+      'color': const Color(0xFFB71C1C),
+      'meaning': 'Blessings upon the Prophet and his family',
+      'reward': 'عشر حسنات',
+    },
+    {
+      'name': 'لا إله إلا أنت سبحانك إني كنت من الظالمين',
+      'count': 100,
+      'color': const Color(0xFF283593),
+      'meaning': 'Dua of Yunus (peace be upon him)',
+      'reward': 'استجابة الدعاء',
+    },
+    {
+      'name': 'رب اغفر لي',
+      'count': 100,
+      'color': const Color(0xFF4A148C),
+      'meaning': 'My Lord, forgive me',
+      'reward': 'مغفرة الذنوب',
+    },
+    {
+      'name': 'الحمد لله رب العالمين',
+      'count': 33,
+      'color': const Color(0xFF558B2F),
+      'meaning': 'Praise be to Allah, Lord of the worlds',
+      'reward': 'ثواب عظيم',
+    },
+    {
+      'name': 'لا إله إلا الله محمد رسول الله',
+      'count': 100,
+      'color': const Color(0xFF0277BD),
+      'meaning': 'The testimony of faith',
+      'reward': 'أجر كبير',
     },
   ];
 
@@ -531,11 +629,14 @@ class _MesphaScreenState extends State<MesphaScreen>
                 children: [
                   Text(
                     selected['name'] as String,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: sw * 0.05,
+                      fontSize: sw * 0.042,
                       fontFamily: 'Tajawal',
                       fontWeight: FontWeight.w900,
                       color: _currentColor,
+                      height: 1.35,
                     ),
                   ),
                   Text(
@@ -866,120 +967,144 @@ class _MesphaScreenState extends State<MesphaScreen>
   Widget _buildDhikrSelector() {
     final sw = MediaQuery.of(context).size.width;
     final sh = MediaQuery.of(context).size.height;
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: context.cardBg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      padding: EdgeInsets.all(sw * 0.05),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: sw * 0.15,
-            height: sh * 0.006,
-            decoration: BoxDecoration(
-              color: context.greyText300,
-              borderRadius: BorderRadius.circular(10),
-            ),
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.72,
+      minChildSize: 0.45,
+      maxChildSize: 0.92,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: context.cardBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
           ),
-          verticalSpace(sh * 0.025),
-          Text(
-            'اختر الذكر',
-            style: TextStyle(
-              fontSize: sw * 0.06,
-              fontFamily: 'Tajawal',
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          verticalSpace(sh * 0.025),
-          ...List.generate(_dhikrOptions.length, (index) {
-            final dhikr = _dhikrOptions[index];
-            final isSelected = dhikr['name'] == _selectedDhikr;
-            
-            return Container(
-              margin: EdgeInsets.only(bottom: sh * 0.015),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _changeDhikr(dhikr),
-                  borderRadius: BorderRadius.circular(sw * 0.04),
-                  child: Container(
-                    padding: EdgeInsets.all(sw * 0.04),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? (dhikr['color'] as Color).withOpacity(0.1)
-                          : context.inputFillColor,
-                      borderRadius: BorderRadius.circular(sw * 0.04),
-                      border: Border.all(
-                        color: isSelected
-                            ? (dhikr['color'] as Color)
-                            : context.dividerColor,
-                        width: 2,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(sw * 0.03),
-                          decoration: BoxDecoration(
-                            color: dhikr['color'] as Color,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Text(
-                            '${dhikr['count']}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: sw * 0.04,
-                              fontFamily: 'Tajawal',
-                              fontWeight: FontWeight.w700,
+          child: Column(
+            children: [
+              verticalSpace(sh * 0.015),
+              Container(
+                width: sw * 0.15,
+                height: sh * 0.006,
+                decoration: BoxDecoration(
+                  color: context.greyText300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              verticalSpace(sh * 0.02),
+              Text(
+                'اختر الذكر',
+                style: TextStyle(
+                  fontSize: sw * 0.06,
+                  fontFamily: 'Tajawal',
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              verticalSpace(sh * 0.015),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: EdgeInsets.fromLTRB(
+                    sw * 0.05,
+                    0,
+                    sw * 0.05,
+                    sh * 0.03,
+                  ),
+                  itemCount: _dhikrOptions.length,
+                  itemBuilder: (context, index) {
+                    final dhikr = _dhikrOptions[index];
+                    final isSelected = dhikr['name'] == _selectedDhikr;
+                    final color = dhikr['color'] as Color;
+
+                    return Container(
+                      margin: EdgeInsets.only(bottom: sh * 0.012),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _changeDhikr(dhikr),
+                          borderRadius: BorderRadius.circular(sw * 0.04),
+                          child: Container(
+                            padding: EdgeInsets.all(sw * 0.04),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? color.withOpacity(0.1)
+                                  : context.inputFillColor,
+                              borderRadius: BorderRadius.circular(sw * 0.04),
+                              border: Border.all(
+                                color: isSelected
+                                    ? color
+                                    : context.dividerColor,
+                                width: 2,
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(sw * 0.028),
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    '${dhikr['count']}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: sw * 0.035,
+                                      fontFamily: 'Tajawal',
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                horizontalSpace(sw * 0.035),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        dhikr['name'] as String,
+                                        style: TextStyle(
+                                          fontSize: sw * 0.04,
+                                          fontFamily: 'Tajawal',
+                                          fontWeight: FontWeight.w800,
+                                          color: isSelected
+                                              ? color
+                                              : context.highText,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                      Text(
+                                        dhikr['meaning'] as String,
+                                        style: TextStyle(
+                                          fontSize: sw * 0.028,
+                                          fontFamily: 'Tajawal',
+                                          color: context.greyText600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (isSelected)
+                                  Padding(
+                                    padding: EdgeInsets.only(top: sw * 0.01),
+                                    child: Icon(
+                                      Icons.check_circle,
+                                      color: color,
+                                      size: sw * 0.055,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
-                        horizontalSpace(sw * 0.04),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dhikr['name'] as String,
-                                style: TextStyle(
-                                  fontSize: sw * 0.045,
-                                  fontFamily: 'Tajawal',
-                                  fontWeight: FontWeight.w800,
-                                  color: isSelected
-                                      ? (dhikr['color'] as Color)
-                                      : context.highText,
-                                ),
-                              ),
-                              Text(
-                                dhikr['meaning'] as String,
-                                style: TextStyle(
-                                  fontSize: sw * 0.03,
-                                  fontFamily: 'Tajawal',
-                                  color: context.greyText600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (isSelected)
-                          Icon(
-                            Icons.check_circle,
-                            color: dhikr['color'] as Color,
-                            size: sw * 0.06,
-                          ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            );
-          }),
-          verticalSpace(sh * 0.02),
-        ],
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 

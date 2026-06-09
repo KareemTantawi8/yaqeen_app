@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+
 class AppImages {
   static const String mosqueImage = "assets/images/mosque_image.png";
   static const String yaqeenImage = "assets/images/Yaqeen.png";
@@ -27,4 +30,68 @@ class AppImages {
   static const String shareIcon = "assets/icons/share_icon.png";
   static const String radioIcon = "assets/icons/radio_icon.png";
   static const String hadisBannerWidget = "assets/images/hadis_banner_image.png";
+}
+
+/// Decodes [AppImages.triangleImage] at the on-screen size to avoid decoding
+/// the full asset when only a smaller region is painted.
+ImageProvider triangleDecorationImage(
+  BuildContext context, {
+  double? width,
+  double? height,
+}) {
+  final screen = MediaQuery.sizeOf(context);
+  final dpr = MediaQuery.devicePixelRatioOf(context);
+  final logicalW = width ?? screen.width;
+  final logicalH = height ?? screen.height;
+
+  return ResizeImage(
+    AssetImage(AppImages.triangleImage),
+    width: (logicalW * dpr).round(),
+    height: (logicalH * dpr).round(),
+  );
+}
+
+/// Decorative triangle texture sized to its parent (or the screen when unbounded).
+class TriangleTexture extends StatelessWidget {
+  const TriangleTexture({
+    super.key,
+    this.fit = BoxFit.cover,
+    this.color,
+    this.opacity = 1.0,
+  });
+
+  final BoxFit fit;
+  final Color? color;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screen = MediaQuery.sizeOf(context);
+        final dpr = MediaQuery.devicePixelRatioOf(context);
+        final logicalW = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : screen.width;
+        final logicalH = constraints.maxHeight.isFinite
+            ? constraints.maxHeight
+            : screen.height;
+
+        final image = Image.asset(
+          AppImages.triangleImage,
+          fit: fit,
+          color: color,
+          width: logicalW,
+          height: logicalH,
+          cacheWidth: (logicalW * dpr).round(),
+          cacheHeight: (logicalH * dpr).round(),
+        );
+
+        if (opacity < 1.0) {
+          return Opacity(opacity: opacity, child: image);
+        }
+        return image;
+      },
+    );
+  }
 }

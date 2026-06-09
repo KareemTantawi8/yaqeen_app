@@ -32,10 +32,10 @@ quran,prayer,islam,muslim,azkar,qibla,adhan,hijri,mosque,tasbih,قرآن,صلا�
 ### Version
 
 ```
-1.0
+1.1
 ```
 
-*(Match `pubspec.yaml` → `version: 1.0.0+1`.)*
+*(Match `pubspec.yaml` → `version: 1.1.0+3` — user-facing 1.1, build 3.)*
 
 ### Copyright (max 200 characters)
 

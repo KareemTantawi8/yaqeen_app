@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/extension/context_extension.dart';
+import 'package:yaqeen_app/core/services/location_service.dart';
 import 'package:yaqeen_app/core/styles/colors/app_color.dart';
 import 'package:yaqeen_app/features/mosque/data/models/mosque_model.dart';
 import 'package:yaqeen_app/features/mosque/data/services/mosque_service.dart';
@@ -17,11 +19,11 @@ class MosqueMapScreen extends StatefulWidget {
 }
 
 class _MosqueMapScreenState extends State<MosqueMapScreen> {
-  // Completer guards against calling the controller before onMapCreated fires
-  final Completer<GoogleMapController> _controller = Completer();
+  final MapController _mapController = MapController();
+  static const _defaultCenter = LatLng(21.4225, 39.8262);
 
   LatLng? _userLocation;
-  Set<Marker> _markers = {};
+  List<MosqueModel> _mosques = [];
   MosqueModel? _selectedMosque;
   bool _isLoading = true;
   bool _hasError = false;
@@ -37,17 +39,17 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
 
   Future<void> _initLocation() async {
     final saved = await LocationService.getSavedLocation();
-    final immediate = saved ?? {
-      'latitude': LocationService.defaultLatitude,
-      'longitude': LocationService.defaultLongitude,
-    };
+    final immediate = saved ??
+        {
+          'latitude': LocationService.defaultLatitude,
+          'longitude': LocationService.defaultLongitude,
+        };
     _userLocation = LatLng(
       immediate['latitude'] as double,
       immediate['longitude'] as double,
     );
     await _loadMosques();
 
-    // GPS refresh
     try {
       final pos = await LocationService.getCurrentLocation()
           .timeout(const Duration(seconds: 12));
@@ -57,8 +59,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
       final lngDiff = (newLoc.longitude - _userLocation!.longitude).abs();
       if (latDiff < 0.005 && lngDiff < 0.005) return;
       _userLocation = newLoc;
-      final mapCtrl = await _controller.future;
-      await mapCtrl.animateCamera(CameraUpdate.newLatLng(_userLocation!));
+      _mapController.move(_userLocation!, 14);
       await _loadMosques();
     } catch (_) {}
   }
@@ -66,7 +67,11 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
   Future<void> _loadMosques() async {
     if (_userLocation == null) return;
     if (mounted) {
-      setState(() { _isLoading = true; _hasError = false; _selectedMosque = null; });
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _selectedMosque = null;
+      });
     }
 
     try {
@@ -76,69 +81,96 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
         radiusMeters: _searchRadiusKm * 1000,
       );
 
-      final markers = <Marker>{
-        Marker(
-          markerId: const MarkerId('user'),
-          position: _userLocation!,
-          infoWindow: const InfoWindow(title: 'موقعك الحالي'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        ),
-        for (final m in mosques)
-          Marker(
-            markerId: MarkerId(m.placeId),
-            position: LatLng(m.latitude, m.longitude),
-            infoWindow: InfoWindow(
-              title: m.name,
-              snippet: _distanceLabel(m.distanceKm),
-            ),
-            onTap: () => setState(() => _selectedMosque = m),
-          ),
-      };
+      if (mounted) {
+        setState(() {
+          _mosques = mosques;
+          _isLoading = false;
+        });
+      }
 
-      if (mounted) setState(() { _markers = markers; _isLoading = false; });
-
-      // Animate to user location after markers are set
-      final mapCtrl = await _controller.future;
-      await mapCtrl.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: _userLocation!, zoom: 14),
-      ));
+      _mapController.move(_userLocation!, 14);
     } catch (_) {
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
+      }
     }
   }
 
   Future<void> _launchDirections(double lat, double lng) async {
     final uri = Uri.parse(
-        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
+  List<Marker> _buildMarkers() {
+    final center = _userLocation ?? _defaultCenter;
+    final markers = <Marker>[
+      Marker(
+        point: center,
+        width: 40,
+        height: 40,
+        child: const Icon(Icons.my_location, color: Colors.blue, size: 32),
+      ),
+    ];
+
+    for (final m in _mosques) {
+      final isSelected = _selectedMosque?.placeId == m.placeId;
+      markers.add(
+        Marker(
+          point: LatLng(m.latitude, m.longitude),
+          width: 44,
+          height: 44,
+          child: GestureDetector(
+            onTap: () => setState(() => _selectedMosque = m),
+            child: Icon(
+              Icons.mosque_rounded,
+              size: isSelected ? 38 : 32,
+              color: isSelected ? AppColors.primaryColor : const Color(0xFF2D4A47),
+            ),
+          ),
+        ),
+      );
+    }
+    return markers;
+  }
+
   @override
   void dispose() {
-    _controller.future.then((c) => c.dispose());
+    _mapController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final center = _userLocation ?? _defaultCenter;
+
     return Scaffold(
       body: Stack(
         children: [
-          GoogleMap(
-            onMapCreated: (c) => _controller.complete(c),
-            initialCameraPosition: CameraPosition(
-              target: _userLocation ?? const LatLng(21.4225, 39.8262),
-              zoom: 14,
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: center,
+              initialZoom: 14,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
             ),
-            markers: _markers,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.yaqeen.mobile',
+              ),
+              MarkerLayer(markers: _buildMarkers()),
+            ],
           ),
 
-          // Top bar
           Positioned(
             top: 0,
             left: 0,
@@ -148,22 +180,22 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
                 padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
                 child: Row(
                   children: [
-                    // Refresh
                     _MapButton(
                       icon: Icons.refresh_rounded,
                       onTap: _loadMosques,
                     ),
                     const Spacer(),
-                    // Radius chips
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: context.cardBg,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                           ),
                         ],
@@ -181,7 +213,9 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
                               duration: const Duration(milliseconds: 200),
                               margin: const EdgeInsets.symmetric(horizontal: 3),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: sel
                                     ? AppColors.primaryColor
@@ -210,14 +244,15 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
             ),
           ),
 
-          // Loading overlay
           if (_isLoading)
             Container(
               color: Colors.black26,
               child: Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 28, vertical: 20),
+                    horizontal: 28,
+                    vertical: 20,
+                  ),
                   decoration: BoxDecoration(
                     color: context.cardBg,
                     borderRadius: BorderRadius.circular(16),
@@ -241,7 +276,6 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
               ),
             ),
 
-          // Error overlay
           if (_hasError && !_isLoading)
             Center(
               child: Container(
@@ -265,7 +299,8 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
                     FilledButton(
                       onPressed: _loadMosques,
                       style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor),
+                        backgroundColor: AppColors.primaryColor,
+                      ),
                       child: const Text(
                         'إعادة المحاولة',
                         style: TextStyle(fontFamily: 'Tajawal'),
@@ -276,7 +311,6 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
               ),
             ),
 
-          // Bottom mosque info panel
           if (_selectedMosque != null && !_isLoading)
             Positioned(
               bottom: 0,
@@ -291,11 +325,6 @@ class _MosqueMapScreenState extends State<MosqueMapScreen> {
         ],
       ),
     );
-  }
-
-  String _distanceLabel(double km) {
-    if (km < 1) return '${(km * 1000).toStringAsFixed(0)} م';
-    return '${km.toStringAsFixed(1)} كم';
   }
 }
 
@@ -315,7 +344,7 @@ class _MapButton extends StatelessWidget {
           color: context.cardBg,
           shape: BoxShape.circle,
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 8),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 8),
           ],
         ),
         child: Icon(icon, color: AppColors.primaryColor, size: 20),
@@ -340,11 +369,10 @@ class _MosqueInfoPanel extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.cardBg,
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -355,7 +383,6 @@ class _MosqueInfoPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag handle + close
           Row(
             children: [
               IconButton(
@@ -465,15 +492,17 @@ class _MosqueInfoPanel extends StatelessWidget {
               label: const Text(
                 'الاتجاهات',
                 style: TextStyle(
-                    fontFamily: 'Tajawal',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700),
+                  fontFamily: 'Tajawal',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 padding: const EdgeInsets.symmetric(vertical: 13),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),

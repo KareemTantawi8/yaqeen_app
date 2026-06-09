@@ -39,6 +39,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Phones only — drops x86_64 emulator ABI from the bundle (~5–10 MB).
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
     }
 
     signingConfigs {
@@ -84,6 +88,20 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// Copy bundled Adhan MP3s into res/raw before every build so notification
+// channels can reference @raw/makkah, @raw/sudais, etc. (hot restart alone
+// does not pick up new native resources — a full rebuild is required).
+val syncAdhanRawSounds = tasks.register<Copy>("syncAdhanRawSounds") {
+    from(rootProject.projectDir.parentFile.resolve("assets/audio/adhan")) {
+        include("makkah.mp3", "madinah.mp3", "mishary.mp3", "abdulbasit.mp3", "sudais.mp3")
+    }
+    into(layout.projectDirectory.dir("src/main/res/raw"))
+}
+
+tasks.named("preBuild").configure {
+    dependsOn(syncAdhanRawSounds)
 }
 
 dependencies {

@@ -87,7 +87,7 @@ class _QuranHubScreenState extends State<QuranHubScreen>
 
   SliverAppBar _buildHeader() {
     return SliverAppBar(
-      expandedHeight: 235,
+      expandedHeight: 255,
       pinned: true,
       floating: false,
       automaticallyImplyLeading: false,
@@ -184,7 +184,7 @@ class _HeaderBackground extends StatelessWidget {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -196,19 +196,20 @@ class _HeaderBackground extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                       fontFamily: 'Tajawal',
                       letterSpacing: 0.5,
+                      height: 1.3,
                     ),
                   ),
-                  // const SizedBox(height: 6),
+                  const SizedBox(height: 10),
                   Text(
                     'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       fontSize: 17,
                       fontFamily: 'Amiri Quran',
-                      height: 1.6,
+                      height: 1.8,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 14),
                   // Stats row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -220,7 +221,7 @@ class _HeaderBackground extends StatelessWidget {
                       _StatChip(value: '6236', label: 'آية'),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   // Search bar
                   Container(
                     height: 44,
@@ -276,7 +277,7 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.14),
         borderRadius: BorderRadius.circular(20),
@@ -928,6 +929,7 @@ class _NowPlayingBar extends StatelessWidget {
                     ),
                     textAlign: TextAlign.right,
                   ),
+                  const SizedBox(height: 6),
                   Text(
                     reciterName,
                     style: TextStyle(
@@ -1051,6 +1053,7 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
+        toolbarHeight: 68,
         leading: IconButton(
           icon: Container(
             padding: const EdgeInsets.all(7),
@@ -1062,27 +1065,33 @@ class _TafsirDetailScreenState extends State<_TafsirDetailScreen> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.surah.nameAr,
-              style: const TextStyle(
-                fontFamily: 'Amiri Quran',
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.surah.nameAr,
+                style: const TextStyle(
+                  fontFamily: 'Amiri Quran',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  height: 1.4,
+                ),
               ),
-            ),
-            Text(
-              'التفسير الميسر',
-              style: TextStyle(
-                fontFamily: 'Tajawal',
-                fontSize: 12,
-                color: Colors.white.withOpacity(0.8),
+              const SizedBox(height: 6),
+              Text(
+                'التفسير الميسر',
+                style: TextStyle(
+                  fontFamily: 'Tajawal',
+                  fontSize: 12,
+                  color: Colors.white.withOpacity(0.8),
+                  height: 1.3,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           Container(

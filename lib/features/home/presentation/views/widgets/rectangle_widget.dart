@@ -12,8 +12,8 @@ class RectangleWidget extends StatelessWidget {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
           begin: Alignment(1.05, 0.02),
           end: Alignment(0.00, 0.98),
           colors: [
@@ -22,7 +22,8 @@ class RectangleWidget extends StatelessWidget {
           ],
         ),
         image: DecorationImage(
-          image: AssetImage(AppImages.triangleImage),
+          image: triangleDecorationImage(context),
+          fit: BoxFit.cover,
         ),
       ),
     );

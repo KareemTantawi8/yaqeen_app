@@ -38,7 +38,19 @@ class PrayerNotificationService {
     'sudais': 'عبد الرحمن السديس',
   };
 
-  static String _channelId(String voiceId) => 'adhan_voice_$voiceId';
+  // v2: each voice has its own raw sound file (mishary/abdulbasit/sudais added).
+  static String _channelId(String voiceId) => 'adhan_voice_v2_$voiceId';
+
+  static const _androidBundledRawSounds = {
+    'makkah',
+    'madinah',
+    'mishary',
+    'abdulbasit',
+    'sudais',
+  };
+
+  static String _androidRawSoundId(String voiceId) =>
+      _androidBundledRawSounds.contains(voiceId) ? voiceId : 'makkah';
 
   // Notification IDs: prayerIndex * 10 + dayOffset (0–6).
   // فجر=0..6, ظهر=10..16, عصر=20..26, مغرب=30..36, عشاء=40..46.
@@ -109,7 +121,9 @@ class PrayerNotificationService {
             voiceName,
             description: _channelDesc,
             importance: Importance.max,
-            sound: RawResourceAndroidNotificationSound(voiceId),
+            sound: RawResourceAndroidNotificationSound(
+              _androidRawSoundId(voiceId),
+            ),
             playSound: true,
             enableVibration: true,
             showBadge: true,
@@ -179,10 +193,22 @@ class PrayerNotificationService {
 
   /// Whether the OS allows showing/scheduling notifications (separate from app toggle).
   static Future<bool> hasSystemNotificationPermission() async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (Platform.isIOS) {
+      // permission_handler's Permission.notification is unreliable on iOS unless
+      // the Podfile enables PERMISSION_NOTIFICATIONS. Use the same plugin that
+      // requests permission so grant/deny stays consistent.
+      final options = await _plugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.checkPermissions();
+      return options?.isEnabled ?? false;
+    }
+
+    if (Platform.isAndroid) {
       final status = await Permission.notification.status;
       return status.isGranted || status.isLimited;
     }
+
     return true;
   }
 
@@ -216,7 +242,9 @@ class PrayerNotificationService {
             _channelId(voiceId),
             _voiceChannels[voiceId]!,
             channelDescription: _channelDesc,
-            sound: RawResourceAndroidNotificationSound(voiceId),
+            sound: RawResourceAndroidNotificationSound(
+              _androidRawSoundId(voiceId),
+            ),
             importance: Importance.max,
             priority: Priority.max,
             playSound: true,
@@ -434,33 +462,10 @@ class PrayerNotificationService {
         'حان وقت صلاة $prayerName',
         'اضغط لسماع الأذان',
         tzTime,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channelId,
-            channelName,
-            channelDescription: _channelDesc,
-            // Sound is set on the channel; reference it here too so the OS
-            // uses the correct one when the channel already exists.
-            sound: RawResourceAndroidNotificationSound(voiceId),
-            importance: Importance.max,
-            priority: Priority.max,
-            enableVibration: true,
-            playSound: true,
-            fullScreenIntent: true,
-            category: AndroidNotificationCategory.alarm,
-            visibility: NotificationVisibility.public,
-            showWhen: true,
-          ),
-          iOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-            // iOS local-notification sounds must be in an Apple-supported
-            // format (CAF/WAV/AIFF). MP3-based per-voice names are ignored on
-            // many release devices, resulting in silent notifications.
-            sound: _iosAdhanSound,
-            interruptionLevel: InterruptionLevel.active,
-          ),
+        _notificationDetails(
+          channelId: channelId,
+          channelName: channelName,
+          voiceId: voiceId,
         ),
         androidScheduleMode: androidScheduleMode,
         uiLocalNotificationDateInterpretation:
@@ -472,8 +477,58 @@ class PrayerNotificationService {
         'Scheduled: $prayerName at ${prayerTime.toLocal()} → $tzTime (voice=$voiceId)',
       );
     } catch (e, st) {
+      final error = e.toString();
+      if (Platform.isAndroid &&
+          error.contains('invalid_sound') &&
+          voiceId != 'makkah') {
+        debugPrint(
+          'PrayerNotificationService: raw sound missing for $voiceId — '
+          'retrying with makkah',
+        );
+        await _scheduleOne(
+          id,
+          prayerName,
+          prayerTime,
+          _channelId('makkah'),
+          _voiceChannels['makkah']!,
+          'makkah',
+        );
+        return;
+      }
       debugPrint('Failed to schedule $prayerName: $e\n$st');
     }
+  }
+
+  static NotificationDetails _notificationDetails({
+    required String channelId,
+    required String channelName,
+    required String voiceId,
+  }) {
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        channelId,
+        channelName,
+        channelDescription: _channelDesc,
+        sound: RawResourceAndroidNotificationSound(
+          _androidRawSoundId(voiceId),
+        ),
+        importance: Importance.max,
+        priority: Priority.max,
+        enableVibration: true,
+        playSound: true,
+        fullScreenIntent: true,
+        category: AndroidNotificationCategory.alarm,
+        visibility: NotificationVisibility.public,
+        showWhen: true,
+      ),
+      iOS: const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        sound: _iosAdhanSound,
+        interruptionLevel: InterruptionLevel.active,
+      ),
+    );
   }
 
   // ---------------------------------------------------------------------------

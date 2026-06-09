@@ -24,9 +24,15 @@ Take **phone screenshots** on a device or emulator (min. 2, recommended 4–8):
 - Azkar
 - Qibla or Mosques
 
-Save them in `assets/google_play/screenshots/phone/` (create folder when ready).
+Regenerate from `assets/app_store/` sources:
 
-**Suggested size:** 1080×1920 or 1080×2400 (9:16 portrait), PNG or JPEG, each under 8 MB.
+```bash
+.venv_assets/bin/python tooling/generate_google_play_screenshots.py
+```
+
+Output: `assets/google_play/screenshots/phone/` (**1080×2400** JPEG).
+
+**Manual capture:** 1080×1920 or 1080×2400 (9:16 portrait), PNG or JPEG, each under 8 MB.
 
 ## Limits (Google Play)
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yaqeen_app/core/services/force_update_service.dart';
+import 'package:yaqeen_app/features/splach/presentation/views/force_update_screen.dart';
 
 import '../../../../../core/styles/images/app_image.dart';
 
@@ -23,9 +25,21 @@ class _SplashScreenBodyState extends State<SplashScreenBody>
         .animate(controler);
     controler.forward();
 
-    Future.delayed(const Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 2), _checkVersionAndNavigate);
+  }
+
+  Future<void> _checkVersionAndNavigate() async {
+    if (!mounted) return;
+
+    final updateRequired = await ForceUpdateService.isUpdateRequired();
+
+    if (!mounted) return;
+
+    if (updateRequired) {
+      Navigator.pushReplacementNamed(context, ForceUpdateScreen.routeName);
+    } else {
       Navigator.pushReplacementNamed(context, '/main');
-    });
+    }
   }
 
   @override
@@ -40,8 +54,8 @@ class _SplashScreenBodyState extends State<SplashScreenBody>
     return Container(
       height: double.infinity,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
           begin: Alignment(1.05, 0.02),
           end: Alignment(0.00, 0.98),
           colors: [
@@ -50,7 +64,8 @@ class _SplashScreenBodyState extends State<SplashScreenBody>
           ],
         ),
         image: DecorationImage(
-          image: AssetImage('assets/images/triangle.png'),
+          image: triangleDecorationImage(context),
+          fit: BoxFit.cover,
         ),
       ),
       child: Stack(

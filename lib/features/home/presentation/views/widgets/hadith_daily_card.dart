@@ -71,14 +71,10 @@ class _HadithDailyCardState extends State<HadithDailyCard> {
           borderRadius: BorderRadius.circular(22),
           child: Stack(
             children: [
-              Positioned.fill(
-                child: Opacity(
+              const Positioned.fill(
+                child: TriangleTexture(
                   opacity: 0.05,
-                  child: Image.asset(
-                    AppImages.triangleImage,
-                    fit: BoxFit.cover,
-                    color: AppColors.primaryColor,
-                  ),
+                  color: AppColors.primaryColor,
                 ),
               ),
               Positioned(

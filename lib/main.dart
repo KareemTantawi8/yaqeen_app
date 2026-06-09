@@ -1,5 +1,4 @@
 import 'package:audio_session/audio_session.dart';
-import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -57,22 +56,7 @@ void main() async {
     debugPrint('FCMService bootstrap failed: $e');
   }
 
-  final app = const ProviderScope(child: YaqeenApp());
-
-  if (kReleaseMode) {
-    runApp(app);
-  } else {
-    final clarityConfig = ClarityConfig(
-      projectId: 'scpt8xziyk',
-      logLevel: LogLevel.Error,
-    );
-    runApp(
-      ClarityWidget(
-        app: app,
-        clarityConfig: clarityConfig,
-      ),
-    );
-  }
+  runApp(const ProviderScope(child: YaqeenApp()));
 }
 
 void _ignoreSimulatorMetaKeyAssertionInDebug() {

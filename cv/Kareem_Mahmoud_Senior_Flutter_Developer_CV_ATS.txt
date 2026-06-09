@@ -1,0 +1,76 @@
+KAREEM MAHMOUD
+Senior Flutter and Mobile Developer
+
+Kareem01229526319@gmail.com | +966568243283 | +201229526319
+Saudi Arabia
+LinkedIn: https://www.linkedin.com/in/kareem-mahmoud-a50822218/
+GitHub: https://github.com/KareemTantawi8
+
+PROFESSIONAL SUMMARY
+
+Senior Mobile Developer specializing in Flutter, Dart, and Swift, with a track record shipping production apps to the App Store and Google Play, including enterprise fuel and logistics platforms and consumer products. Strong in clean architecture, performance tuning, payments, real-time features, and full release ownership from design alignment through store submission. Experienced in on-site and remote delivery with cross-functional teams. Bilingual Arabic and English (native).
+
+PROFESSIONAL EXPERIENCE
+
+Al-Drees Petroleum and Transport Services Company | On-Site | Riyadh, Saudi Arabia
+Mobile Application Developer | Present
+
+WAIE - Aldrees (Production App)
+App Store: https://apps.apple.com/us/app/%D8%A7%D9%84%D8%AF%D8%B1%D9%8A%D8%B3-aldrees/id6738043230
+Google Play: https://play.google.com/store/apps/details?id=com.waie.aldrees.mobile
+
+- Contributed to architecture, development, and scaling of the WAIE mobile application (Android and iOS) for fuel services, payments, and customer operations at national scale (100K+ Google Play downloads, 4.7 App Store rating).
+- Designed and delivered multiple enterprise apps within the ERP ecosystem: Driver Dashboard (SAGO Logistics), Technician App, and NFC-enabled field workflows.
+- Streamlined logistics and field-service operations through scalable architecture, clean code, and secure integration with backend enterprise systems.
+
+NG-Technology | Remote | Cairo, Egypt
+Mobile Application Developer | Jul 2024 - Jun 2025
+
+- Built a complete E-Commerce app (35+ screens) and admin dashboard from scratch: catalog, cart, checkout, and order flows.
+- Led Figma handoff and API coordination with backend; integrated Paymob, Stripe, and Vodafone Cash for secure multi-gateway checkout.
+- Introduced reusable components and scalable architecture for complex retail workflows.
+- Extended a Financial Management Application with dashboards and reliable transaction handling.
+
+Ebuziness | Remote | Canada
+Flutter Developer | Apr 2024 - Jun 2025
+
+- Shipped authentication, onboarding, and company profile setup; cut onboarding time by 20%.
+- Enhanced dashboard, routing, and bus management; 25% scheduling efficiency gain, 30% better data visibility.
+- Delivered trip management and reporting; 15% fewer manual planning errors.
+- Integrated real-time notifications and REST APIs; 99% uptime, 20% faster operational response.
+
+PUBLISHED APPLICATIONS
+
+WAIE - Aldrees | Al-Drees (Professional) | Flutter, iOS, Android
+App Store: https://apps.apple.com/us/app/%D8%A7%D9%84%D8%AF%D8%B1%D9%8A%D8%B3-aldrees/id6738043230
+Google Play: https://play.google.com/store/apps/details?id=com.waie.aldrees.mobile
+
+Wash Slender | Personal (Lead Developer) | Flutter, BLoC, Dio, Firebase, WebSockets
+App Store: https://apps.apple.com/us/app/%D9%88%D8%B4-%D8%B3%D9%84%D9%86%D8%AF%D8%B1/id6772749229
+GitHub: https://github.com/KareemTantawi8/cars_market
+
+Yaqeen | Personal (Lead Developer) | Flutter, Riverpod, GetIt, FCM
+App Store: https://apps.apple.com/us/app/%D9%8A-%D9%82-%D9%8A%D9%86/id6775386295
+GitHub: https://github.com/KareemTantawi8/yaqeen_app
+
+ADDITIONAL PROJECTS
+
+Fall Detection App | Flutter, sensors | GitHub: https://github.com/KareemTantawi8
+E-Commerce Application | Flutter, REST, payments | GitHub: https://github.com/KareemTantawi8
+Doctor Application | Flutter, healthcare | GitHub: https://github.com/KareemTantawi8
+Grocery Application | Flutter, retail | GitHub: https://github.com/KareemTantawi8
+
+TECHNICAL SKILLS
+
+Mobile: Flutter, Dart, Swift, iOS, Android, BLoC, Cubit, Provider, GetX, Riverpod
+Architecture: Clean Architecture, MVVM, MVC, SOLID, Repository Pattern, GetIt
+APIs: REST, Dio, HTTP, WebSockets, Firebase, FCM, Laravel Reverb, Pusher
+Data and Tools: SQLite, Hive, Shared Preferences, Git, GitHub, Figma, App Store Connect, Google Play Console
+Languages: Dart, Swift, C++, Java, Python
+Spoken: Arabic (Native), English (Native)
+Soft Skills: Mentoring, teamwork, communication, problem solving, self-learning
+
+EDUCATION
+
+Bachelor of Science, Computer Science
+Asyut University | GPA 3.4 / 4.0

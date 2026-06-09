@@ -8,9 +8,8 @@
 # flutter_local_notifications — keep notification receiver classes
 -keep class com.dexterous.** { *; }
 
-# Google Maps
--keep class com.google.android.gms.maps.** { *; }
--keep interface com.google.android.gms.maps.** { *; }
+# Adhan notification sounds referenced from Dart via RawResourceAndroidNotificationSound
+-keepclassmembers class **.R$raw { *; }
 
 # Firebase
 -keep class com.google.firebase.** { *; }

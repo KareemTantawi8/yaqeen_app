@@ -3,8 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  connectivity_plus
   firebase_core
+  firebase_remote_config
   flutter_localization
   flutter_timezone
   geolocator_windows

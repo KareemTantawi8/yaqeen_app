@@ -240,28 +240,6 @@ class _FavoriteHadithCard extends StatelessWidget {
                 height: 1.9,
               ),
             ),
-            if (hadith.refNo.isNotEmpty) ...[
-              verticalSpace(10),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: context.lightAccent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    hadith.refNo,
-                    style: const TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: 11,
-                      fontFamily: 'Tajawal',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),

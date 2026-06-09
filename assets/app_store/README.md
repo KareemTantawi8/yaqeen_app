@@ -18,3 +18,5 @@ iPhone images are scaled to fill the frame (minimal crop). iPad images keep the 
 ## Files
 
 Upload every JPEG from `iphone/` and `ipad/` (same filenames as the sources). Up to **10 screenshots** per device size in App Store Connect.
+
+For **version 1.1.0** upload steps, see `docs/store/RELEASE-v1.1.0.md`.

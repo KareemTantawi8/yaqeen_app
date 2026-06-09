@@ -7,6 +7,7 @@ class HadithModel {
   final String narrator;
   final String grade;
   final String refNo;
+  final String tafsir;
   bool isFavorite;
 
   HadithModel({
@@ -18,6 +19,7 @@ class HadithModel {
     this.narrator = '',
     this.grade = '',
     required this.refNo,
+    this.tafsir = '',
     this.isFavorite = false,
   });
 
@@ -31,6 +33,7 @@ class HadithModel {
       narrator: json['narrator'] ?? '',
       grade: json['grade'] ?? '',
       refNo: json['refno']?.toString() ?? '',
+      tafsir: json['tafsir'] ?? '',
       isFavorite: json['isFavorite'] == true,
     );
   }
@@ -45,6 +48,7 @@ class HadithModel {
       'narrator': narrator,
       'grade': grade,
       'refno': refNo,
+      'tafsir': tafsir,
       'isFavorite': isFavorite,
     };
   }
@@ -58,6 +62,7 @@ class HadithModel {
     String? narrator,
     String? grade,
     String? refNo,
+    String? tafsir,
     bool? isFavorite,
   }) {
     return HadithModel(
@@ -69,6 +74,7 @@ class HadithModel {
       narrator: narrator ?? this.narrator,
       grade: grade ?? this.grade,
       refNo: refNo ?? this.refNo,
+      tafsir: tafsir ?? this.tafsir,
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }

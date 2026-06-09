@@ -1,10 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:yaqeen_app/features/home/data/models/hadith_model.dart';
-import 'package:yaqeen_app/features/home/data/repo/hadith_service.dart';
-import 'hadith_detail_screen.dart';
+import 'package:yaqeen_app/features/home/data/models/hadeethenc_models.dart';
+import 'package:yaqeen_app/features/home/data/repo/hadeethenc_service.dart';
+import 'hadith_topic_screen.dart';
 import '../../../../core/extension/context_extension.dart';
 import '../../../../core/styles/colors/app_color.dart';
 import '../../../../core/utils/spacing.dart';
+
+const _kColors = [
+  Color(0xFF1565C0),
+  Color(0xFF6A1B9A),
+  Color(0xFF1A5F54),
+  Color(0xFF558B2F),
+  Color(0xFF00838F),
+  Color(0xFFAD1457),
+  Color(0xFF37474F),
+  Color(0xFF4527A0),
+  Color(0xFF00695C),
+  Color(0xFF6D4C41),
+];
+
+const _kIcons = [
+  Icons.auto_stories_rounded,
+  Icons.star_rounded,
+  Icons.favorite_rounded,
+  Icons.balance_rounded,
+  Icons.people_rounded,
+  Icons.campaign_rounded,
+  Icons.history_edu_rounded,
+  Icons.menu_book_rounded,
+  Icons.lightbulb_outline_rounded,
+  Icons.mosque_rounded,
+];
+
+Color _color(int i) => _kColors[i % _kColors.length];
+IconData _icon(int i) => _kIcons[i % _kIcons.length];
 
 class HadithSearchScreen extends StatefulWidget {
   const HadithSearchScreen({super.key});
@@ -16,9 +45,17 @@ class HadithSearchScreen extends StatefulWidget {
 class _HadithSearchScreenState extends State<HadithSearchScreen> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
-  List<HadithModel> _results = [];
-  bool _isSearching = false;
+
+  List<HadeethEncCategory> _allCategories = [];
+  List<HadeethEncCategory> _results = [];
+  bool _isFetchingCategories = false;
   bool _hasSearched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _prefetchCategories();
+  }
 
   @override
   void dispose() {
@@ -27,29 +64,26 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
     super.dispose();
   }
 
-  Future<void> _search() async {
-    final query = _controller.text.trim();
-    if (query.isEmpty) return;
-    _focusNode.unfocus();
-    setState(() { _isSearching = true; _hasSearched = true; _results = []; });
-
-    final allHadiths = <HadithModel>[];
-    for (final book in HadithService.books) {
-      try {
-        final hadiths = await HadithService.fetchMultiple(book: book.key, count: 3);
-        allHadiths.addAll(hadiths);
-      } catch (_) {}
+  Future<void> _prefetchCategories() async {
+    setState(() => _isFetchingCategories = true);
+    try {
+      final cats = await HadeethEncService.fetchAllCategories();
+      if (mounted) setState(() { _allCategories = cats; _isFetchingCategories = false; });
+    } catch (_) {
+      if (mounted) setState(() => _isFetchingCategories = false);
     }
+  }
 
-    final lower = query.toLowerCase();
-    final results = allHadiths.where((h) =>
-      h.arabicText.contains(query) ||
-      h.chapter.contains(query) ||
-      h.englishText.toLowerCase().contains(lower) ||
-      h.bookName.contains(query)
-    ).toList();
-
-    setState(() { _results = results; _isSearching = false; });
+  void _search() {
+    final query = _controller.text.trim();
+    _focusNode.unfocus();
+    if (query.isEmpty) return;
+    setState(() {
+      _hasSearched = true;
+      _results = _allCategories
+          .where((c) => c.title.contains(query))
+          .toList();
+    });
   }
 
   @override
@@ -109,7 +143,8 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
           GestureDetector(
             onTap: _search,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 color: AppColors.primaryColor,
                 borderRadius: BorderRadius.circular(14),
@@ -141,7 +176,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
               textDirection: TextDirection.rtl,
               style: const TextStyle(fontFamily: 'Tajawal', fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'ابحث في متن الحديث...',
+                hintText: 'ابحث عن موضوع...',
                 hintStyle: const TextStyle(
                   fontFamily: 'Tajawal',
                   color: Color(0xFFAAAAAA),
@@ -164,8 +199,10 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
                     width: 1.5,
                   ),
                 ),
-                prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor, size: 22),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                prefixIcon: const Icon(Icons.search,
+                    color: AppColors.primaryColor, size: 22),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
               ),
               onSubmitted: (_) => _search(),
             ),
@@ -176,23 +213,21 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
   }
 
   Widget _buildBody() {
-    if (_isSearching) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(color: AppColors.primaryColor),
-            verticalSpace(16),
-            const Text(
-              'جاري البحث في الأحاديث...',
-              style: TextStyle(
-                fontFamily: 'Tajawal',
-                color: AppColors.primaryColor,
-                fontSize: 14,
-              ),
+    if (_isFetchingCategories && !_hasSearched) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(color: AppColors.primaryColor),
+          verticalSpace(16),
+          Text(
+            'جارٍ تحميل فهرس الموضوعات...',
+            style: TextStyle(
+              color: context.greyText500,
+              fontFamily: 'Tajawal',
+              fontSize: 14,
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -204,7 +239,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             Icon(Icons.search, size: 72, color: context.greyText300),
             verticalSpace(16),
             Text(
-              'ابحث في الأحاديث الشريفة',
+              'ابحث في موضوعات الأحاديث',
               style: TextStyle(
                 color: context.greyText500,
                 fontFamily: 'Tajawal',
@@ -214,7 +249,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             ),
             verticalSpace(8),
             Text(
-              'أدخل كلمة أو جزء من متن الحديث',
+              'مثال: صلاة، زكاة، توبة، أخلاق...',
               style: TextStyle(
                 color: context.greyText400,
                 fontFamily: 'Tajawal',
@@ -262,7 +297,7 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Text(
-            'تم إيجاد ${_results.length} نتيجة',
+            'تم إيجاد ${_results.length} موضوع',
             style: const TextStyle(
               color: AppColors.primaryColor,
               fontFamily: 'Tajawal',
@@ -276,7 +311,8 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             itemCount: _results.length,
             separatorBuilder: (_, __) => verticalSpace(10),
-            itemBuilder: (ctx, i) => _HadithSearchResultCard(hadith: _results[i]),
+            itemBuilder: (ctx, i) =>
+                _CategoryResultCard(category: _results[i], colorIndex: i),
           ),
         ),
       ],
@@ -284,16 +320,33 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
   }
 }
 
-class _HadithSearchResultCard extends StatelessWidget {
-  final HadithModel hadith;
-  const _HadithSearchResultCard({required this.hadith});
+// ────────────────────────────────────────────────────────────────────
+
+class _CategoryResultCard extends StatelessWidget {
+  final HadeethEncCategory category;
+  final int colorIndex;
+
+  const _CategoryResultCard({
+    required this.category,
+    required this.colorIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final color = _color(colorIndex);
+    final icon = _icon(colorIndex);
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => HadithDetailScreen(hadith: hadith)),
+        MaterialPageRoute(
+          builder: (_) => HadithTopicScreen(
+            categoryId: category.id,
+            categoryTitle: category.title,
+            categoryCount: category.hadeethsCount,
+            categoryColor: color,
+            categoryIcon: icon,
+          ),
+        ),
       ),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -308,83 +361,56 @@ class _HadithSearchResultCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Row(
           children: [
-            // Book badge
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: context.lightAccent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    hadith.refNo.isNotEmpty ? hadith.refNo : '—',
-                    style: const TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: 11,
+            const Icon(Icons.chevron_left_rounded,
+                color: AppColors.primaryColor, size: 20),
+            const Spacer(),
+            Expanded(
+              flex: 10,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    category.title,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: context.highText,
+                      fontSize: 16,
                       fontFamily: 'Tajawal',
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-                Text(
-                  hadith.bookName,
-                  style: const TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 13,
-                    fontFamily: 'Tajawal',
-                    fontWeight: FontWeight.w700,
+                  verticalSpace(6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${category.hadeethsCount} حديث',
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 12,
+                        fontFamily: 'Tajawal',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            verticalSpace(10),
-            Text(
-              hadith.arabicText,
-              textAlign: TextAlign.right,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: context.highText,
-                fontSize: 16,
-                fontFamily: 'Amiri Quran',
-                height: 1.9,
+                ],
               ),
             ),
-            if (hadith.chapter.isNotEmpty) ...[
-              verticalSpace(8),
-              Text(
-                hadith.chapter,
-                textAlign: TextAlign.right,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: context.secondaryText,
-                  fontSize: 12,
-                  fontFamily: 'Tajawal',
-                ),
+            horizontalSpace(12),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-            verticalSpace(8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text(
-                  'اقرأ الحديث كاملاً',
-                  style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 12,
-                    fontFamily: 'Tajawal',
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                horizontalSpace(4),
-                const Icon(Icons.chevron_right, color: AppColors.primaryColor, size: 12),
-              ],
+              child: Icon(icon, color: color, size: 22),
             ),
           ],
         ),

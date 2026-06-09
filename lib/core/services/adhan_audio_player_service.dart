@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yaqeen_app/core/services/adhan_audio_cache.dart';
 
 class AdhanAudioPlayerService {
   AdhanAudioPlayerService._internal() {
@@ -28,7 +29,6 @@ class AdhanAudioPlayerService {
   static const _keySelectedVoice = 'selected_adhan_voice_id';
   static const _legacyKeySelectedSound = 'selected_adhan_sound';
 
-  // Bundled adhan (remote quranicaudio URLs 404; cleartext HTTP mirrors are blocked on Android).
   static const List<Map<String, String>> voices = [
     {
       'id': 'makkah',
@@ -97,15 +97,15 @@ class AdhanAudioPlayerService {
     _isLoading = true;
     try {
       final id = voiceId ?? await getSelectedVoiceId();
-      final voice = getVoiceById(id);
-      final assetPath = voice['asset']!;
+      final path = await AdhanAudioCache.resolvePlayablePath(id);
 
       if (_isPlaying) {
         await _player.stop();
         _isPlaying = false;
       }
 
-      await _player.setAudioSource(AudioSource.asset(assetPath));
+      final source = AudioSource.asset(path);
+      await _player.setAudioSource(source);
       await _player.play();
     } catch (e) {
       _isPlaying = false;

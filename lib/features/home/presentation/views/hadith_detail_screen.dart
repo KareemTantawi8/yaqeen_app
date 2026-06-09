@@ -19,6 +19,7 @@ class HadithDetailScreen extends StatefulWidget {
 
 class _HadithDetailScreenState extends State<HadithDetailScreen> {
   bool _isFavorite = false;
+  bool _tafsirExpanded = false;
 
   @override
   void initState() {
@@ -84,6 +85,10 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                 child: Column(
                   children: [
                     _buildHadithCard(sw),
+                    if (widget.hadith.tafsir.isNotEmpty) ...[
+                      verticalSpace(16),
+                      _buildTafsirCard(),
+                    ],
                     verticalSpace(20),
                     _buildActions(),
                   ],
@@ -175,11 +180,10 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
         borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
-            Positioned.fill(
-              child: Opacity(
+            const Positioned.fill(
+              child: TriangleTexture(
                 opacity: 0.05,
-                child: Image.asset(AppImages.triangleImage,
-                    fit: BoxFit.cover, color: Colors.white),
+                color: Colors.white,
               ),
             ),
             Positioned(top: -30, right: -30, child: _decor(120, 0.07)),
@@ -189,52 +193,28 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Book + ref row
+                  // Book row
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      if (hadith.refNo.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                                color: Colors.white.withOpacity(0.3)),
-                          ),
-                          child: Text(
-                            hadith.refNo,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontFamily: 'Tajawal',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                      Text(
+                        hadith.bookName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Tajawal',
+                          fontWeight: FontWeight.w700,
                         ),
-                      Row(
-                        children: [
-                          Text(
-                            hadith.bookName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: 'Tajawal',
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          horizontalSpace(8),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.menu_book_rounded,
-                                color: Colors.white, size: 18),
-                          ),
-                        ],
+                      ),
+                      horizontalSpace(8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.menu_book_rounded,
+                            color: Colors.white, size: 18),
                       ),
                     ],
                   ),
@@ -327,6 +307,89 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTafsirCard() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: context.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: () =>
+                setState(() => _tafsirExpanded = !_tafsirExpanded),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  AnimatedRotation(
+                    turns: _tafsirExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(Icons.expand_more_rounded,
+                        color: AppColors.primaryColor, size: 22),
+                  ),
+                  horizontalSpace(8),
+                  const Text(
+                    'شرح الحديث',
+                    style: TextStyle(
+                      color: AppColors.primaryColor,
+                      fontSize: 15,
+                      fontFamily: 'Tajawal',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  horizontalSpace(8),
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.lightbulb_outline_rounded,
+                        color: AppColors.primaryColor, size: 16),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_tafsirExpanded) ...[
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColors.primaryColor.withOpacity(0.1),
+              indent: 16,
+              endIndent: 16,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                widget.hadith.tafsir,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: context.highText,
+                  fontSize: 15,
+                  fontFamily: 'Tajawal',
+                  height: 1.9,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

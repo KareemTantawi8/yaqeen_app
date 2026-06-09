@@ -1,7 +1,6 @@
 import FirebaseCore
 import FirebaseMessaging
 import Flutter
-import GoogleMaps
 import UIKit
 import UserNotifications
 
@@ -18,8 +17,6 @@ import UserNotifications
     if FirebaseApp.app() == nil {
       FirebaseApp.configure()
     }
-
-    GMSServices.provideAPIKey("AIzaSyDVjB-dVk0Fy325gPWUaJGAbatgTSLD-PU")
 
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self

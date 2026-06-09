@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kareem Mahmoud — Senior Flutter Developer</title>
+  <style>
+    :root {
+      --ink: #111;
+      --body: #333;
+      --muted: #5c5c5c;
+      --line: #e2e2e2;
+      --accent: #1565c0;
+      --accent-soft: #e8f1fb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: var(--body);
+      max-width: 8.5in;
+      margin: 0 auto;
+      padding: 0.5in 0.6in;
+      background: #fff;
+    }
+    a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    .masthead {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px 24px;
+      align-items: end;
+      padding-bottom: 14px;
+      border-bottom: 2.5px solid var(--accent);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 26pt;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .headline {
+      font-size: 12pt;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+    .contact-block {
+      text-align: right;
+      font-size: 9.5pt;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+    .contact-block a { font-weight: 600; }
+    .contact-block .loc { font-weight: 600; color: var(--body); }
+
+    /* Sections */
+    section { margin-bottom: 16px; }
+    h2 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink);
+      margin-bottom: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--line);
+    }
+    .summary {
+      font-size: 10.5pt;
+      color: var(--body);
+      text-align: justify;
+    }
+
+    /* Experience */
+    .role { margin-bottom: 16px; }
+    .role:last-child { margin-bottom: 0; }
+    .role-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .company {
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .dates {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .role-line {
+      font-size: 10pt;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .role-line strong { color: var(--body); font-weight: 600; }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .tag {
+      font-size: 8.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px 8px;
+      border-radius: 3px;
+      background: #f4f4f4;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+    .tag.on-site { background: var(--accent-soft); color: var(--accent); border-color: #c5daf3; }
+    ul.role-bullets { margin-left: 18px; }
+    ul.role-bullets li { margin-bottom: 4px; }
+
+    /* Product highlight under job */
+    .product-box {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      font-size: 10pt;
+    }
+    .product-box .product-title {
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .product-box .product-desc {
+      color: var(--body);
+      margin-bottom: 6px;
+      font-size: 9.5pt;
+    }
+    .link-row { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 9.5pt; }
+    .link-row a::before { content: "→ "; font-weight: 400; }
+
+    /* Published apps table */
+    .apps-table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    .apps-table th {
+      text-align: left;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding: 6px 8px;
+      border-bottom: 2px solid var(--line);
+      font-weight: 700;
+    }
+    .apps-table td {
+      padding: 8px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+    .apps-table tr:last-child td { border-bottom: none; }
+    .app-name { font-weight: 700; color: var(--ink); }
+    .app-sub { font-size: 9pt; color: var(--muted); margin-top: 2px; }
+    .stack { font-size: 9pt; color: var(--muted); line-height: 1.4; }
+
+    /* Portfolio projects */
+    .portfolio-item {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .portfolio-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .portfolio-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 4px 12px;
+      margin-bottom: 4px;
+    }
+    .portfolio-title { font-weight: 700; font-size: 10.5pt; color: var(--ink); }
+    .portfolio-links { font-size: 9.5pt; }
+    .portfolio-links a + a { margin-left: 12px; }
+    .portfolio-tech {
+      font-size: 9pt;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    ul.compact { margin-left: 18px; }
+    ul.compact li { margin-bottom: 2px; font-size: 10pt; }
+
+    /* Skills */
+    .skills-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+      font-size: 10pt;
+    }
+    .skill-cat strong {
+      display: block;
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    /* Education */
+    .edu-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+    .edu-degree { font-weight: 700; color: var(--ink); }
+
+    @media print {
+      body { padding: 0.35in 0.45in; }
+      .role, .portfolio-item, section { break-inside: avoid; }
+    }
+    @media (max-width: 600px) {
+      .masthead { grid-template-columns: 1fr; }
+      .contact-block { text-align: left; }
+      .skills-wrap { grid-template-columns: 1fr; }
+      .apps-table { font-size: 9pt; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <h1>Kareem Mahmoud</h1>
+    <p class="headline">Senior Flutter &amp; Mobile Developer</p>
+  </div>
+  <div class="contact-block">
+    <div><a href="mailto:Kareem01229526319@gmail.com">Kareem01229526319@gmail.com</a></div>
+    <div><a href="tel:+966568243283">+966 56 824 3283</a> · <a href="tel:+201229526319">+20 122 952 6319</a></div>
+    <div class="loc">Saudi Arabia</div>
+    <div>
+      <a href="https://www.linkedin.com/in/kareem-mahmoud-a50822218/" target="_blank" rel="noopener">LinkedIn</a>
+      ·
+      <a href="https://github.com/KareemTantawi8" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <h2>Professional Summary</h2>
+  <p class="summary">
+    Senior Mobile Developer specializing in <strong>Flutter</strong>, <strong>Dart</strong>, and <strong>Swift</strong>, with a track record shipping production apps to the App Store and Google Play—including enterprise fuel &amp; logistics platforms and consumer products. Strong in clean architecture, performance tuning, payments, real-time features, and full release ownership from design alignment through store submission. Experienced in on-site and remote delivery with cross-functional teams (product, backend, QA). Bilingual Arabic/English (native).
+  </p>
+</section>
+
+<section>
+  <h2>Professional Experience</h2>
+
+  <article class="role">
+    <div class="role-top">
+      <div class="company">Al-Drees Petroleum &amp; Transport Services Company</div>
+      <div class="dates">Present</div>
+    </div>
+    <p class="role-line">
+      <strong>Mobile Application Developer</strong>
+      · On-Site · Riyadh, Saudi Arabia
+    </p>
+    <div class="tags">
+      <span class="tag on-site">On-Site</span>
+      <span class="tag">Flutter</span>
+      <span class="tag">iOS</span>
+      <span class="tag">Android</span>
+      <span class="tag">Enterprise</span>
+    </div>
+
+    <div class="product-box">
+      <div class="product-title">WAIE — الدريس | Aldrees (Production App)</div>
+      <p class="product-desc">
+        Large-scale fuel &amp; logistics mobile platform for Saudi Arabia (100K+ Google Play downloads, 4.7★ App Store rating).
+      </p>
+      <div class="link-row">
+        <a href="https://apps.apple.com/us/app/%D8%A7%D9%84%D8%AF%D8%B1%D9%8A%D8%B3-aldrees/id6738043230" target="_blank" rel="noopener">App Store</a>
+        <a href="https://play.google.com/store/apps/details?id=com.waie.aldrees.mobile" target="_blank" rel="noopener">Google Play</a>
+      </div>
+    </div>
+
+    <ul class="role-bullets">
+      <li>Contributed to architecture, development, and scaling of the <strong>WAIE</strong> mobile application (Android &amp; iOS) for fuel services, payments, and customer operations at national scale.</li>
+      <li>Designed and delivered multiple enterprise apps within the ERP ecosystem: <strong>Driver Dashboard (SAGO Logistics)</strong>, <strong>Technician App</strong>, and <strong>NFC-enabled</strong> field workflows.</li>
+      <li>Streamlined logistics and field-service operations through scalable architecture, clean code, and secure integration with backend enterprise systems.</li>
+    </ul>
+  </article>
+
+  <article class="role">
+    <div class="role-top">
+      <div class="company">NG-Technology</div>
+      <div class="dates">Jul 2024 – Jun 2025</div>
+    </div>
+    <p class="role-line">
+      <strong>Mobile Application Developer</strong>
+      · Remote · Cairo, Egypt
+    </p>
+    <div class="tags">
+      <span class="tag">Remote</span>
+      <span class="tag">E-Commerce</span>
+      <span class="tag">Fintech</span>
+    </div>
+    <ul class="role-bullets">
+      <li>Built a complete <strong>E-Commerce app</strong> (35+ screens) and admin dashboard from scratch—catalog, cart, checkout, and order flows.</li>
+      <li>Led Figma handoff and API coordination with backend; integrated <strong>Paymob, Stripe, and Vodafone Cash</strong> for secure multi-gateway checkout.</li>
+      <li>Introduced reusable components and scalable architecture for complex retail workflows.</li>
+      <li>Extended a <strong>Financial Management Application</strong> with dashboards and reliable transaction handling.</li>
+    </ul>
+  </article>
+
+  <article class="role">
+    <div class="role-top">
+      <div class="company">Ebuziness</div>
+      <div class="dates">Apr 2024 – Jun 2025</div>
+    </div>
+    <p class="role-line">
+      <strong>Flutter Developer</strong>
+      · Remote · Canada
+    </p>
+    <div class="tags">
+      <span class="tag">Remote</span>
+      <span class="tag">Fleet / Transport</span>
+    </div>
+    <ul class="role-bullets">
+      <li>Shipped authentication, onboarding, and company profile setup—cut onboarding time by <strong>20%</strong>.</li>
+      <li>Enhanced dashboard, routing, and bus management—<strong>25%</strong> scheduling efficiency gain, <strong>30%</strong> better data visibility.</li>
+      <li>Delivered trip management and reporting—<strong>15%</strong> fewer manual planning errors.</li>
+      <li>Integrated real-time notifications and REST APIs—<strong>99%</strong> uptime, <strong>20%</strong> faster operational response.</li>
+    </ul>
+  </article>
+</section>
+
+<section>
+  <h2>Published Applications</h2>
+  <table class="apps-table" aria-label="Published mobile applications">
+    <thead>
+      <tr>
+        <th>Application</th>
+        <th>Context</th>
+        <th>Stack</th>
+        <th>Links</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="app-name">WAIE — الدريس | Aldrees</div>
+          <div class="app-sub">Fuel &amp; logistics · Saudi Arabia</div>
+        </td>
+        <td>Al-Drees · Professional</td>
+        <td class="stack">Flutter · iOS · Android</td>
+        <td>
+          <a href="https://apps.apple.com/us/app/%D8%A7%D9%84%D8%AF%D8%B1%D9%8A%D8%B3-aldrees/id6738043230" target="_blank" rel="noopener">App Store</a><br />
+          <a href="https://play.google.com/store/apps/details?id=com.waie.aldrees.mobile" target="_blank" rel="noopener">Google Play</a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="app-name">Wash Slender</div>
+          <div class="app-sub">Automotive marketplace · AR/EN RTL</div>
+        </td>
+        <td>Personal · Lead Developer</td>
+        <td class="stack">Flutter · BLoC · Dio · Firebase · WebSockets</td>
+        <td>
+          <a href="https://apps.apple.com/us/app/%D9%88%D8%B4-%D8%B3%D9%84%D9%86%D8%AF%D8%B1/id6772749229" target="_blank" rel="noopener">App Store</a><br />
+          <a href="https://github.com/KareemTantawi8/cars_market" target="_blank" rel="noopener">GitHub</a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="app-name">Yaqeen — يَقِين</div>
+          <div class="app-sub">Islamic lifestyle · Prayer &amp; Quran</div>
+        </td>
+        <td>Personal · Lead Developer</td>
+        <td class="stack">Flutter · Riverpod · GetIt · FCM</td>
+        <td>
+          <a href="https://apps.apple.com/us/app/%D9%8A-%D9%82-%D9%8A%D9%86/id6775386295" target="_blank" rel="noopener">App Store</a><br />
+          <a href="https://github.com/KareemTantawi8/yaqeen_app" target="_blank" rel="noopener">GitHub</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Additional Projects</h2>
+
+  <article class="portfolio-item">
+    <div class="portfolio-head">
+      <span class="portfolio-title">Fall Detection App</span>
+      <span class="portfolio-links"><a href="https://github.com/KareemTantawi8" target="_blank" rel="noopener">GitHub</a></span>
+    </div>
+    <p class="portfolio-tech">Flutter · Device sensors · Safety alerts</p>
+    <ul class="compact">
+      <li>Sensor-driven fall detection with alert workflows for mobile safety use cases.</li>
+    </ul>
+  </article>
+
+  <article class="portfolio-item">
+    <div class="portfolio-head">
+      <span class="portfolio-title">E-Commerce Application</span>
+      <span class="portfolio-links"><a href="https://github.com/KareemTantawi8" target="_blank" rel="noopener">GitHub</a></span>
+    </div>
+    <p class="portfolio-tech">Flutter · REST · Multi-gateway payments</p>
+    <ul class="compact">
+      <li>End-to-end mobile commerce: catalog, cart, checkout, and payment integration.</li>
+    </ul>
+  </article>
+
+  <article class="portfolio-item">
+    <div class="portfolio-head">
+      <span class="portfolio-title">Doctor Application</span>
+      <span class="portfolio-links"><a href="https://github.com/KareemTantawi8" target="_blank" rel="noopener">GitHub</a></span>
+    </div>
+    <p class="portfolio-tech">Flutter · Healthcare · Scheduling</p>
+    <ul class="compact">
+      <li>Doctor/patient flows, appointments, and profile management.</li>
+    </ul>
+  </article>
+
+  <article class="portfolio-item">
+    <div class="portfolio-head">
+      <span class="portfolio-title">Grocery Application</span>
+      <span class="portfolio-links"><a href="https://github.com/KareemTantawi8" target="_blank" rel="noopener">GitHub</a></span>
+    </div>
+    <p class="portfolio-tech">Flutter · Retail · Orders</p>
+    <ul class="compact">
+      <li>Product browsing, cart, and order management for grocery retail.</li>
+    </ul>
+  </article>
+</section>
+
+<section>
+  <h2>Technical Skills</h2>
+  <div class="skills-wrap">
+    <div class="skill-cat">
+      <strong>Mobile</strong>
+      Flutter, Dart, Swift, iOS, Android, BLoC, Cubit, Provider, GetX, Riverpod
+    </div>
+    <div class="skill-cat">
+      <strong>Architecture</strong>
+      Clean Architecture, MVVM, MVC, SOLID, Repository Pattern, GetIt
+    </div>
+    <div class="skill-cat">
+      <strong>Backend &amp; APIs</strong>
+      REST, Dio, HTTP, WebSockets, Firebase, FCM, Laravel Reverb / Pusher
+    </div>
+    <div class="skill-cat">
+      <strong>Data &amp; Tools</strong>
+      SQLite, Hive, Shared Preferences, Git, GitHub, Figma, App Store Connect, Google Play Console
+    </div>
+    <div class="skill-cat">
+      <strong>Languages</strong>
+      Dart, Swift, C++, Java, Python
+    </div>
+    <div class="skill-cat">
+      <strong>Soft Skills</strong>
+      Mentoring, teamwork, communication, problem solving, self-learning
+    </div>
+    <div class="skill-cat">
+      <strong>Spoken Languages</strong>
+      Arabic (Native), English (Native)
+    </div>
+    <div class="skill-cat">
+      <strong>CS &amp; ML</strong>
+      Data structures, algorithms, OOP; KNN, SVM, deep learning (academic)
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Education</h2>
+  <div class="edu-row">
+    <span class="edu-degree">Bachelor of Science — Computer Science</span>
+    <span>Asyut University · GPA 3.4 / 4.0</span>
+  </div>
+</section>
+
+</body>
+</html>

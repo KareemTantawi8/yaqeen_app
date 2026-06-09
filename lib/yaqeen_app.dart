@@ -18,6 +18,7 @@ import 'features/home/presentation/views/quran_read_screen.dart';
 import 'features/home/presentation/views/quran_audio_screen.dart';
 import 'features/home/presentation/views/quran_tafsir_screen.dart';
 import 'features/splach/presentation/views/splach_screen.dart';
+import 'features/splach/presentation/views/force_update_screen.dart';
 import 'features/vendor/presentation/views/vendor_dashboard_screen.dart';
 import 'features/Prayer/presentation/views/adhan_settings_screen.dart';
 
@@ -79,6 +80,7 @@ class YaqeenApp extends ConsumerWidget {
       },
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
+        ForceUpdateScreen.routeName: (context) => const ForceUpdateScreen(),
         BottomNavBar.routeName: (context) => const BottomNavBar(),
         MesphaScreen.routeName: (context) => const MesphaScreen(),
         QuranScreen.routeName: (context) => const QuranScreen(),
